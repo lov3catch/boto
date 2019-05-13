@@ -25,23 +25,23 @@ class BotsController
      */
     public function handler(Request $request, $token): Response
     {
-//        if ($request->isMethod('post')) {
-//            $bots = [
-//                new BashImBot(),
-//                new BotonarioumBot(),
-//            ];
-//
-//            $requestBody = file_get_contents('php://input');
-//            $data = json_decode($requestBody, true);
-//
-//            /** @var BotInterface $bot */
-//            foreach ($bots as $bot) {
-//                if ($bot->isCurrentBot()) {
-//                    $bot->handle(Update::create($data));
-//                    break;
-//                }
-//            }
-//        }
+        if ($request->isMethod('post')) {
+            $bots = [
+                new BashImBot(),
+                new BotonarioumBot(),
+            ];
+
+            $requestBody = file_get_contents('php://input');
+            $data = json_decode($requestBody, true);
+
+            /** @var BotInterface $bot */
+            foreach ($bots as $bot) {
+                if ($bot->isCurrentBot()) {
+                    $bot->handle(Update::create($data));
+                    break;
+                }
+            }
+        }
 
         return new Response('It works!! ☺');
     }
