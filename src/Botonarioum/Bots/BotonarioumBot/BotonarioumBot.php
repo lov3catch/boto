@@ -59,14 +59,10 @@ class BotonarioumBot extends AbstractBot
                 $update->getMessage()->getChat()->getId(),
                 '
 Список груп:
-@zaycev_net_music_bot
-(Бот для поиска музыки. Статус: забанено на iOS устройствах)
-@deezer_music_bot
-(Бот для поиска музыки. Статус: активен)
-@pied_piper_bot
-(Бот для поиска музыки. Статус: активен)
-@equalizerguru_bot
-(Бот для поиска музыки. Статус: активен)
+https://t.me/mp3db
+(Большое собрание музыки. Более 150 тыс. записей)
+https://t.me/vyrvano_kontekst
+(Цитатник женского коллектива)
                 '
             );
 
