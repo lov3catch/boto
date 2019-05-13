@@ -15,7 +15,7 @@ class BotsController
     /**
      * @Route("/bots", name="handler")
      */
-    public function index(Request $request, $token): Response
+    public function index(Request $request): Response
     {
         return new Response('It works! ☺');
     }
@@ -43,6 +43,6 @@ class BotsController
             }
         }
 
-        return new Response('It works! ☺');
+        return new Response('It works!! ☺');
     }
 }
