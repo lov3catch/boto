@@ -13,9 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class BotsController
 {
     /**
-     * @Route("/bots/{token}", name="handler")
+     * @Route("/bots", name="handler")
      */
-    public function handler(Request $request, string $token): Response
+    public function index(Request $request, $token): Response
+    {
+        return new Response('It works! ☺');
+    }
+
+    /**
+     * @Route("/bots/{token}", name="handler_example")
+     */
+    public function handler(Request $request, $token): Response
     {
         if ($request->isMethod('post')) {
             $bots = [
