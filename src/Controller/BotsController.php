@@ -63,6 +63,7 @@ class BotsController
             $channel->setUpdatedAt(new \DateTime());
 
             $entityManager->persist($channel);
+            $entityManager->flush();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
