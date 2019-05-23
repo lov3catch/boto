@@ -25,7 +25,7 @@ class BotsController
     /**
      * @Route("/bots/{token}", name="handler_example")
      */
-    public function handler(Request $request, $token): Response
+    public function handler(Request $request, $token, EntityManager $entityManager): Response
     {
         if ($request->isMethod('post')) {
             $bots = [
@@ -45,7 +45,7 @@ class BotsController
             }
         }
 
-        $this->saveToDb($token);
+        $this->saveToDb($token, $entityManager);
 
         return new Response('It works!! ☺');
     }
