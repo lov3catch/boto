@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Botonarioum\Bots\BashImBot\BashImBot;
 use App\Botonarioum\Bots\BotInterface;
 use App\Botonarioum\Bots\BotonarioumBot\BotonarioumBot;
+use App\Entity\Channel;
+use Doctrine\ORM\EntityManager;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +45,26 @@ class BotsController
             }
         }
 
+        $this->saveToDb($token);
+
         return new Response('It works!! ☺');
+    }
+
+    private function saveToDb($token, EntityManager $entityManager)
+    {
+        try {
+            $channel = new Channel();
+            $channel->setToken($token);
+            $channel->setChannelId(111);
+            $channel->setFirstName('example');
+            $channel->setLastName('example');
+            $channel->setCreatedAt(new \DateTime());
+            $channel->setUpdatedAt(new \DateTime());
+
+            $entityManager->persist($channel);
+        } catch (\Exception $exception) {
+            echo $exception->getMessage();
+        }
+
     }
 }
