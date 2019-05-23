@@ -7,6 +7,7 @@ use App\Botonarioum\Bots\BotInterface;
 use App\Botonarioum\Bots\BotonarioumBot\BotonarioumBot;
 use App\Entity\Channel;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class BotsController
     /**
      * @Route("/bots/{token}", name="handler_example")
      */
-    public function handler(Request $request, $token, EntityManager $entityManager): Response
+    public function handler(Request $request, $token, EntityManagerInterface $entityManager): Response
     {
         if ($request->isMethod('post')) {
             $bots = [
@@ -50,7 +51,7 @@ class BotsController
         return new Response('It works!! ☺');
     }
 
-    private function saveToDb($token, EntityManager $entityManager)
+    private function saveToDb($token, EntityManagerInterface $entityManager)
     {
         try {
             $channel = new Channel();
