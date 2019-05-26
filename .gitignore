@@ -21,3 +21,6 @@
 ###<IDEA ###
 /.idea
 ###>IDEA ###
+
+/tools/cert/*
+!/tools/cert/.gitkeep

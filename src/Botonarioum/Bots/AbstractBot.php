@@ -1,33 +1,27 @@
 <?php declare(strict_types=1);
 
 namespace App\Botonarioum\Bots;
-//include_once "BotInterface.php";
 
+use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 
 class AbstractBot implements BotInterface
 {
-//    protected const ENV_TOKEN_KEY = null;
-
     protected const
         BOTONARIOUM_KEY = '🤖 BOTONARIOUM',
         DONATE_KEY = '🍩 DONATE';
 
-    public function handle(Update $update): bool
+    public function handle(Update $update, EntityManagerInterface $entityManager): bool
     {
         throw new \Exception('Method must be implemented');
     }
 
     public function isCurrentBot(): bool
     {
+//        return true;
         return false !== strpos($_SERVER[REQUEST_URI], $this->getToken());
     }
-
-//    protected function getToken(): string
-//    {
-//        return $_ENV[self::ENV_TOKEN_KEY];
-//    }
 
     protected function botonarioumAction(Update $update): SendMessage
     {

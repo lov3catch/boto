@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Botonarioum\Bots\BotonarioumBot;
+namespace App\Botonarioum\Bots\SandboxBot;
 
 use App\Botonarioum\Bots\AbstractBot;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,9 +10,9 @@ use Formapro\TelegramBot\ReplyKeyboardMarkup;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 
-class BotonarioumBot extends AbstractBot
+class SandboxBot extends AbstractBot
 {
-    protected const ENV_TOKEN_KEY = 'BOTONARIOUMBOT_TOKEN';
+    protected const ENV_TOKEN_KEY = 'SANDBOXBOT_TOKEN';
 
     private const
         CONTACTS_KEY = 'ℹ️ Контакты',

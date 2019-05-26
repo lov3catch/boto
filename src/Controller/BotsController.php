@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Botonarioum\Bots\BashImBot\BashImBot;
 use App\Botonarioum\Bots\BotInterface;
 use App\Botonarioum\Bots\BotonarioumBot\BotonarioumBot;
+use App\Botonarioum\Bots\SandboxBot\SandboxBot;
 use App\Entity\Channel;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +32,7 @@ class BotsController
             $bots = [
                 new BashImBot(),
                 new BotonarioumBot(),
+                new SandboxBot()
             ];
 
             $requestBody = file_get_contents('php://input');
@@ -40,25 +41,25 @@ class BotsController
             /** @var BotInterface $bot */
             foreach ($bots as $bot) {
                 if ($bot->isCurrentBot()) {
-                    $bot->handle(Update::create($data));
+                    $bot->handle(Update::create($data), $entityManager);
                     break;
                 }
             }
         }
 
-        $this->saveToDb($token, $entityManager);
+        $this->saveToDb($data, $token, $entityManager);
 
         return new Response('It works!! ☺');
     }
 
-    private function saveToDb($token, EntityManagerInterface $entityManager)
+    private function saveToDb(array $request, string $token, EntityManagerInterface $entityManager)
     {
         try {
             $channel = new Channel();
             $channel->setToken($token);
-            $channel->setChannelId(111);
-            $channel->setFirstName('example');
-            $channel->setLastName('example');
+            $channel->setChannelId($request['message']['chat']['id']);
+            $channel->setFirstName($request['message']['from']['first_name']);
+            $channel->setLastName($request['message']['from']['last_name']);
             $channel->setCreatedAt(new \DateTime());
             $channel->setUpdatedAt(new \DateTime());
 

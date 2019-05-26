@@ -3,6 +3,7 @@
 namespace App\Botonarioum\Bots\BashImBot;
 
 use App\Botonarioum\Bots\AbstractBot;
+use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\KeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
@@ -14,7 +15,7 @@ class BashImBot extends AbstractBot
 {
     protected const ENV_TOKEN_KEY = 'BASHIM_TOKEN';
 
-    public function handle(Update $update): bool
+    public function handle(Update $update, EntityManagerInterface $entityManager): bool
     {
         $bot = new Bot($this->getToken());
 
