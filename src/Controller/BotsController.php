@@ -40,7 +40,7 @@ class BotsController
 
             /** @var BotInterface $bot */
             foreach ($bots as $bot) {
-                if ($bot->isCurrentBot()) {
+                if ($bot->isCurrentBot($request)) {
                     $bot->handle(Update::create($data), $entityManager);
                     break;
                 }

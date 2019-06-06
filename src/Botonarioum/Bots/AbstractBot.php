@@ -5,6 +5,7 @@ namespace App\Botonarioum\Bots;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
+use Symfony\Component\HttpFoundation\Request;
 
 class AbstractBot implements BotInterface
 {
@@ -17,10 +18,9 @@ class AbstractBot implements BotInterface
         throw new \Exception('Method must be implemented');
     }
 
-    public function isCurrentBot(): bool
+    public function isCurrentBot(Request $request): bool
     {
-//        return true;
-        return false !== strpos($_SERVER[REQUEST_URI], $this->getToken());
+        return false !== strpos($request->getRequestUri(), $this->getToken());
     }
 
     protected function botonarioumAction(Update $update): SendMessage

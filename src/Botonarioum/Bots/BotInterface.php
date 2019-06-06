@@ -4,6 +4,7 @@ namespace App\Botonarioum\Bots;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Update;
+use Symfony\Component\HttpFoundation\Request;
 
 interface BotInterface
 {
@@ -11,5 +12,5 @@ interface BotInterface
 
     public function getToken(): string;
 
-    public function isCurrentBot(): bool;
+    public function isCurrentBot(Request $request): bool;
 }
