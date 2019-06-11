@@ -20,11 +20,11 @@ class BotContainer
 
     public function handle(Request $request): void
     {
-        $data = $request->request->all();
+        $json = json_decode($data = $request->getContent(), true);
 
         foreach ($this->bots as $bot) {
             if ($bot->isCurrentBot($request)) {
-                $bot->handle(Update::create($data));
+                $bot->handle(Update::create($json));
                 break;
             }
         }
