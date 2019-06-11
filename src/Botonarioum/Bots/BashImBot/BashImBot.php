@@ -3,7 +3,6 @@
 namespace App\Botonarioum\Bots\BashImBot;
 
 use App\Botonarioum\Bots\AbstractBot;
-use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\KeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
@@ -14,11 +13,18 @@ use Symfony\Component\DomCrawler\Crawler;
 class BashImBot extends AbstractBot
 {
     protected const ENV_TOKEN_KEY = 'BASHIM_TOKEN';
+    /**
+     * @var Bot
+     */
+    private $bot;
 
-    public function handle(Update $update, EntityManagerInterface $entityManager): bool
+    public function __construct()
     {
-        $bot = new Bot($this->getToken());
+        $this->bot = new Bot($this->getToken());
+    }
 
+    public function handle(Update $update): bool
+    {
         $userInput = $update->getMessage()->getText();
 
         if ($userInput === self::BOTONARIOUM_KEY) {
@@ -40,7 +46,7 @@ class BashImBot extends AbstractBot
         $keyboard = new ReplyKeyboardMarkup([[$fooButton], [$barButton, $bazButton]]);
 
         $message->setReplyMarkup($keyboard);
-        $bot->sendMessage($message);
+        $this->bot->sendMessage($message);
 
         return true;
     }

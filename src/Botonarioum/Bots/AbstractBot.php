@@ -2,7 +2,6 @@
 
 namespace App\Botonarioum\Bots;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +12,7 @@ class AbstractBot implements BotInterface
         BOTONARIOUM_KEY = '🤖 BOTONARIOUM',
         DONATE_KEY = '🍩 DONATE';
 
-    public function handle(Update $update, EntityManagerInterface $entityManager): bool
+    public function handle(Update $update): bool
     {
         throw new \Exception('Method must be implemented');
     }

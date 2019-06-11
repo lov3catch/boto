@@ -19,15 +19,29 @@ class BotonarioumBot extends AbstractBot
         BOTS_CATALOGUE_KEY = '📔 Боты',
         GROUPS_CATALOGUE_KEY = '📔 Групы';
 
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @var Bot
+     */
+    private $bot;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+        $this->bot = new Bot($this->getToken());
+    }
+
     private function defaultKeyboard(): ReplyKeyboardMarkup
     {
         return new ReplyKeyboardMarkup([[new KeyboardButton(self::BOTS_CATALOGUE_KEY), new KeyboardButton(self::GROUPS_CATALOGUE_KEY)], [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::CONTACTS_KEY)]]);
     }
 
-    public function handle(Update $update, EntityManagerInterface $entityManager): bool
+    public function handle(Update $update): bool
     {
-        $bot = new Bot($this->getToken());
-
         $userInput = $update->getMessage()->getText();
 
         if ($userInput === self::CONTACTS_KEY) {
@@ -78,7 +92,7 @@ https://t.me/vyrvano_kontekst
             $message->setReplyMarkup($this->defaultKeyboard());
         }
 
-        $bot->sendMessage($message);
+        $this->bot->sendMessage($message);
 
         return true;
     }
