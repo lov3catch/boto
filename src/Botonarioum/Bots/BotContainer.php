@@ -30,6 +30,6 @@ class BotContainer
             }
         }
 
-        return;
+        return null;
     }
 }
