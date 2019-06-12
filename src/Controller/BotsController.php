@@ -6,8 +6,10 @@ use App\Botonarioum\Bots\BashImBot\BashImBot;
 use App\Botonarioum\Bots\BotContainer;
 use App\Botonarioum\Bots\BotonarioumBot\BotonarioumBot;
 use App\Botonarioum\Bots\SandboxBot\SandboxBot;
-use App\Entity\Channel;
+use App\Events\ActivityEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Formapro\TelegramBot\Bot;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,9 +29,10 @@ class BotsController
      * @param Request $request
      * @param $token
      * @param EntityManagerInterface $entityManager
+     * @param EventDispatcherInterface $dispatcher
      * @return Response
      */
-    public function handler(Request $request, $token, EntityManagerInterface $entityManager): Response
+    public function handler(Request $request, $token, EntityManagerInterface $entityManager, EventDispatcherInterface $dispatcher): Response
     {
         if ($request->isMethod('post')) {
             $container = (new BotContainer())
@@ -37,30 +40,13 @@ class BotsController
                 ->add(new BotonarioumBot($entityManager))
                 ->add(new SandboxBot());
 
-            $container->handle($request);
-        }
+            $bot = $container->handle($request);
 
-        $this->saveToDb(json_decode(file_get_contents('php://input'), true), $token, $entityManager);
+            if ($bot instanceof Bot) {
+                $dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent($request, $bot));
+            }
+        }
 
         return new Response('It works!! ☺');
-    }
-
-    private function saveToDb(array $request, string $token, EntityManagerInterface $entityManager)
-    {
-        try {
-            $channel = new Channel();
-            $channel->setToken($token);
-            $channel->setChannelId($request['message']['chat']['id']);
-            $channel->setFirstName($request['message']['from']['first_name']);
-            $channel->setLastName($request['message']['from']['last_name']);
-            $channel->setCreatedAt(new \DateTime());
-            $channel->setUpdatedAt(new \DateTime());
-
-            $entityManager->persist($channel);
-            $entityManager->flush();
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
-        }
-
     }
 }

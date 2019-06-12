@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Botonarioum\Bots;
 
+use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -18,15 +19,17 @@ class BotContainer
         return $this;
     }
 
-    public function handle(Request $request): void
+    public function handle(Request $request): ?Bot
     {
-        $json = json_decode($data = $request->getContent(), true);
+        $json = json_decode($request->getContent(), true);
 
         foreach ($this->bots as $bot) {
             if ($bot->isCurrentBot($request)) {
                 $bot->handle(Update::create($json));
-                break;
+                return $bot;
             }
         }
+
+        return;
     }
 }
