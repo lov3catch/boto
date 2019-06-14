@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use Formapro\TelegramBot\Bot;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -17,14 +16,14 @@ class ActivityEvent extends Event
     private $request;
 
     /**
-     * @var Bot
+     * @var string
      */
-    private $bot;
+    private $token;
 
-    public function __construct(Request $request, Bot $bot)
+    public function __construct(Request $request, string $token)
     {
         $this->request = $request;
-        $this->bot = $bot;
+        $this->token = $token;
     }
 
     public function getRequestContent(): array
@@ -32,8 +31,8 @@ class ActivityEvent extends Event
         return json_decode($data = $this->request->getContent(), true);
     }
 
-    public function getBot(): Bot
+    public function getToken(): string
     {
-        return $this->bot;
+        return $this->token;
     }
 }

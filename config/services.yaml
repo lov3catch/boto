@@ -26,3 +26,22 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    botonarioum.handler.bashim:
+        class: App\Botonarioum\Bots\Handlers\BashImHandler
+
+    botonarioum.handler.botonarioum:
+        class: App\Botonarioum\Bots\Handlers\BotonarioumHandler
+
+    # Bots
+    App\Botonarioum\Bots\BotContainer:
+        autowire: true
+        calls:
+            - method: add
+              arguments:
+                  - '%env(BOTONARIOUMBOT_TOKEN)%'
+                  - '@botonarioum.handler.bashim'
+            - method: add
+              arguments:
+                  - '%env(BASHIM_TOKEN)%'
+                  - '@botonarioum.handler.botonarioum'

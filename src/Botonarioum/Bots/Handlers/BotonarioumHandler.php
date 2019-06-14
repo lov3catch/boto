@@ -1,31 +1,29 @@
 <?php declare(strict_types=1);
 
-namespace App\Botonarioum\Bots\SandboxBot;
+namespace App\Botonarioum\Bots\Handlers;
 
-use App\Botonarioum\Bots\AbstractBot;
+use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\KeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 
-class SandboxBot extends AbstractBot
+class BotonarioumHandler extends AbstractHandler
 {
-    protected const ENV_TOKEN_KEY = 'SANDBOXBOT_TOKEN';
-
     private const
         CONTACTS_KEY = 'ℹ️ Контакты',
         BOTS_CATALOGUE_KEY = '📔 Боты',
         GROUPS_CATALOGUE_KEY = '📔 Групы';
 
     /**
-     * @var Bot
+     * @var EntityManagerInterface
      */
-    private $bot;
+    private $entityManager;
 
-    public function __construct()
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->bot = new Bot($this->getToken());
+        $this->entityManager = $entityManager;
     }
 
     private function defaultKeyboard(): ReplyKeyboardMarkup
@@ -33,7 +31,7 @@ class SandboxBot extends AbstractBot
         return new ReplyKeyboardMarkup([[new KeyboardButton(self::BOTS_CATALOGUE_KEY), new KeyboardButton(self::GROUPS_CATALOGUE_KEY)], [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::CONTACTS_KEY)]]);
     }
 
-    public function handle(Update $update): bool
+    public function handle(Bot $bot, Update $update): bool
     {
         $userInput = $update->getMessage()->getText();
 
@@ -85,13 +83,8 @@ https://t.me/vyrvano_kontekst
             $message->setReplyMarkup($this->defaultKeyboard());
         }
 
-        $this->bot->sendMessage($message);
+        $bot->sendMessage($message);
 
         return true;
-    }
-
-    public function getToken(): string
-    {
-        return $_ENV[self::ENV_TOKEN_KEY];
     }
 }

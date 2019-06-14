@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Botonarioum\Bots;
 
+use App\Botonarioum\Bots\Handlers\BotHandlerInterface;
+use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\HttpFoundation\Request;
 
 class BotContainer
 {
-    private $bots = [];
+    public $bots = [];
 
-    public function add(BotInterface $bot): self
+    public function add(string $token, BotHandlerInterface $handler): self
     {
-        $this->bots[] = $bot;
+        $this->bots[$token] = $handler;
 
         return $this;
     }
 
-    public function handle(Request $request): ?BotInterface
+    public function handle(string $token, Request $request): bool
     {
         $json = json_decode($request->getContent(), true);
 
-        foreach ($this->bots as $bot) {
-            if ($bot->isCurrentBot($request)) {
-                $bot->handle(Update::create($json));
-                return $bot;
-            }
+        $handler = $this->bots[$token] ?? null;
+
+        if ($handler instanceof BotHandlerInterface) {
+            $handler->handle(new Bot($token), Update::create($json));
+
+            return true;
         }
 
-        return null;
+        return false;
     }
 }

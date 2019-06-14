@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Subscribers;
 
-use App\Entity\Channel;
 use App\Events\ActivityEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class InsertChannelActivity implements EventSubscriberInterface
+class TrackChannelActivity implements EventSubscriberInterface
 {
     /**
      * @var EntityManagerInterface
@@ -46,22 +45,6 @@ class InsertChannelActivity implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
-        $token = $event->getBot()->getToken();
-        $request = $event->getRequestContent();
-
-        try {
-            $channel = new Channel();
-            $channel->setToken($token);
-            $channel->setChannelId($request['message']['chat']['id']);
-            $channel->setFirstName($request['message']['from']['first_name']);
-            $channel->setLastName($request['message']['from']['last_name']);
-            $channel->setCreatedAt(new \DateTime());
-            $channel->setUpdatedAt(new \DateTime());
-
-            $this->entityManager->persist($channel);
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
-        }
+        //
     }
 }

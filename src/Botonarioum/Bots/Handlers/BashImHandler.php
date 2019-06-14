@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace App\Botonarioum\Bots\BashImBot;
+namespace App\Botonarioum\Bots\Handlers;
 
-use App\Botonarioum\Bots\AbstractBot;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\KeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
@@ -10,20 +9,9 @@ use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\DomCrawler\Crawler;
 
-class BashImBot extends AbstractBot
+class BashImHandler extends AbstractHandler
 {
-    protected const ENV_TOKEN_KEY = 'BASHIM_TOKEN';
-    /**
-     * @var Bot
-     */
-    private $bot;
-
-    public function __construct()
-    {
-        $this->bot = new Bot($this->getToken());
-    }
-
-    public function handle(Update $update): bool
+    public function handle(Bot $bot, Update $update): bool
     {
         $userInput = $update->getMessage()->getText();
 
@@ -40,20 +28,17 @@ class BashImBot extends AbstractBot
             $message->setParseMode('HTML');
         }
 
-        $fooButton = new KeyboardButton('Случайное из BASH.IM');
-        $bazButton = new KeyboardButton(self::BOTONARIOUM_KEY);
-        $barButton = new KeyboardButton(self::DONATE_KEY);
-        $keyboard = new ReplyKeyboardMarkup([[$fooButton], [$barButton, $bazButton]]);
+        $keyboard = new ReplyKeyboardMarkup(
+            [
+                [new KeyboardButton('Случайное из BASH.IM')],
+                [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::BOTONARIOUM_KEY)]
+            ]
+        );
 
         $message->setReplyMarkup($keyboard);
-        $this->bot->sendMessage($message);
+        $bot->sendMessage($message);
 
         return true;
-    }
-
-    public function getToken(): string
-    {
-        return $_ENV[self::ENV_TOKEN_KEY];
     }
 
     private function getRandom()
