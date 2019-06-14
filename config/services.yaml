@@ -40,8 +40,8 @@ services:
             - method: add
               arguments:
                   - '%env(BOTONARIOUMBOT_TOKEN)%'
-                  - '@botonarioum.handler.bashim'
+                  - '@botonarioum.handler.botonarioum'
             - method: add
               arguments:
                   - '%env(BASHIM_TOKEN)%'
-                  - '@botonarioum.handler.botonarioum'
+                  - '@botonarioum.handler.bashim'
