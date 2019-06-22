@@ -14,16 +14,6 @@ class Channel
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $token;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
     private $channel_id;
 
     /**
@@ -37,6 +27,16 @@ class Channel
     private $last_name;
 
     /**
+     * @ORM\Column(type="string", length=5, nullable=true)
+     */
+    private $language_code;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $handler_name;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $created_at;
@@ -45,23 +45,6 @@ class Channel
      * @ORM\Column(type="datetime")
      */
     private $updated_at;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(string $token): self
-    {
-        $this->token = $token;
-
-        return $this;
-    }
 
     public function getChannelId(): ?int
     {
@@ -119,6 +102,44 @@ class Channel
     public function setUpdatedAt(\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguageCode(): string
+    {
+        return $this->language_code;
+    }
+
+    /**
+     * @param string $language_code
+     * @return Channel
+     */
+    public function setLanguageCode(string $language_code): self
+    {
+        $this->language_code = $language_code;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHandlerName(): string
+    {
+        return $this->handler_name;
+    }
+
+    /**
+     * @param string $handler_name
+     * @return Channel
+     */
+    public function setHandlerName(string $handler_name): self
+    {
+        $this->handler_name = $handler_name;
 
         return $this;
     }
