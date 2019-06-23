@@ -7,7 +7,8 @@ namespace App\Subscribers;
 use App\Entity\Channel;
 use App\Events\ActivityEvent;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class UpdateChannel implements EventSubscriberInterface
@@ -17,9 +18,15 @@ class UpdateChannel implements EventSubscriberInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -50,29 +57,28 @@ class UpdateChannel implements EventSubscriberInterface
         $request = $event->getRequestContent();
 
         try {
-            $channel = new Channel();
-            $channel->setChannelId($request['message']['chat']['id']);
-            $channel->setFirstName($request['message']['from']['first_name']);
-            $channel->setLastName($request['message']['from']['last_name']);
-            $channel->setLanguageCode($request['message']['from']['language_code']);
-            $channel->setHandlerName('example-handler');
-            $channel->setCreatedAt(new \DateTime());
-            $channel->setUpdatedAt(new \DateTime());
-
-            $this->entityManager->persist($channel);
-            $this->entityManager->flush();
-        } catch (DuplicateKeyException $exception) {
             $channel = $this->entityManager->getRepository(Channel::class)->find($request['message']['chat']['id']);
-            $channel->setFirstName($request['message']['from']['first_name']);
-            $channel->setLastName($request['message']['from']['last_name']);
-            $channel->setLanguageCode($request['message']['from']['language_code']);
-            $channel->setUpdatedAt(new \DateTime());
+
+            if ($channel) {
+                $channel->setFirstName($request['message']['from']['first_name']);
+                $channel->setLastName($request['message']['from']['last_name']);
+                $channel->setLanguageCode($request['message']['from']['language_code']);
+                $channel->setUpdatedAt(new \DateTime());
+            } else {
+                $channel = new Channel();
+                $channel->setChannelId($request['message']['chat']['id']);
+                $channel->setFirstName($request['message']['from']['first_name']);
+                $channel->setLastName($request['message']['from']['last_name']);
+                $channel->setLanguageCode($request['message']['from']['language_code']);
+                $channel->setHandlerName('example-handler');
+                $channel->setCreatedAt(new \DateTime());
+                $channel->setUpdatedAt(new \DateTime());
+            }
 
             $this->entityManager->persist($channel);
             $this->entityManager->flush();
-            echo $exception->getMessage();
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
         }
     }
 }

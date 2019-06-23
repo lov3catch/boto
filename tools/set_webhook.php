@@ -9,7 +9,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $env = new Dotenv();
 $env->load(__DIR__ . '/../.env');
 
-$host = 'https://d0b66067.ngrok.io';
+$host = readline('NGROK HOST (example: https://d0b66067.ngrok.io): ');
 $tokens = [
     $_ENV['SANDBOXBOT_TOKEN'],
 ];
