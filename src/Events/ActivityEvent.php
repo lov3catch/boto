@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Botonarioum\Bots\Handlers\BotHandlerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,14 +17,14 @@ class ActivityEvent extends Event
     private $request;
 
     /**
-     * @var string
+     * @var BotHandlerInterface
      */
-    private $token;
+    private $handler;
 
-    public function __construct(Request $request, string $token)
+    public function __construct(Request $request, BotHandlerInterface $handler)
     {
         $this->request = $request;
-        $this->token = $token;
+        $this->handler = $handler;
     }
 
     public function getRequestContent(): array
@@ -31,8 +32,11 @@ class ActivityEvent extends Event
         return json_decode($data = $this->request->getContent(), true);
     }
 
-    public function getToken(): string
+    /**
+     * @return BotHandlerInterface
+     */
+    public function getHandler(): BotHandlerInterface
     {
-        return $this->token;
+        return $this->handler;
     }
 }

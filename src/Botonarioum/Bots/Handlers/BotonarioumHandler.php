@@ -11,6 +11,8 @@ use Formapro\TelegramBot\Update;
 
 class BotonarioumHandler extends AbstractHandler
 {
+    public const HANDLER_NAME = 'bot.botonarioum.catalogue';
+
     private const
         CONTACTS_KEY = 'ℹ️ Контакты',
         BOTS_CATALOGUE_KEY = '📔 Боты',

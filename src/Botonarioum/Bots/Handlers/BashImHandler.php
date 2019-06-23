@@ -11,6 +11,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class BashImHandler extends AbstractHandler
 {
+    public const HANDLER_NAME = 'bot.bashorg.parser';
+
     public function handle(Bot $bot, Update $update): bool
     {
         $userInput = $update->getMessage()->getText();

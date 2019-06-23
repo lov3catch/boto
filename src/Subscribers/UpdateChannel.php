@@ -54,10 +54,13 @@ class UpdateChannel implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
+        $handler = $event->getHandler();
         $request = $event->getRequestContent();
 
         try {
-            $channel = $this->entityManager->getRepository(Channel::class)->find($request['message']['chat']['id']);
+            $channel = $this->entityManager
+                ->getRepository(Channel::class)
+                ->findOneBy(['channel_id' => $request['message']['chat']['id'], 'handler_name' => $handler::HANDLER_NAME]);
 
             if ($channel) {
                 $channel->setFirstName($request['message']['from']['first_name']);
@@ -70,7 +73,7 @@ class UpdateChannel implements EventSubscriberInterface
                 $channel->setFirstName($request['message']['from']['first_name']);
                 $channel->setLastName($request['message']['from']['last_name']);
                 $channel->setLanguageCode($request['message']['from']['language_code']);
-                $channel->setHandlerName('example-handler');
+                $channel->setHandlerName($handler::HANDLER_NAME);
                 $channel->setCreatedAt(new \DateTime());
                 $channel->setUpdatedAt(new \DateTime());
             }

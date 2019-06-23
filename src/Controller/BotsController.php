@@ -34,8 +34,8 @@ class BotsController
     {
         if ($request->isMethod('post')) {
 
-            if ($botContainer->handle($token, $request)) {
-                $dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent($request, $token));
+            if ($handler = $botContainer->handle($token, $request)) {
+                $dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent($request, $handler));
             }
         }
 

@@ -11,7 +11,7 @@ class Channel
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="integer", unique=true)
+     * @ORM\Column(type="integer")
      */
     private $channel_id;
 
@@ -31,6 +31,7 @@ class Channel
     private $language_code;
 
     /**
+     * @ORM\Id()
      * @ORM\Column(type="string", length=255)
      */
     private $handler_name;

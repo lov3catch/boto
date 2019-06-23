@@ -20,7 +20,7 @@ class BotContainer
         return $this;
     }
 
-    public function handle(string $token, Request $request): bool
+    public function handle(string $token, Request $request): ?BotHandlerInterface
     {
         $json = json_decode($request->getContent(), true);
 
@@ -29,9 +29,9 @@ class BotContainer
         if ($handler instanceof BotHandlerInterface) {
             $handler->handle(new Bot($token), Update::create($json));
 
-            return true;
+            return $handler;
         }
 
-        return false;
+        return null;
     }
 }
