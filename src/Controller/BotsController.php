@@ -33,10 +33,7 @@ class BotsController
     public function handler(Request $request, $token, BotContainer $botContainer, EventDispatcherInterface $dispatcher): Response
     {
         if ($request->isMethod('post')) {
-
-            if ($handler = $botContainer->handle($token, $request)) {
-                $dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent($request, $handler));
-            }
+            $botContainer->handle($token, $request);
         }
 
         return new Response('It works!! ☺');

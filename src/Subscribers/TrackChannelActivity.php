@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Subscribers;
 
+use App\Entity\ChannelActivity;
 use App\Events\ActivityEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TrackChannelActivity implements EventSubscriberInterface
@@ -15,9 +18,15 @@ class TrackChannelActivity implements EventSubscriberInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -45,6 +54,19 @@ class TrackChannelActivity implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
-        //
+        $handler = $event->getHandler();
+        $request = $event->getRequestContent();
+
+        try {
+            $channelActivite = (new ChannelActivity())
+                ->setChannelId($request['message']['chat'])
+                ->setHandlerName($handler::HANDLER_NAME)
+                ->setCreatedAt(new \DateTime());
+
+            $this->entityManager->persist($channelActivite);
+            $this->entityManager->flush();
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        }
     }
 }

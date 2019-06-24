@@ -5,13 +5,28 @@ declare(strict_types=1);
 namespace App\Botonarioum\Bots;
 
 use App\Botonarioum\Bots\Handlers\BotHandlerInterface;
+use App\Events\ActivityEvent;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class BotContainer
 {
+    /**
+     * @var BotHandlerInterface[]
+     */
     public $bots = [];
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    public function __construct(EventDispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
 
     public function add(string $token, BotHandlerInterface $handler): self
     {
@@ -20,7 +35,7 @@ class BotContainer
         return $this;
     }
 
-    public function handle(string $token, Request $request): ?BotHandlerInterface
+    public function handle(string $token, Request $request): void
     {
         $json = json_decode($request->getContent(), true);
 
@@ -29,9 +44,7 @@ class BotContainer
         if ($handler instanceof BotHandlerInterface) {
             $handler->handle(new Bot($token), Update::create($json));
 
-            return $handler;
+            $this->dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent($request, $handler));
         }
-
-        return null;
     }
 }
