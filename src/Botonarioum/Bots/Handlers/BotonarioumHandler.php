@@ -4,7 +4,9 @@ namespace App\Botonarioum\Bots\Handlers;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
+use Formapro\TelegramBot\InlineKeyboardMarkup;
 use Formapro\TelegramBot\KeyboardButton;
+use Formapro\TelegramBot\InlineKeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
@@ -46,36 +48,13 @@ class BotonarioumHandler extends AbstractHandler
 
             $message->setReplyMarkup($this->defaultKeyboard());;
         } elseif ($userInput === self::BOTS_CATALOGUE_KEY) {
-            $message = new SendMessage(
-                $update->getMessage()->getChat()->getId(),
-                '
-Список ботов:
-@zaycev_net_music_bot
-(Бот для поиска музыки. Статус: забанено на iOS устройствах)
-@deezer_music_bot
-(Бот для поиска музыки. Статус: активен)
-@pied_piper_bot
-(Бот для поиска музыки. Статус: активен)
-@equalizerguru_bot
-(Бот для поиска музыки. Статус: активен)
-                '
-            );
+            $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список ботов:');
 
-            $message->setReplyMarkup($this->defaultKeyboard());
+            $message->setReplyMarkup($this->buildKeyboardWithBots());
         } elseif ($userInput === self::GROUPS_CATALOGUE_KEY) {
-            $message = new SendMessage(
-                $update->getMessage()->getChat()->getId(),
-                '
-Список груп:
-https://t.me/mp3db
-(Большое собрание музыки. Более 150 тыс. записей)
+            $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список груп:');
 
-https://t.me/vyrvano_kontekst
-(Цитатник женского коллектива)
-'
-            );
-
-            $message->setReplyMarkup($this->defaultKeyboard());
+            $message->setReplyMarkup($this->buildKeyboardWithChannels());
         } else {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
@@ -88,5 +67,28 @@ https://t.me/vyrvano_kontekst
         $bot->sendMessage($message);
 
         return true;
+    }
+
+    private function buildKeyboardWithBots()
+    {
+//        https://t.me/zaycev_net_music_bot
+//        (Бот для поиска музыки. Статус: забанено на iOS устройствах)
+//https://t.me/deezer_music_bot
+//(Бот для поиска музыки. Статус: активен)
+//https://t.me/pied_piper_bot
+//(Бот для поиска музыки. Статус: активен)
+//https://t.me/equalizerguru_bot
+//(Бот для поиска музыки. Статус: активен)
+        return new InlineKeyboardMarkup([[InlineKeyboardButton::withUrl('Zaycev Net', 'https://t.me/equalizerguru_bot')]]);
+    }
+
+    private function buildKeyboardWithChannels()
+    {
+//        https://t.me/mp3db
+//        (Большое собрание музыки. Более 150 тыс. записей)
+//
+//https://t.me/vyrvano_kontekst
+//(Цитатник женского коллектива)
+        return new InlineKeyboardMarkup([[InlineKeyboardButton::withUrl('MP3', 'https://t.me/vyrvano_kontekst')]]);
     }
 }

@@ -48,7 +48,7 @@ class Element
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title;
+    private $url;
 
     public function getId(): ?int
     {
@@ -115,14 +115,14 @@ class Element
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getUrl(): ?string
     {
-        return $this->title;
+        return $this->url;
     }
 
-    public function setTitle(string $title): self
+    public function setUrl(string $url): self
     {
-        $this->title = $title;
+        $this->url = $url;
 
         return $this;
     }
