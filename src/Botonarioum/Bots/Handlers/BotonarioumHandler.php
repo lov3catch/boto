@@ -2,11 +2,12 @@
 
 namespace App\Botonarioum\Bots\Handlers;
 
+use App\Entity\Element;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
+use Formapro\TelegramBot\InlineKeyboardButton;
 use Formapro\TelegramBot\InlineKeyboardMarkup;
 use Formapro\TelegramBot\KeyboardButton;
-use Formapro\TelegramBot\InlineKeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
@@ -71,6 +72,11 @@ class BotonarioumHandler extends AbstractHandler
 
     private function buildKeyboardWithBots()
     {
+        $keyboard = array_map(function (Element $element) {
+            return [InlineKeyboardButton::withUrl($element->getName(), $element->getUrl())];
+        }, $this->entityManager->getRepository(Element::class)->findBy(['type' => 2]));
+
+//        $this->entityManager->getRepository(Element::class)->findBy(['type' => 1]);
 //        https://t.me/zaycev_net_music_bot
 //        (Бот для поиска музыки. Статус: забанено на iOS устройствах)
 //https://t.me/deezer_music_bot
@@ -79,16 +85,19 @@ class BotonarioumHandler extends AbstractHandler
 //(Бот для поиска музыки. Статус: активен)
 //https://t.me/equalizerguru_bot
 //(Бот для поиска музыки. Статус: активен)
-        return new InlineKeyboardMarkup([[InlineKeyboardButton::withUrl('Zaycev Net', 'https://t.me/equalizerguru_bot')]]);
+        return new InlineKeyboardMarkup([$keyboard]);
     }
 
     private function buildKeyboardWithChannels()
     {
+        $keyboard = array_map(function (Element $element) {
+            return [InlineKeyboardButton::withUrl($element->getName(), $element->getUrl())];
+        }, $this->entityManager->getRepository(Element::class)->findBy(['type' => 1]));
 //        https://t.me/mp3db
 //        (Большое собрание музыки. Более 150 тыс. записей)
 //
 //https://t.me/vyrvano_kontekst
 //(Цитатник женского коллектива)
-        return new InlineKeyboardMarkup([[InlineKeyboardButton::withUrl('MP3', 'https://t.me/vyrvano_kontekst')]]);
+        return new InlineKeyboardMarkup([$keyboard]);
     }
 }
