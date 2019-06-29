@@ -88,6 +88,6 @@ class BotonarioumHandler extends AbstractHandler
             return [InlineKeyboardButton::withUrl($element->getName(), $element->getUrl())];
         }, $elements);
 
-        return new InlineKeyboardMarkup([$keyboard]);
+        return new InlineKeyboardMarkup($keyboard);
     }
 }
