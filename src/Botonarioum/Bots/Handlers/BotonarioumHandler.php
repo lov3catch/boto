@@ -21,6 +21,10 @@ class BotonarioumHandler extends AbstractHandler
         BOTS_CATALOGUE_KEY = '📔 Боты',
         GROUPS_CATALOGUE_KEY = '📔 Групы';
 
+    private const
+        TYPE_BOT_ID = 2,
+        TYPE_CHANNEL_ID = 1;
+
     /**
      * @var EntityManagerInterface
      */
@@ -51,11 +55,15 @@ class BotonarioumHandler extends AbstractHandler
         } elseif ($userInput === self::BOTS_CATALOGUE_KEY) {
             $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список ботов:');
 
-            $message->setReplyMarkup($this->buildKeyboardWithBots());
+            $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_BOT_ID]));
+
+            $message->setReplyMarkup($markup);
         } elseif ($userInput === self::GROUPS_CATALOGUE_KEY) {
             $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список груп:');
 
-            $message->setReplyMarkup($this->buildKeyboardWithChannels());
+            $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_CHANNEL_ID]));
+
+            $message->setReplyMarkup($markup);
         } else {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
@@ -70,34 +78,16 @@ class BotonarioumHandler extends AbstractHandler
         return true;
     }
 
-    private function buildKeyboardWithBots()
+    /**
+     * @param Element[] $elements
+     * @return InlineKeyboardMarkup
+     */
+    private function buildKeyboard(array $elements): InlineKeyboardMarkup
     {
         $keyboard = array_map(function (Element $element) {
             return [InlineKeyboardButton::withUrl($element->getName(), $element->getUrl())];
-        }, $this->entityManager->getRepository(Element::class)->findBy(['type' => 2]));
+        }, $elements);
 
-//        $this->entityManager->getRepository(Element::class)->findBy(['type' => 1]);
-//        https://t.me/zaycev_net_music_bot
-//        (Бот для поиска музыки. Статус: забанено на iOS устройствах)
-//https://t.me/deezer_music_bot
-//(Бот для поиска музыки. Статус: активен)
-//https://t.me/pied_piper_bot
-//(Бот для поиска музыки. Статус: активен)
-//https://t.me/equalizerguru_bot
-//(Бот для поиска музыки. Статус: активен)
-        return new InlineKeyboardMarkup([$keyboard]);
-    }
-
-    private function buildKeyboardWithChannels()
-    {
-        $keyboard = array_map(function (Element $element) {
-            return [InlineKeyboardButton::withUrl($element->getName(), $element->getUrl())];
-        }, $this->entityManager->getRepository(Element::class)->findBy(['type' => 1]));
-//        https://t.me/mp3db
-//        (Большое собрание музыки. Более 150 тыс. записей)
-//
-//https://t.me/vyrvano_kontekst
-//(Цитатник женского коллектива)
         return new InlineKeyboardMarkup([$keyboard]);
     }
 }
