@@ -60,7 +60,7 @@ class UpdateChannel implements EventSubscriberInterface
         try {
             $channel = $this->entityManager
                 ->getRepository(Channel::class)
-                ->findOneBy(['channel_id' => $request['message']['chat']['id'], 'handler_name' => $handler::HANDLER_NAME]);
+                ->findOneBy(['channel_id' => $request['message']['chat']['id'] ?? $request['callback_query']['message']['chat']['id'], 'handler_name' => $handler::HANDLER_NAME]);
 
             if ($channel) {
                 $channel->setFirstName($request['message']['from']['first_name']);
