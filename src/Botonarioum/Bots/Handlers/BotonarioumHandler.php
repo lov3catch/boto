@@ -25,6 +25,12 @@ class BotonarioumHandler extends AbstractHandler
         TYPE_BOT_ID = 2,
         TYPE_CHANNEL_ID = 1;
 
+    private const
+        ELEMENT_ID_POSITION = 2;
+
+    private const
+        CALLBACK_DATA_DELIMITED = ':';
+
     /**
      * @var EntityManagerInterface
      */
@@ -42,6 +48,25 @@ class BotonarioumHandler extends AbstractHandler
 
     public function handle(Bot $bot, Update $update): bool
     {
+        if ($update->getCallbackQuery()) {
+            $elementId = explode(self::CALLBACK_DATA_DELIMITED, $update->getCallbackQuery()->getData())[self::ELEMENT_ID_POSITION];
+
+            $element = $this->entityManager->getRepository(Element::class)->find($elementId);
+
+            $message = new SendMessage(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $element->getUrl()
+            );
+
+            $markup = new InlineKeyboardMarkup([[InlineKeyboardButton::withUrl('Открыть', $element->getUrl())]]);
+
+            $message->setReplyMarkup($markup);
+
+            $bot->sendMessage($message);
+
+            return true;
+        }
+
         $userInput = $update->getMessage()->getText();
 
         if ($userInput === self::CONTACTS_KEY) {
@@ -85,7 +110,8 @@ class BotonarioumHandler extends AbstractHandler
     private function buildKeyboard(array $elements): InlineKeyboardMarkup
     {
         $keyboard = array_map(function (Element $element) {
-            return [InlineKeyboardButton::withUrl($element->getName(), $element->getUrl())];
+            $callbackData = implode(self::CALLBACK_DATA_DELIMITED, ['boto', 'id', $element->getId()]);
+            return [InlineKeyboardButton::withCallbackData($element->getName(), $callbackData)];
         }, $elements);
 
         return new InlineKeyboardMarkup($keyboard);
