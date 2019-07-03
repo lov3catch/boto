@@ -57,11 +57,11 @@ class TrackChannelActivity implements EventSubscriberInterface
         $handler = $event->getHandler();
         $update = $event->getUpdate();
 
-        $message = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage() : $update->getMessage();
+        $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
 
         try {
             $channelActivite = (new ChannelActivity())
-                ->setChannelId($message->getChat()->getId())
+                ->setChannelId($chat->getId())
                 ->setHandlerName($handler::HANDLER_NAME)
                 ->setCreatedAt(new \DateTime());
 

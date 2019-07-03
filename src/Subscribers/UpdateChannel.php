@@ -57,24 +57,25 @@ class UpdateChannel implements EventSubscriberInterface
         $handler = $event->getHandler();
         $update = $event->getUpdate();
 
-        $message = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage() : $update->getMessage();
+        $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
+        $from = $update->getCallbackQuery() ? $update->getCallbackQuery()->getFrom() : $update->getMessage()->getFrom();
 
         try {
             $channel = $this->entityManager
                 ->getRepository(Channel::class)
-                ->findOneBy(['channel_id' => $message->getChat()->getId(), 'handler_name' => $handler::HANDLER_NAME]);
+                ->findOneBy(['channel_id' => $chat->getId(), 'handler_name' => $handler::HANDLER_NAME]);
 
             if ($channel) {
-                $channel->setFirstName($message->getFrom()->getFirstName());
-                $channel->setLastName($message->getFrom()->getLastName());
-                $channel->setLanguageCode($message->getFrom()->getLanguageCode());
+                $channel->setFirstName($from->getFirstName());
+                $channel->setLastName($from->getLastName());
+                $channel->setLanguageCode($from->getLanguageCode());
                 $channel->setUpdatedAt(new \DateTime());
             } else {
                 $channel = new Channel();
-                $channel->setChannelId($message->getChat()->getId());
-                $channel->setFirstName($message->getFrom()->getFirstName());
-                $channel->setLastName($message->getFrom()->getLastName());
-                $channel->setLanguageCode($message->getFrom()->getLanguageCode());
+                $channel->setChannelId($chat->getId());
+                $channel->setFirstName($from->getFirstName());
+                $channel->setLastName($from->getLastName());
+                $channel->setLanguageCode($from->getLanguageCode());
                 $channel->setHandlerName($handler::HANDLER_NAME);
                 $channel->setCreatedAt(new \DateTime());
                 $channel->setUpdatedAt(new \DateTime());
