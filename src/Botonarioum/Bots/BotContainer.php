@@ -44,7 +44,7 @@ class BotContainer
         if ($handler instanceof BotHandlerInterface) {
             $handler->handle(new Bot($token), Update::create($json));
 
-            $this->dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent($request, $handler));
+            $this->dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent(Update::create($json), $handler));
         }
     }
 }

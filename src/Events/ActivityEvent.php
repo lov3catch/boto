@@ -6,30 +6,30 @@ namespace App\Events;
 
 use App\Botonarioum\Bots\Handlers\BotHandlerInterface;
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpFoundation\Request;
+use Formapro\TelegramBot\Update;
 
 class ActivityEvent extends Event
 {
     public const EVENT_NAME = 'bots.activity';
     /**
-     * @var Request
+     * @var Update
      */
-    private $request;
+    private $update;
 
     /**
      * @var BotHandlerInterface
      */
     private $handler;
 
-    public function __construct(Request $request, BotHandlerInterface $handler)
+    public function __construct(Update $update, BotHandlerInterface $handler)
     {
-        $this->request = $request;
+        $this->update = $update;
         $this->handler = $handler;
     }
 
-    public function getRequestContent(): array
+    public function getUpdate(): Update
     {
-        return json_decode($data = $this->request->getContent(), true);
+        return $this->update;
     }
 
     /**

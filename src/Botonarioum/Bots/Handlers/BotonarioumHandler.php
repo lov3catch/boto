@@ -2,8 +2,11 @@
 
 namespace App\Botonarioum\Bots\Handlers;
 
+use App\Entity\Element;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
+use Formapro\TelegramBot\InlineKeyboardButton;
+use Formapro\TelegramBot\InlineKeyboardMarkup;
 use Formapro\TelegramBot\KeyboardButton;
 use Formapro\TelegramBot\ReplyKeyboardMarkup;
 use Formapro\TelegramBot\SendMessage;
@@ -17,6 +20,16 @@ class BotonarioumHandler extends AbstractHandler
         CONTACTS_KEY = 'ℹ️ Контакты',
         BOTS_CATALOGUE_KEY = '📔 Боты',
         GROUPS_CATALOGUE_KEY = '📔 Групы';
+
+    private const
+        TYPE_BOT_ID = 2,
+        TYPE_CHANNEL_ID = 1;
+
+    private const
+        ELEMENT_ID_POSITION = 2;
+
+    private const
+        CALLBACK_DATA_DELIMITED = ':';
 
     /**
      * @var EntityManagerInterface
@@ -35,6 +48,25 @@ class BotonarioumHandler extends AbstractHandler
 
     public function handle(Bot $bot, Update $update): bool
     {
+        if ($update->getCallbackQuery()) {
+            $elementId = explode(self::CALLBACK_DATA_DELIMITED, $update->getCallbackQuery()->getData())[self::ELEMENT_ID_POSITION];
+
+            $element = $this->entityManager->getRepository(Element::class)->find($elementId);
+
+            $message = new SendMessage(
+                $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                $element->getUrl()
+            );
+
+            $markup = new InlineKeyboardMarkup([[InlineKeyboardButton::withUrl('Открыть', $element->getUrl())]]);
+
+            $message->setReplyMarkup($markup);
+
+            $bot->sendMessage($message);
+
+            return true;
+        }
+
         $userInput = $update->getMessage()->getText();
 
         if ($userInput === self::CONTACTS_KEY) {
@@ -46,36 +78,17 @@ class BotonarioumHandler extends AbstractHandler
 
             $message->setReplyMarkup($this->defaultKeyboard());;
         } elseif ($userInput === self::BOTS_CATALOGUE_KEY) {
-            $message = new SendMessage(
-                $update->getMessage()->getChat()->getId(),
-                '
-Список ботов:
-@zaycev_net_music_bot
-(Бот для поиска музыки. Статус: забанено на iOS устройствах)
-@deezer_music_bot
-(Бот для поиска музыки. Статус: активен)
-@pied_piper_bot
-(Бот для поиска музыки. Статус: активен)
-@equalizerguru_bot
-(Бот для поиска музыки. Статус: активен)
-                '
-            );
+            $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список ботов:');
 
-            $message->setReplyMarkup($this->defaultKeyboard());
+            $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_BOT_ID]));
+
+            $message->setReplyMarkup($markup);
         } elseif ($userInput === self::GROUPS_CATALOGUE_KEY) {
-            $message = new SendMessage(
-                $update->getMessage()->getChat()->getId(),
-                '
-Список груп:
-https://t.me/mp3db
-(Большое собрание музыки. Более 150 тыс. записей)
+            $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список груп:');
 
-https://t.me/vyrvano_kontekst
-(Цитатник женского коллектива)
-'
-            );
+            $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_CHANNEL_ID]));
 
-            $message->setReplyMarkup($this->defaultKeyboard());
+            $message->setReplyMarkup($markup);
         } else {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
@@ -88,5 +101,19 @@ https://t.me/vyrvano_kontekst
         $bot->sendMessage($message);
 
         return true;
+    }
+
+    /**
+     * @param Element[] $elements
+     * @return InlineKeyboardMarkup
+     */
+    private function buildKeyboard(array $elements): InlineKeyboardMarkup
+    {
+        $keyboard = array_map(function (Element $element) {
+            $callbackData = implode(self::CALLBACK_DATA_DELIMITED, ['boto', 'id', $element->getId()]);
+            return [InlineKeyboardButton::withCallbackData($element->getName(), $callbackData)];
+        }, $elements);
+
+        return new InlineKeyboardMarkup($keyboard);
     }
 }
