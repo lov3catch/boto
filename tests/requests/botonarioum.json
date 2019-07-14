@@ -1,0 +1,23 @@
+{
+  "update_id": 693714497,
+  "message": {
+    "message_id": 7936,
+    "from": {
+      "id": 292198768,
+      "is_bot": false,
+      "first_name": "Ihor",
+      "last_name": "Kopyl",
+      "username": "igorkpl",
+      "language_code": "ru"
+    },
+    "chat": {
+      "id": 292198768,
+      "first_name": "Ihor",
+      "last_name": "Kopyl",
+      "username": "igorkpl",
+      "type": "private"
+    },
+    "date": 1562871459,
+    "text": "🤖 BOTONARIOUM"
+  }
+}
