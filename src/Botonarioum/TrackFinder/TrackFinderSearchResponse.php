@@ -2,8 +2,6 @@
 
 namespace App\Botonarioum\TrackFinder;
 
-use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Paginator\Page;
-
 class TrackFinderSearchResponse
 {
     /**
@@ -36,7 +34,7 @@ class TrackFinderSearchResponse
     {
         if ($this->pager instanceof Page) return $this->pager;
 
-        $this->pager = $this->pager = Page::fromMeta($this->meta);
+        $this->pager = Page::fromMeta($this->meta);
 
         return $this->getPager();
     }

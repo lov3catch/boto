@@ -30,8 +30,11 @@ class TrackFinderSearchResponseKeyboard
     {
         $paginationKeyboard = [];
 
-        $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('◀️', 'prev');
-        $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('▶️', 'next');
+        $prevCallbackData = implode('.', ['pager', 'prev', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', '{}']);
+        $nextCallbackData = implode('.', ['pager', 'next', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', '{}']);
+
+        $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('◀️', $prevCallbackData);
+        $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('▶️', $nextCallbackData);
 
         $keyboard[] = $paginationKeyboard;
     }

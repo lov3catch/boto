@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Paginator;
+namespace App\Botonarioum\TrackFinder;
 
 class Page
 {
@@ -13,6 +13,16 @@ class Page
         $this->count = $count;
         $this->limit = $limit;
         $this->offset = $offset;
+    }
+
+    public function limit(): int
+    {
+        return $this->limit;
+    }
+
+    public function offset(): int
+    {
+        return $this->offset;
     }
 
     public function hasPrev(): bool
