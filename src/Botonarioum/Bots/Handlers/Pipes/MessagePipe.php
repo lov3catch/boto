@@ -3,6 +3,7 @@
 namespace App\Botonarioum\Bots\Handlers\Pipes;
 
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards\TrackFinderSearchResponseKeyboard;
+use App\Botonarioum\TrackFinder\Page;
 use App\Botonarioum\TrackFinder\TrackFinderService;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
@@ -29,7 +30,7 @@ class MessagePipe extends AbstractPipe
 
         $bot->sendMessage($message);
 
-        $searchResponse = $this->trackFinderService->search('Hardkiss');
+        $searchResponse = $this->trackFinderService->search('Hardkiss', Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
         $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
         $message = new SendMessage(

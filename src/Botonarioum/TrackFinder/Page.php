@@ -8,6 +8,16 @@ class Page
     private $limit;
     private $count;
 
+    public const
+        PAGE_SIZE = 5,
+        DIRECTION_CALLBACK_POSITION = 1,
+        LIMIT_CALLBACK_POSITION = 3,
+        OFFSET_CALLBACK_POSITION = 5;
+
+    public const
+        DEFAULT_LIMIT = 5,
+        DEFAULT_OFFSET = 0;
+
     public function __construct(int $count, int $limit, int $offset)
     {
         $this->count = $count;

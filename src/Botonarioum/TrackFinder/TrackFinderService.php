@@ -4,14 +4,16 @@ namespace App\Botonarioum\TrackFinder;
 
 class TrackFinderService
 {
-    public function search(string $searchThis): TrackFinderSearchResponse
+    public function search(string $searchThis, int $limit, int $offset): TrackFinderSearchResponse
     {
-        return new TrackFinderSearchResponse($this->doSearch($searchThis));
+        return new TrackFinderSearchResponse($this->doSearch($searchThis, $limit, $offset));
     }
 
-    private function doSearch(string $searchThis): array
+    private function doSearch(string $searchThis, int $limit, int $offset): array
     {
-        $response = file_get_contents('https://track-finder.herokuapp.com/search?query=hardkiss&page[limit]=5&page[offset]=0');
+        $url = implode('', ['https://track-finder.herokuapp.com/search?query=', $searchThis, '&page[limit]=', $limit, '&page[offset]=', $offset]);
+        $response = file_get_contents($url);
+
         return json_decode($response, true);
     }
 }

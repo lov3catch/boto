@@ -31,7 +31,9 @@ class TrackFinderSearchResponseKeyboard
     {
         $paginationKeyboard = [];
 
-        $text = $update->getCallbackQuery()->getMessage()->getText() ?? $update->getMessage()->getText();
+        $text = $update->getCallbackQuery()
+            ? $update->getCallbackQuery()->getMessage()->getText()
+            : $update->getMessage()->getText();
 
         if ($response->getPager()->hasPrev()) {
             $prevCallbackData = implode('.', ['pager', 'prev', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
