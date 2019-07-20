@@ -45,4 +45,20 @@ class FakeRequestsFactory
 
         return Update::create($json);
     }
+
+    public static function createNextPageRequest(): Update
+    {
+        $file = new \SplFileObject(__DIR__ . '/requests/next.json');
+        $json = json_decode($file->fread($file->getSize()), true);
+
+        return Update::create($json);
+    }
+
+    public static function createPrevPageRequest(): Update
+    {
+        $file = new \SplFileObject(__DIR__ . '/requests/prev.json');
+        $json = json_decode($file->fread($file->getSize()), true);
+
+        return Update::create($json);
+    }
 }

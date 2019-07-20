@@ -1,29 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace App\Botonarioum\Bots\Handlers\Pipes;
+namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer;
 
+use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards\TrackFinderSearchResponseKeyboard;
-use App\Botonarioum\TrackFinder\TrackFinderService;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 
-class MessagePipe extends AbstractPipe
+class NextCallbackPipe extends MessagePipe
 {
-    /**
-     * @var TrackFinderService
-     */
-    protected $trackFinderService;
-
-    public function __construct()
+    public function isSupported(Update $update): bool
     {
-        $this->trackFinderService = new TrackFinderService();
+        return (bool)$update->getCallbackQuery();
     }
 
     public function processing(Bot $bot, Update $update): bool
     {
         $message = new SendMessage(
-            $update->getMessage()->getChat()->getId(),
+            $update->getCallbackQuery()->getMessage()->getChat()->getId(),
             '🔎 Ищу...'
         );
 
@@ -33,8 +28,8 @@ class MessagePipe extends AbstractPipe
         $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
         $message = new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            $update->getMessage()->getText()
+            $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+            'next'
         );
 
         $message->setReplyMarkup($markup);
@@ -44,10 +39,4 @@ class MessagePipe extends AbstractPipe
         return true;
     }
 
-    public function isSupported(Update $update): bool
-    {
-        if ($update->getCallbackQuery()) return false;
-
-        return true;
-    }
 }

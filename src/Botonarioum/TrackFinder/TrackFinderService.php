@@ -11,7 +11,7 @@ class TrackFinderService
 
     private function doSearch(string $searchThis): array
     {
-        $response = file_get_contents('https://track-finder.herokuapp.com/search?query=hardkiss&page[limit]=5&page[offset]=1');
+        $response = file_get_contents('https://track-finder.herokuapp.com/search?query=hardkiss&page[limit]=5&page[offset]=0');
         return json_decode($response, true);
     }
 }

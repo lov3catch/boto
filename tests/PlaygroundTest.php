@@ -20,15 +20,15 @@ class PlaygroundTest extends TestCase
         $this->bot = new Bot(self::BOT_TOKEN);
     }
 
-//    public function testStart()
-//    {
-//        $update = FakeRequestsFactory::createStartRequest();
-//
-//        $handler = new MusicDealerHandler();
-//        $handler->handle($this->bot, $update);
-//
-//        $this->assertTrue(true);
-//    }
+    public function testStart()
+    {
+        $update = FakeRequestsFactory::createStartRequest();
+
+        $handler = new MusicDealerHandler();
+        $handler->handle($this->bot, $update);
+
+        $this->assertTrue(true);
+    }
 
     public function testMessage()
     {
@@ -40,23 +40,43 @@ class PlaygroundTest extends TestCase
         $this->assertTrue(true);
     }
 
-//    public function testDonate()
-//    {
-//        $update = FakeRequestsFactory::creatDonateRequest();
-//
-//        $handler = new MusicDealerHandler();
-//        $handler->handle($this->bot, $update);
-//
-//        $this->assertTrue(true);
-//    }
-//
-//    public function testBotonarioum()
-//    {
-//        $update = FakeRequestsFactory::creatBotonarioumRequest();
-//
-//        $handler = new MusicDealerHandler();
-//        $handler->handle($this->bot, $update);
-//
-//        $this->assertTrue(true);
-//    }
+    public function testNextPage()
+    {
+        $update = FakeRequestsFactory::createNextPageRequest();
+
+        $handler = new MusicDealerHandler();
+        $handler->handle($this->bot, $update);
+
+        $this->assertTrue(true);
+    }
+
+    public function testPrevPage()
+    {
+        $update = FakeRequestsFactory::createPrevPageRequest();
+
+        $handler = new MusicDealerHandler();
+        $handler->handle($this->bot, $update);
+
+        $this->assertTrue(true);
+    }
+
+    public function testDonate()
+    {
+        $update = FakeRequestsFactory::creatDonateRequest();
+
+        $handler = new MusicDealerHandler();
+        $handler->handle($this->bot, $update);
+
+        $this->assertTrue(true);
+    }
+
+    public function testBotonarioum()
+    {
+        $update = FakeRequestsFactory::creatBotonarioumRequest();
+
+        $handler = new MusicDealerHandler();
+        $handler->handle($this->bot, $update);
+
+        $this->assertTrue(true);
+    }
 }

@@ -4,6 +4,8 @@ namespace App\Botonarioum\Bots\Handlers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\NextCallbackPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\PipeInterface;
 use Formapro\TelegramBot\Bot;
@@ -38,6 +40,8 @@ class MusicDealerHandler extends AbstractHandler
         $this
             ->add(new StartPipe())
             ->add(new MessagePipe())
+            ->add(new NextCallbackPipe())
+            ->add(new PrevCallbackPipe())
             ->add(new DefaultPipe());
     }
 }
