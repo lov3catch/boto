@@ -4,6 +4,7 @@ namespace App\Botonarioum\Bots\Handlers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DownloadCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\NextCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
@@ -42,6 +43,7 @@ class MusicDealerHandler extends AbstractHandler
             ->add(new MessagePipe())
             ->add(new NextCallbackPipe())
             ->add(new PrevCallbackPipe())
+            ->add(new DownloadCallbackPipe())
             ->add(new DefaultPipe());
     }
 }

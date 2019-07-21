@@ -16,6 +16,7 @@ class MessagePipe extends AbstractPipe
      */
     protected $trackFinderService;
 
+    // todo: Перенести в MD
     public function __construct()
     {
         $this->trackFinderService = new TrackFinderService();
@@ -30,7 +31,7 @@ class MessagePipe extends AbstractPipe
 
         $bot->sendMessage($message);
 
-        $searchResponse = $this->trackFinderService->search('Hardkiss', Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
+        $searchResponse = $this->trackFinderService->search($update->getMessage()->getText(), Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
         $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
         $message = new SendMessage(

@@ -1,0 +1,74 @@
+{
+  "update_id": 693714555,
+  "callback_query": {
+    "id": "1254984153729595736",
+    "from": {
+      "id": 292198768,
+      "is_bot": false,
+      "first_name": "Ihor",
+      "last_name": "Kopyl",
+      "username": "igorkpl",
+      "language_code": "ru"
+    },
+    "message": {
+      "message_id": 8105,
+      "from": {
+        "id": 412602481,
+        "is_bot": true,
+        "first_name": "mysexybot",
+        "username": "my_sexy_little_bot"
+      },
+      "chat": {
+        "id": 292198768,
+        "first_name": "Ihor",
+        "last_name": "Kopyl",
+        "username": "igorkpl",
+        "type": "private"
+      },
+      "date": 1563706557,
+      "text": "hardkiss",
+      "reply_markup": {
+        "inline_keyboard": [
+          [
+            {
+              "text": "The Hardkiss - Кораблі",
+              "callback_data": "zn::/musicset/play/7aaa3751d28be767c1950c229671d57a/8408950.json"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Коханці",
+              "callback_data": "zn::/musicset/play/dc5be3fc59d8f08cc4d72dda155a5685/8408953.json"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Журавлі",
+              "callback_data": "zn::/musicset/play/f177d26e96a5e977d495124571a38723/4602734.json"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Helpless",
+              "callback_data": "zn::/musicset/play/1b43d2a8ca057fca32849b324051b311/3973903.json"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Мелодія",
+              "callback_data": "zn::/musicset/play/d72484aa76ed18d13caa3dd601dc0093/8408948.json"
+            }
+          ],
+          [
+            {
+              "text": "▶️",
+              "callback_data": "pager.next.limit.5.offset.0.track_name.hardkiss"
+            }
+          ]
+        ]
+      }
+    },
+    "chat_instance": "-2842617674903484803",
+    "data": "zn::/musicset/play/7aaa3751d28be767c1950c229671d57a/8408950.json"
+  }
+}

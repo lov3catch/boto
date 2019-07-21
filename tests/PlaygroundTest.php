@@ -40,6 +40,16 @@ class PlaygroundTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testDownload()
+    {
+        $update = FakeRequestsFactory::creatDownloadRequest();
+
+        $handler = new MusicDealerHandler();
+        $handler->handle($this->bot, $update);
+
+        $this->assertTrue(true);
+    }
+
     public function testNextPage()
     {
         $update = FakeRequestsFactory::createNextPageRequest();

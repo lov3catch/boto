@@ -156,6 +156,9 @@
     "ralouphie/getallheaders": {
         "version": "2.0.5"
     },
+    "rmccue/requests": {
+        "version": "v1.7.0"
+    },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
         "recipe": {

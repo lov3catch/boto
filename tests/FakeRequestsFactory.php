@@ -38,6 +38,14 @@ class FakeRequestsFactory
         return Update::create($json);
     }
 
+    public static function creatDownloadRequest(): Update
+    {
+        $file = new \SplFileObject(__DIR__ . '/requests/download.json');
+        $json = json_decode($file->fread($file->getSize()), true);
+
+        return Update::create($json);
+    }
+
     public static function creatBotonarioumRequest(): Update
     {
         $file = new \SplFileObject(__DIR__ . '/requests/botonarioum.json');
