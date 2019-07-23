@@ -7,6 +7,7 @@ use App\Botonarioum\TrackFinder\Page;
 use App\Botonarioum\TrackFinder\TrackFinderService;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\DeleteMessage;
+use Formapro\TelegramBot\EditMessageText;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 
@@ -45,18 +46,18 @@ class MessagePipe extends AbstractPipe
             return true;
         }
 
-        $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), $sendSearchMessage->getMessageId()));
-
         $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
-        $message = new SendMessage(
+        $newMessage = EditMessageText::withChatId(
+            'ой',
             $update->getMessage()->getChat()->getId(),
-            $update->getMessage()->getText()
+            $sendSearchMessage->getMessageId()
+
         );
 
-        $message->setReplyMarkup($markup);
+        $newMessage->setReplyMarkup($markup);
 
-        $bot->sendMessage($message);
+        $bot->editMessageText($newMessage);
 
         return true;
     }
