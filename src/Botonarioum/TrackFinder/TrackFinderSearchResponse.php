@@ -38,4 +38,9 @@ class TrackFinderSearchResponse
 
         return $this->getPager();
     }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->data);
+    }
 }

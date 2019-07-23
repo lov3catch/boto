@@ -24,7 +24,7 @@ class NextCallbackPipe extends MessagePipe
     public function processing(Bot $bot, Update $update): bool
     {
         $message = EditMessageText::withChatId(
-            'oop otstoy',
+            $update->getCallbackQuery()->getMessage()->getText(),
             $update->getCallbackQuery()->getMessage()->getChat()->getId(),
             $update->getCallbackQuery()->getMessage()->getMessageId()
         );
@@ -32,7 +32,10 @@ class NextCallbackPipe extends MessagePipe
         $offset = (int)(explode('.', $update->getCallbackQuery()->getData())[Page::OFFSET_CALLBACK_POSITION] + Page::PAGE_SIZE);
         $limit = (int)(explode('.', $update->getCallbackQuery()->getData())[Page::LIMIT_CALLBACK_POSITION]);
 
-        $searchResponse = $this->trackFinderService->search('Hardkiss', $limit, $offset);
+        $searchThis = array_reverse(explode('.', $update->getCallbackQuery()->getData()));
+        $searchThis = reset($searchThis);
+
+        $searchResponse = $this->trackFinderService->search($searchThis, $limit, $offset);
         $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
         $message->setReplyMarkup($markup);
