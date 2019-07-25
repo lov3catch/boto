@@ -4,6 +4,8 @@ namespace App\Botonarioum\Bots\Handlers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\BotonarioumPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DonatePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DownloadCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\NextCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
@@ -40,6 +42,8 @@ class MusicDealerHandler extends AbstractHandler
     {
         $this
             ->add(new StartPipe())
+            ->add(new DonatePipe())
+            ->add(new BotonarioumPipe())
             ->add(new MessagePipe())
             ->add(new NextCallbackPipe())
             ->add(new PrevCallbackPipe())
