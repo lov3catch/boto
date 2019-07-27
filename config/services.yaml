@@ -50,5 +50,5 @@ services:
                   - '@botonarioum.handler.bashim'
             - method: add
               arguments:
-                  - '%env(SANDBOXBOT_TOKEN)%'
+                  - '%env(ZAYCEV_NET_1)%'
                   - '@botonarioum.handler.music_dealer'
