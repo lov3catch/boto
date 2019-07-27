@@ -6,7 +6,6 @@ use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards\TrackFinderSearchR
 use App\Botonarioum\TrackFinder\Page;
 use App\Botonarioum\TrackFinder\TrackFinderService;
 use Formapro\TelegramBot\Bot;
-use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\EditMessageText;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
@@ -42,6 +41,8 @@ class MessagePipe extends AbstractPipe
             );
 
             $bot->sendMessage($message);
+
+            // todo: обновляем клавиатуру
 
             return true;
         }

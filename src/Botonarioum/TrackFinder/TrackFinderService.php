@@ -11,7 +11,7 @@ class TrackFinderService
 
     private function doSearch(string $searchThis, int $limit, int $offset): array
     {
-        $url = implode('', ['https://track-finder.herokuapp.com/search?query=', $searchThis, '&page[limit]=', $limit, '&page[offset]=', $offset]);
+        $url = implode('', ['https://track-finder.herokuapp.com/search?query=', urlencode($searchThis), '&page[limit]=', $limit, '&page[offset]=', $offset]);
         $response = file_get_contents($url);
 
         return json_decode($response, true);
