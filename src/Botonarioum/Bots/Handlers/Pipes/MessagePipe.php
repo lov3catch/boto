@@ -32,6 +32,19 @@ class MessagePipe extends AbstractPipe
 
         $sendSearchMessage = $bot->sendMessage($message);
 
+        if (empty($update->getMessage()->getText())) {
+            $message = new SendMessage(
+                $update->getMessage()->getChat()->getId(),
+                'Not found :('
+            );
+
+            $bot->sendMessage($message);
+
+            // todo: обновляем клавиатуру
+
+            return true;
+        }
+
         $searchResponse = $this->trackFinderService->search($update->getMessage()->getText(), Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
 
         if ($searchResponse->isEmpty()) {
