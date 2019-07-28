@@ -35,7 +35,7 @@ class MessagePipe extends AbstractPipe
         if (empty($update->getMessage()->getText())) {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
-                'Not found :('
+                'Не найдено :('
             );
 
             $bot->sendMessage($message);
@@ -50,7 +50,7 @@ class MessagePipe extends AbstractPipe
         if ($searchResponse->isEmpty()) {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
-                'Not found :('
+                'Не найдено :('
             );
 
             $bot->sendMessage($message);
@@ -63,7 +63,7 @@ class MessagePipe extends AbstractPipe
         $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
         $newMessage = EditMessageText::withChatId(
-            'ой',
+            '🎶 Результат поиска: ' . substr($update->getMessage()->getText(), 0, 20),
             $update->getMessage()->getChat()->getId(),
             $sendSearchMessage->getMessageId()
 
