@@ -27,7 +27,7 @@ class TrackFinderSearchResponseKeyboard
             $title = $item[0];
             // todo: Реализовать класс для работы с провайдерами
             $callbackData = implode('::', ['zn', $item[1]]);
-            return InlineKeyboardButton::withCallbackData($title, $callbackData);
+            return [InlineKeyboardButton::withCallbackData($title, $callbackData)];
         }, $response->getData());
     }
 
