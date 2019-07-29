@@ -13,6 +13,7 @@ class TrackFinderSearchResponseKeyboard
     {
         $keyboard = [];
 
+        $this->attachPagerPart($keyboard, $response, $update);
         $this->attachContentPart($keyboard, $response, $update);
         $this->attachPagerPart($keyboard, $response, $update);
 
