@@ -2,7 +2,6 @@
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer;
 
-use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards\TrackFinderSearchResponseKeyboard;
 use App\Botonarioum\TrackFinder\Page;
 use Formapro\TelegramBot\Bot;
