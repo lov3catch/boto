@@ -3,10 +3,10 @@
 namespace App\Botonarioum\Bots\Handlers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
-use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\BotonarioumPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DonatePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DownloadCallbackPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\MessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\NextCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
