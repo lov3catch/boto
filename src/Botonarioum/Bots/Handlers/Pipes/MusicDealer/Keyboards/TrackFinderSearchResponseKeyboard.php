@@ -23,7 +23,7 @@ class TrackFinderSearchResponseKeyboard
 
     private function attachContentPart(array &$keyboard, TrackFinderSearchResponse $response, Update $update): void
     {
-        $keyboard[] = array_map(function (array $item) {
+        $keyboard = array_map(function (array $item) {
             $title = $item[0];
             // todo: Реализовать класс для работы с провайдерами
             $callbackData = implode('::', ['zn', $item[1]]);
