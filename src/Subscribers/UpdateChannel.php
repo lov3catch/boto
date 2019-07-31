@@ -68,14 +68,14 @@ class UpdateChannel implements EventSubscriberInterface
             if ($channel) {
                 $channel->setFirstName($from->getFirstName());
                 $channel->setLastName($from->getLastName());
-                $channel->setLanguageCode($from->getLanguageCode());
+                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
                 $channel->setUpdatedAt(new \DateTime());
             } else {
                 $channel = new Channel();
                 $channel->setChannelId($chat->getId());
                 $channel->setFirstName($from->getFirstName());
                 $channel->setLastName($from->getLastName());
-                $channel->setLanguageCode($from->getLanguageCode());
+                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
                 $channel->setHandlerName($handler::HANDLER_NAME);
                 $channel->setCreatedAt(new \DateTime());
                 $channel->setUpdatedAt(new \DateTime());
