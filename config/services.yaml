@@ -60,3 +60,7 @@ services:
               arguments:
                   - '%env(ZAYCEV_NET_3)%'
                   - '@botonarioum.handler.music_dealer'
+                              - method: add
+              arguments:
+                  - '%env(ZAYCEV_NET_4)%'
+                  - '@botonarioum.handler.music_dealer'
