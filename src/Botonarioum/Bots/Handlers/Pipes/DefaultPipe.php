@@ -2,6 +2,7 @@
 
 namespace App\Botonarioum\Bots\Handlers\Pipes;
 
+use Exception;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
@@ -12,16 +13,21 @@ class DefaultPipe extends AbstractPipe
 
     public function processing(Bot $bot, Update $update): bool
     {
-        $chatId = ($update->getCallbackQuery())
-            ? $update->getCallbackQuery()->getMessage()->getChat()->getId()
-            : $update->getMessage()->getChat()->getId();
+        try {
+            $chatId = ($update->getCallbackQuery())
+                ? $update->getCallbackQuery()->getMessage()->getChat()->getId()
+                : $update->getMessage()->getChat()->getId();
 
-        $message = new SendMessage(
-            $chatId,
-            $this::MESSAGE
-        );
+            $message = new SendMessage(
+                $chatId,
+                $this::MESSAGE
+            );
 
-        $bot->sendMessage($message);
+            $bot->sendMessage($message);
+        } catch (Exception $exception) {
+            echo $exception->getMessage();
+        }
+
 
         return true;
     }
