@@ -41,10 +41,6 @@ services:
     autowire: true
     calls:
       - method: add
-          arguments:
-            - '%env(ZAYCEV_NET_4)%'
-            - '@botonarioum.handler.music_dealer'
-      - method: add
         arguments:
           - '%env(BOTONARIOUMBOT_TOKEN)%'
           - '@botonarioum.handler.botonarioum'
@@ -58,10 +54,9 @@ services:
           - '@botonarioum.handler.music_dealer'
       - method: add
         arguments:
-          - '%env(ZAYCEV_NET_2)%'
+          - '%env(ZAYCEV_NET_4)%'
           - '@botonarioum.handler.music_dealer'
       - method: add
         arguments:
           - '%env(ZAYCEV_NET_3)%'
           - '@botonarioum.handler.music_dealer'
-
