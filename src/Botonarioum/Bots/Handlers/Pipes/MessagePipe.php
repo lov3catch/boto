@@ -22,6 +22,6 @@ class MessagePipe extends AbstractPipe
     {
         if ($update->getCallbackQuery()) return false;
 
-        return true;
+        return ($update->getMessage()) ? true : false;
     }
 }
