@@ -38,6 +38,10 @@ class StartPipe extends AbstractPipe
     {
         if ($update->getCallbackQuery()) return false;
 
-        return '/start' === $update->getMessage()->getText() ? true : false;
+        if ($update->getMessage()) {
+            return '/start' === $update->getMessage()->getText() ? true : false;
+        }
+
+        return false;
     }
 }
