@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class BotsController
 {
     /**
-     * @Route("/bots", name="handler")
+     * @Route("/echo", name="handler")
      *
      * @param Request $request
      * @return Response
