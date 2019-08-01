@@ -13,6 +13,8 @@ class DefaultPipe extends AbstractPipe
 
     public function processing(Bot $bot, Update $update): bool
     {
+        // todo: fix thix
+        return true;
         try {
             $chatId = ($update->getCallbackQuery())
                 ? $update->getCallbackQuery()->getMessage()->getChat()->getId()
