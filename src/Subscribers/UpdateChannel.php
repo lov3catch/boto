@@ -54,37 +54,37 @@ class UpdateChannel implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
-        $handler = $event->getHandler();
-        $update = $event->getUpdate();
-
-        $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
-        $from = $update->getCallbackQuery() ? $update->getCallbackQuery()->getFrom() : $update->getMessage()->getFrom();
-
-        try {
-            $channel = $this->entityManager
-                ->getRepository(Channel::class)
-                ->findOneBy(['channel_id' => $chat->getId(), 'handler_name' => $handler::HANDLER_NAME]);
-
-            if ($channel) {
-                $channel->setFirstName($from->getFirstName());
-                $channel->setLastName($from->getLastName());
-                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
-                $channel->setUpdatedAt(new \DateTime());
-            } else {
-                $channel = new Channel();
-                $channel->setChannelId($chat->getId());
-                $channel->setFirstName($from->getFirstName());
-                $channel->setLastName($from->getLastName());
-                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
-                $channel->setHandlerName($handler::HANDLER_NAME);
-                $channel->setCreatedAt(new \DateTime());
-                $channel->setUpdatedAt(new \DateTime());
-            }
-
-            $this->entityManager->persist($channel);
-            $this->entityManager->flush();
-        } catch (Exception $exception) {
-            $this->logger->error($exception->getMessage());
-        }
+//        $handler = $event->getHandler();
+//        $update = $event->getUpdate();
+//
+//        $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
+//        $from = $update->getCallbackQuery() ? $update->getCallbackQuery()->getFrom() : $update->getMessage()->getFrom();
+//
+//        try {
+//            $channel = $this->entityManager
+//                ->getRepository(Channel::class)
+//                ->findOneBy(['channel_id' => $chat->getId(), 'handler_name' => $handler::HANDLER_NAME]);
+//
+//            if ($channel) {
+//                $channel->setFirstName($from->getFirstName());
+//                $channel->setLastName($from->getLastName());
+//                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
+//                $channel->setUpdatedAt(new \DateTime());
+//            } else {
+//                $channel = new Channel();
+//                $channel->setChannelId($chat->getId());
+//                $channel->setFirstName($from->getFirstName());
+//                $channel->setLastName($from->getLastName());
+//                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
+//                $channel->setHandlerName($handler::HANDLER_NAME);
+//                $channel->setCreatedAt(new \DateTime());
+//                $channel->setUpdatedAt(new \DateTime());
+//            }
+//
+//            $this->entityManager->persist($channel);
+//            $this->entityManager->flush();
+//        } catch (Exception $exception) {
+//            $this->logger->error($exception->getMessage());
+//        }
     }
 }
