@@ -18,9 +18,9 @@ class BotonarioumHandler extends AbstractHandler
 
     private const
         CONTACTS_KEY = 'ℹ️ Контакты',
-        BOTS_CATALOGUE_KEY = '🤖 Боты',
-        GAMES_CATALOGUE_KEY = '🎮 Игры',
-        GROUPS_CATALOGUE_KEY = ' 👥 Групы';
+        BOTS_CATALOGUE_KEY = '🤖  Боты',
+        GAMES_CATALOGUE_KEY = '🎮  Игры',
+        GROUPS_CATALOGUE_KEY = ' 👥  Групы';
 
     private const
         TYPE_BOT_ID = 2,
