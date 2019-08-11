@@ -89,7 +89,7 @@ class BotonarioumHandler extends AbstractHandler
         } elseif ($userInput === self::GAMES_CATALOGUE_KEY) {
             $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список игр:');
             // todo: получать из базы
-        } elseif ($userInput === self::GROUPS_CATALOGUE_KEY) {
+        } elseif (strpos($userInput, 'рупы')) {
             $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список груп:');
 
             $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_CHANNEL_ID]));
