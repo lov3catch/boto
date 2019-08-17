@@ -21,6 +21,8 @@ class MusicDealerHandler extends AbstractHandler
 
     private $pipes = [];
 
+    private $logger;
+
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
