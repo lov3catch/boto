@@ -47,6 +47,8 @@ class MessagePipe extends BaseMessagePipe
                 return true;
             }
 
+            var_dump('BBBBBBBBBBBBBBBBBBBBBB');
+
             $searchResponse = $this->trackFinderService->search($update->getMessage()->getText(), Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
 
             if ($searchResponse->isEmpty()) {
