@@ -19,13 +19,20 @@ class MessagePipe extends BaseMessagePipe
      */
     protected $trackFinderService;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(LoggerInterface $logger)
     {
+        $this->logger = $logger;
         $this->trackFinderService = new TrackFinderService();
     }
 
     public function processing(Bot $bot, Update $update): bool
     {
+        $this->logger->error('AAAAAAAAAAAAAAAAAAAAAA');
         var_dump('CCCCCCCCCCCCCCCCCCCCCCCCC');
         try {
             $message = new SendMessage(
