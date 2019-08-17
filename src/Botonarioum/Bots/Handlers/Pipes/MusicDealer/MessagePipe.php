@@ -62,6 +62,7 @@ class MessagePipe extends BaseMessagePipe
                 return true;
             }
 
+            var_dump('AAAAAAAAAAAAAAAAAA');
             $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
             $newMessage = EditMessageText::withChatId(
