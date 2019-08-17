@@ -26,6 +26,7 @@ class MessagePipe extends BaseMessagePipe
 
     public function processing(Bot $bot, Update $update): bool
     {
+        var_dump('CCCCCCCCCCCCCCCCCCCCCCCCC');
         try {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
