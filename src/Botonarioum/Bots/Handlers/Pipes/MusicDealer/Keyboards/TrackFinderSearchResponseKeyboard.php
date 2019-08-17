@@ -39,8 +39,6 @@ class TrackFinderSearchResponseKeyboard
             ? explode('.', $update->getCallbackQuery()->getData())[7]
             : $update->getMessage()->getText();
 
-        var_dump($text);
-
         if ($response->getPager()->hasPrev()) {
             $prevCallbackData = implode('.', ['pager', 'prev', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('◀️', $prevCallbackData);
@@ -50,9 +48,6 @@ class TrackFinderSearchResponseKeyboard
             $nextCallbackData = implode('.', ['pager', 'next', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('▶️', $nextCallbackData);
         }
-
-        var_dump($prevCallbackData);
-        var_dump($nextCallbackData);
 
         $keyboard[] = $paginationKeyboard;
     }

@@ -32,8 +32,6 @@ class MessagePipe extends BaseMessagePipe
 
     public function processing(Bot $bot, Update $update): bool
     {
-        $this->logger->error('AAAAAAAAAAAAAAAAAAAAAA');
-        var_dump('CCCCCCCCCCCCCCCCCCCCCCCCC');
         try {
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
@@ -55,8 +53,6 @@ class MessagePipe extends BaseMessagePipe
                 return true;
             }
 
-            var_dump('BBBBBBBBBBBBBBBBBBBBBB');
-
             $searchResponse = $this->trackFinderService->search($update->getMessage()->getText(), Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
 
             if ($searchResponse->isEmpty()) {
@@ -72,7 +68,6 @@ class MessagePipe extends BaseMessagePipe
                 return true;
             }
 
-            var_dump('AAAAAAAAAAAAAAAAAA');
             $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
             $newMessage = EditMessageText::withChatId(
@@ -86,8 +81,7 @@ class MessagePipe extends BaseMessagePipe
 
             $bot->editMessageText($newMessage);
         } catch (\Throwable $exception) {
-            var_dump($exception->getMessage());
-            echo $exception->getMessage();
+            $this->logger->error($exception->getMessage());
         }
 
 
