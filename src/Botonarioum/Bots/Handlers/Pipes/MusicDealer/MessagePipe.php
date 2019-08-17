@@ -74,7 +74,8 @@ class MessagePipe extends BaseMessagePipe
             $newMessage->setReplyMarkup($markup);
 
             $bot->editMessageText($newMessage);
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
+            var_dump($exception->getMessage());
             echo $exception->getMessage();
         }
 
