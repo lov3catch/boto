@@ -6,11 +6,11 @@ use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe as BaseMessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards\TrackFinderSearchResponseKeyboard;
 use App\Botonarioum\TrackFinder\Page;
 use App\Botonarioum\TrackFinder\TrackFinderService;
-use Exception;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\EditMessageText;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
+use Psr\Log\LoggerInterface;
 
 class MessagePipe extends BaseMessagePipe
 {
@@ -19,7 +19,7 @@ class MessagePipe extends BaseMessagePipe
      */
     protected $trackFinderService;
 
-    public function __construct()
+    public function __construct(LoggerInterface $logger)
     {
         $this->trackFinderService = new TrackFinderService();
     }

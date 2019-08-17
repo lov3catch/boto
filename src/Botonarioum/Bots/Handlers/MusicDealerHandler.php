@@ -13,12 +13,19 @@ use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\PipeInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
+use Psr\Log\LoggerInterface;
 
 class MusicDealerHandler extends AbstractHandler
 {
     public const HANDLER_NAME = 'bot.md.downloader';
 
     private $pipes = [];
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
 
     public function add(PipeInterface $pipe): AbstractHandler
     {
@@ -44,9 +51,9 @@ class MusicDealerHandler extends AbstractHandler
             ->add(new StartPipe())
             ->add(new DonatePipe())
             ->add(new BotonarioumPipe())
-            ->add(new MessagePipe())
-            ->add(new NextCallbackPipe())
-            ->add(new PrevCallbackPipe())
+            ->add(new MessagePipe($this->logger))
+            ->add(new NextCallbackPipe($this->logger))
+            ->add(new PrevCallbackPipe($this->logger))
             ->add(new DownloadCallbackPipe())
             ->add(new DefaultPipe());
     }
