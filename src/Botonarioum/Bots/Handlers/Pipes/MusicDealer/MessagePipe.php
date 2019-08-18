@@ -75,7 +75,7 @@ class MessagePipe extends BaseMessagePipe
             $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
             $newMessage = EditMessageText::withChatId(
-                '🎶 Результат поиска: ' . substr($update->getMessage()->getText(), 0, 20),
+                '🎶 Результат поиска: ' . mb_convert_encoding(substr($update->getMessage()->getText(), 0, 20), 'UTF-8', 'UTF-8'),
                 $update->getMessage()->getChat()->getId(),
                 $sendSearchMessage->getMessageId()
 
