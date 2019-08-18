@@ -85,7 +85,11 @@ class MessagePipe extends BaseMessagePipe
 
             $newMessage->setReplyMarkup($markup);
 
+            $this->logger->error('-----6-----');
+
             $bot->editMessageText($newMessage);
+
+            $this->logger->error('-----7-----');
         } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
