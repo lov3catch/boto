@@ -25,6 +25,7 @@ class TrackFinderSearchResponseKeyboard
     {
         $keyboard = array_merge($keyboard, array_map(function (array $item) {
             $title = $item[0];
+            $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
             // todo: Реализовать класс для работы с провайдерами
             $callbackData = implode('::', ['zn', $item[1]]);
             return [InlineKeyboardButton::withCallbackData($title, $callbackData)];
