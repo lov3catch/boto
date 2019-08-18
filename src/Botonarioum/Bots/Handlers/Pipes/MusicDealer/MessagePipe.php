@@ -33,12 +33,14 @@ class MessagePipe extends BaseMessagePipe
     public function processing(Bot $bot, Update $update): bool
     {
         try {
+            $this->logger->error('-----1-----');
             $message = new SendMessage(
                 $update->getMessage()->getChat()->getId(),
                 '🔎 Ищу...'
             );
 
             $sendSearchMessage = $bot->sendMessage($message);
+            $this->logger->error('-----2-----');
 
             if (empty($update->getMessage()->getText())) {
                 $message = new SendMessage(
@@ -52,6 +54,7 @@ class MessagePipe extends BaseMessagePipe
 
                 return true;
             }
+            $this->logger->error('-----3-----');
 
             $searchResponse = $this->trackFinderService->search($update->getMessage()->getText(), Page::DEFAULT_LIMIT, Page::DEFAULT_OFFSET);
 
@@ -67,6 +70,7 @@ class MessagePipe extends BaseMessagePipe
 
                 return true;
             }
+            $this->logger->error('-----4-----');
 
             $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
 
@@ -76,6 +80,8 @@ class MessagePipe extends BaseMessagePipe
                 $sendSearchMessage->getMessageId()
 
             );
+
+            $this->logger->error('-----5-----');
 
             $newMessage->setReplyMarkup($markup);
 
