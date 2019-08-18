@@ -39,6 +39,8 @@ class TrackFinderSearchResponseKeyboard
             ? explode('.', $update->getCallbackQuery()->getData())[7]
             : $update->getMessage()->getText();
 
+        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+
         if ($response->getPager()->hasPrev()) {
             $prevCallbackData = implode('.', ['pager', 'prev', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('◀️', $prevCallbackData);
