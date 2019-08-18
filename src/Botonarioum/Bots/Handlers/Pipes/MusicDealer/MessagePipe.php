@@ -91,7 +91,11 @@ class MessagePipe extends BaseMessagePipe
 
             $this->logger->error('-----7-----');
         } catch (\Throwable $exception) {
+            $this->logger->error('--------------------------' . PHP_EOL);
             $this->logger->error($exception->getMessage());
+            $this->logger->error($exception->getFile());
+            $this->logger->error($exception->getLine());
+            $this->logger->error('--------------------------' . PHP_EOL);
         }
 
 
