@@ -18,8 +18,9 @@ class BotonarioumHandler extends AbstractHandler
 
     private const
         CONTACTS_KEY = 'ℹ️ Контакты',
-        BOTS_CATALOGUE_KEY = '📔 Боты',
-        GROUPS_CATALOGUE_KEY = '📔 Групы';
+        BOTS_CATALOGUE_KEY = '🤖  Боты',
+        GAMES_CATALOGUE_KEY = '🎮  Игры',
+        GROUPS_CATALOGUE_KEY = ' 👥  Групы';
 
     private const
         TYPE_BOT_ID = 2,
@@ -43,7 +44,9 @@ class BotonarioumHandler extends AbstractHandler
 
     private function defaultKeyboard(): ReplyKeyboardMarkup
     {
-        return new ReplyKeyboardMarkup([[new KeyboardButton(self::BOTS_CATALOGUE_KEY), new KeyboardButton(self::GROUPS_CATALOGUE_KEY)], [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::CONTACTS_KEY)]]);
+        return new ReplyKeyboardMarkup([
+            [new KeyboardButton(self::BOTS_CATALOGUE_KEY), new KeyboardButton(self::GAMES_CATALOGUE_KEY), new KeyboardButton(self::GROUPS_CATALOGUE_KEY)],
+            [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::CONTACTS_KEY)]]);
     }
 
     public function handle(Bot $bot, Update $update): bool
@@ -83,7 +86,10 @@ class BotonarioumHandler extends AbstractHandler
             $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_BOT_ID]));
 
             $message->setReplyMarkup($markup);
-        } elseif ($userInput === self::GROUPS_CATALOGUE_KEY) {
+        } elseif ($userInput === self::GAMES_CATALOGUE_KEY) {
+            $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список игр:');
+            // todo: получать из базы
+        } elseif (strpos($userInput, 'рупы')) {
             $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список груп:');
 
             $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_CHANNEL_ID]));

@@ -1,0 +1,78 @@
+{
+  "update_id": 693714517,
+  "callback_query": {
+    "id": "1254984153048204505",
+    "from": {
+      "id": 292198768,
+      "is_bot": false,
+      "first_name": "Ihor",
+      "last_name": "Kopyl",
+      "username": "igorkpl",
+      "language_code": "ru"
+    },
+    "message": {
+      "message_id": 8023,
+      "from": {
+        "id": 412602481,
+        "is_bot": true,
+        "first_name": "mysexybot",
+        "username": "my_sexy_little_bot"
+      },
+      "chat": {
+        "id": 292198768,
+        "first_name": "Ihor",
+        "last_name": "Kopyl",
+        "username": "igorkpl",
+        "type": "private"
+      },
+      "date": 1563214680,
+      "text": "Hardkiss - Stone",
+      "reply_markup": {
+        "inline_keyboard": [
+          [
+            {
+              "text": "The Hardkiss - Коханці",
+              "callback_data": "data-here"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Журавлі",
+              "callback_data": "data-here"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Helpless",
+              "callback_data": "data-here"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Мелодія",
+              "callback_data": "data-here"
+            }
+          ],
+          [
+            {
+              "text": "The Hardkiss - Серце",
+              "callback_data": "data-here"
+            }
+          ],
+          [
+            {
+              "text": "◀️",
+              "callback_data": "pager.prev.limit.5.offset.0.track_name.hardkiss-stone"
+            },
+            {
+              "text": "▶️",
+              "callback_data": "pager.next.limit.5.offset.0.track_name.hardkiss-stone"
+            }
+          ]
+        ]
+      }
+    },
+    "chat_instance": "-2842617674903484803",
+    "data": "pager.prev.limit.5.offset.0.track_name.hardkiss-stone"
+  }
+}

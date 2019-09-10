@@ -7,7 +7,6 @@ namespace App\Subscribers;
 use App\Entity\Channel;
 use App\Events\ActivityEvent;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -54,13 +53,13 @@ class UpdateChannel implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
-        $handler = $event->getHandler();
-        $update = $event->getUpdate();
-
-        $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
-        $from = $update->getCallbackQuery() ? $update->getCallbackQuery()->getFrom() : $update->getMessage()->getFrom();
-
         try {
+            $handler = $event->getHandler();
+            $update = $event->getUpdate();
+
+            $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
+            $from = $update->getCallbackQuery() ? $update->getCallbackQuery()->getFrom() : $update->getMessage()->getFrom();
+
             $channel = $this->entityManager
                 ->getRepository(Channel::class)
                 ->findOneBy(['channel_id' => $chat->getId(), 'handler_name' => $handler::HANDLER_NAME]);
@@ -68,14 +67,14 @@ class UpdateChannel implements EventSubscriberInterface
             if ($channel) {
                 $channel->setFirstName($from->getFirstName());
                 $channel->setLastName($from->getLastName());
-                $channel->setLanguageCode($from->getLanguageCode());
+                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
                 $channel->setUpdatedAt(new \DateTime());
             } else {
                 $channel = new Channel();
                 $channel->setChannelId($chat->getId());
                 $channel->setFirstName($from->getFirstName());
                 $channel->setLastName($from->getLastName());
-                $channel->setLanguageCode($from->getLanguageCode());
+                $channel->setLanguageCode($from->getLanguageCode() ?? 'en');
                 $channel->setHandlerName($handler::HANDLER_NAME);
                 $channel->setCreatedAt(new \DateTime());
                 $channel->setUpdatedAt(new \DateTime());
@@ -83,7 +82,7 @@ class UpdateChannel implements EventSubscriberInterface
 
             $this->entityManager->persist($channel);
             $this->entityManager->flush();
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
     }

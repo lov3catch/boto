@@ -54,12 +54,12 @@ class TrackChannelActivity implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
-        $handler = $event->getHandler();
-        $update = $event->getUpdate();
-
-        $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
-
         try {
+            $handler = $event->getHandler();
+            $update = $event->getUpdate();
+
+            $chat = $update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat() : $update->getMessage()->getChat();
+
             $channelActivite = (new ChannelActivity())
                 ->setChannelId($chat->getId())
                 ->setHandlerName($handler::HANDLER_NAME)
@@ -67,7 +67,7 @@ class TrackChannelActivity implements EventSubscriberInterface
 
             $this->entityManager->persist($channelActivite);
             $this->entityManager->flush();
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
     }

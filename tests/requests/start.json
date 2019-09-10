@@ -1,0 +1,30 @@
+{
+  "update_id": 693714493,
+  "message": {
+    "message_id": 7923,
+    "from": {
+      "id": 292198768,
+      "is_bot": false,
+      "first_name": "Ihor",
+      "last_name": "Kopyl",
+      "username": "igorkpl",
+      "language_code": "ru"
+    },
+    "chat": {
+      "id": 292198768,
+      "first_name": "Ihor",
+      "last_name": "Kopyl",
+      "username": "igorkpl",
+      "type": "private"
+    },
+    "date": 1562868845,
+    "text": "/start",
+    "entities": [
+      {
+        "offset": 0,
+        "length": 6,
+        "type": "bot_command"
+      }
+    ]
+  }
+}

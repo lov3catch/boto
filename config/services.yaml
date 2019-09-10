@@ -33,6 +33,9 @@ services:
     botonarioum.handler.botonarioum:
         class: App\Botonarioum\Bots\Handlers\BotonarioumHandler
 
+    botonarioum.handler.music_dealer:
+        class: App\Botonarioum\Bots\Handlers\MusicDealerHandler
+
     # Bots
     App\Botonarioum\Bots\BotContainer:
         autowire: true
@@ -45,3 +48,19 @@ services:
               arguments:
                   - '%env(BASHIM_TOKEN)%'
                   - '@botonarioum.handler.bashim'
+            - method: add
+              arguments:
+                  - '%env(ZAYCEV_NET_1)%'
+                  - '@botonarioum.handler.music_dealer'
+            - method: add
+              arguments:
+                  - '%env(ZAYCEV_NET_2)%'
+                  - '@botonarioum.handler.music_dealer'
+            - method: add
+              arguments:
+                  - '%env(ZAYCEV_NET_3)%'
+                  - '@botonarioum.handler.music_dealer'
+            - method: add
+              arguments:
+                  - '%env(ZAYCEV_NET_4)%'
+                  - '@botonarioum.handler.music_dealer'

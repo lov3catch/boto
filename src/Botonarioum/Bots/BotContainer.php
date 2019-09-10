@@ -6,6 +6,7 @@ namespace App\Botonarioum\Bots;
 
 use App\Botonarioum\Bots\Handlers\BotHandlerInterface;
 use App\Events\ActivityEvent;
+use Exception;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -37,14 +38,19 @@ class BotContainer
 
     public function handle(string $token, Request $request): void
     {
-        $json = json_decode($request->getContent(), true);
+        try {
+            $json = json_decode($request->getContent(), true);
 
-        $handler = $this->bots[$token] ?? null;
+            $handler = $this->bots[$token] ?? null;
 
-        if ($handler instanceof BotHandlerInterface) {
-            $handler->handle(new Bot($token), Update::create($json));
+            if ($handler instanceof BotHandlerInterface) {
+                $handler->handle(new Bot($token), Update::create($json));
 
-            $this->dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent(Update::create($json), $handler));
+                $this->dispatcher->dispatch(ActivityEvent::EVENT_NAME, new ActivityEvent(Update::create($json), $handler));
+            }
+        } catch (Exception $exception) {
+            echo $exception->getMessage();
         }
+
     }
 }
