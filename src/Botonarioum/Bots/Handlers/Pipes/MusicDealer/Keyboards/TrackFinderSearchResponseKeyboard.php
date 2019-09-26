@@ -20,10 +20,10 @@ class TrackFinderSearchResponseKeyboard
      */
     private $pagerPartBuilder;
 
-    public function __construct(ContentPart $contentPartBuilder, PagerPart $pagerPartBuilder)
+    public function __construct()
     {
-        $this->contentPartBuilder = $contentPartBuilder;
-        $this->pagerPartBuilder = $pagerPartBuilder;
+        $this->contentPartBuilder = new ContentPart();
+        $this->pagerPartBuilder = new PagerPart();
     }
 
     public function build(TrackFinderSearchResponse $response, Update $update): InlineKeyboardMarkup
