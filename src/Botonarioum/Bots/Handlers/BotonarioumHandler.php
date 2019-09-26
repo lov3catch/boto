@@ -45,7 +45,7 @@ class BotonarioumHandler extends AbstractHandler
     private function defaultKeyboard(): ReplyKeyboardMarkup
     {
         return new ReplyKeyboardMarkup([
-            [new KeyboardButton(self::BOTS_CATALOGUE_KEY), new KeyboardButton(self::GAMES_CATALOGUE_KEY), new KeyboardButton(self::GROUPS_CATALOGUE_KEY)],
+            [new KeyboardButton(self::BOTS_CATALOGUE_KEY), new KeyboardButton(self::GROUPS_CATALOGUE_KEY)],
             [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::CONTACTS_KEY)]]);
     }
 
@@ -86,9 +86,6 @@ class BotonarioumHandler extends AbstractHandler
             $markup = $this->buildKeyboard($this->entityManager->getRepository(Element::class)->findBy(['type' => self::TYPE_BOT_ID]));
 
             $message->setReplyMarkup($markup);
-        } elseif ($userInput === self::GAMES_CATALOGUE_KEY) {
-            $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список игр:');
-            // todo: получать из базы
         } elseif (strpos($userInput, 'рупы')) {
             $message = new SendMessage($update->getMessage()->getChat()->getId(), ' Список груп:');
 
