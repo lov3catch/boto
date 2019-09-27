@@ -5,10 +5,42 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards\Parts;
 use App\Botonarioum\TrackFinder\TrackFinderSearchResponse;
 use Formapro\TelegramBot\InlineKeyboardButton;
 use Formapro\TelegramBot\Update;
+use Predis\Client;
 
 class PagerPart
 {
+    /**
+     * @var Client
+     */
+    private $redisStorage;
+
+    public function __construct()
+    {
+        $this->redisStorage = new Client();
+    }
+
     public function build(array &$keyboard, TrackFinderSearchResponse $response, Update $update)
+    {
+        $callbackData = $update->getCallbackQuery()->getData();
+
+        // old callback schema example: pager.prev.limit.10.offset.0.track_name.text
+        // new callback schema example: 11a38b9a-b3da-360f-9353-a5a725514269
+
+        if ($this->isOldSchema($callbackData)) {
+            $this->defaultDriver($keyboard, $response, $update);
+        } else {
+            //
+        }
+    }
+
+    private function isOldSchema(string $callbackData): bool
+    {
+        $callbackDataAsArray = explode('.', $callbackData);
+
+        return 8 === count($callbackDataAsArray);
+    }
+
+    private function defaultDriver(array &$keyboard, TrackFinderSearchResponse $response, Update $update): void
     {
         $paginationKeyboard = [];
 
@@ -29,5 +61,10 @@ class PagerPart
         }
 
         $keyboard[] = $paginationKeyboard;
+    }
+
+    private function redisDriver(array &$keyboard, TrackFinderSearchResponse $response, Update $update): void
+    {
+        //
     }
 }
