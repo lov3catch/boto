@@ -7,6 +7,7 @@
         "ext-iconv": "*",
         "formapro/telegram-bot": "^0.1.14",
         "predis/predis": "^1.1",
+        "ramsey/uuid": "2.9",
         "rmccue/requests": "v1.7.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
