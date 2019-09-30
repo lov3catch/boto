@@ -6,11 +6,13 @@ use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\BotonarioumPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DonatePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DownloadCallbackPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Helpers\CallbackQueryHelper;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\MessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\NextCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\PipeInterface;
+use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
 use Psr\Log\LoggerInterface;
@@ -23,9 +25,12 @@ class MusicDealerHandler extends AbstractHandler
 
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    private $callbackQueryHelper;
+
+    public function __construct(LoggerInterface $logger, CallbackQueryHelper $callbackQueryHelper)
     {
         $this->logger = $logger;
+        $this->callbackQueryHelper = $callbackQueryHelper;
     }
 
 
@@ -54,8 +59,8 @@ class MusicDealerHandler extends AbstractHandler
             ->add(new DonatePipe())
             ->add(new BotonarioumPipe())
             ->add(new MessagePipe($this->logger))
-            ->add(new NextCallbackPipe($this->logger))
-            ->add(new PrevCallbackPipe($this->logger))
+            ->add(new NextCallbackPipe($this->logger, $this->callbackQueryHelper))
+            ->add(new PrevCallbackPipe($this->logger, $this->callbackQueryHelper))
             ->add(new DownloadCallbackPipe())
             ->add(new DefaultPipe());
     }
