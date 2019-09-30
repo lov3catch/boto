@@ -3,10 +3,23 @@
 namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Helpers;
 
 use App\Botonarioum\TrackFinder\Page;
+use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Update;
+use Rhumsaa\Uuid\Uuid;
 
 class CallbackQueryHelper
 {
+    private const REDIS_TTL = 60 * 60 * 24 * 30 * 3;        // 3 month
+    /**
+     * @var RedisStorage
+     */
+    private $storage;
+
+    public function __construct(RedisStorage $storage)
+    {
+        $this->storage = $storage;
+    }
+
     public function getText(Update $update): string
     {
         return $update->getMessage()->getText();
@@ -35,11 +48,21 @@ class CallbackQueryHelper
 
     public function buildPrevCallbackData(int $limit, int $offset, string $text): string
     {
-        return implode('.', ['pager', 'prev', 'limit', $limit, 'offset', $offset, 'track_name', $text]);
+        $key = (Uuid::uuid1())->toString();
+        $value = implode('.', ['pager', 'prev', 'limit', $limit, 'offset', $offset, 'track_name', $text]);
+
+        $this->storage->client()->set($key, $value, null, self::REDIS_TTL);
+
+        return $value;
     }
 
     public function buildNextCallbackData(int $limit, int $offset, string $text): string
     {
-        return implode('.', ['pager', 'next', 'limit', $limit, 'offset', $offset, 'track_name', $text]);
+        $key = (Uuid::uuid1())->toString();
+        $value = implode('.', ['pager', 'next', 'limit', $limit, 'offset', $offset, 'track_name', $text]);
+
+        $this->storage->client()->set($key, $value, null, self::REDIS_TTL);
+
+        return $value;
     }
 }

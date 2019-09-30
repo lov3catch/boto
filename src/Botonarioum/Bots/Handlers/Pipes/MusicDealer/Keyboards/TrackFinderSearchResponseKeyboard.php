@@ -11,6 +11,16 @@ use Formapro\TelegramBot\Update;
 
 class TrackFinderSearchResponseKeyboard
 {
+    /**
+     * @var CallbackQueryHelper
+     */
+    private $callbackQueryHelper;
+
+    public function __construct(CallbackQueryHelper $callbackQueryHelper)
+    {
+        $this->callbackQueryHelper = $callbackQueryHelper;
+    }
+
     public function build(TrackFinderSearchResponse $response, Update $update): InlineKeyboardMarkup
     {
         $keyboard = [];
@@ -39,16 +49,15 @@ class TrackFinderSearchResponseKeyboard
         $paginationKeyboard = [];
 
         $text = (new UpdateHelper($update))->getText();
-        $callbackQueryHelper = new CallbackQueryHelper();
 
         if ($response->getPager()->hasPrev()) {
-            $prevCallbackData = $callbackQueryHelper->buildPrevCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
+            $prevCallbackData = $this->callbackQueryHelper->buildPrevCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
 //            $prevCallbackData = implode('.', ['pager', 'prev', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('◀️', $prevCallbackData);
         }
 
         if ($response->getPager()->hasNext()) {
-            $nextCallbackData = $callbackQueryHelper->buildNextCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
+            $nextCallbackData = $this->callbackQueryHelper->buildNextCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
 //            $nextCallbackData = implode('.', ['pager', 'next', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('▶️', $nextCallbackData);
         }
