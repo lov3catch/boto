@@ -24,10 +24,16 @@ class MessagePipe extends BaseMessagePipe
      */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var TrackFinderSearchResponseKeyboard
+     */
+    private $trackFinderSearchResponseKeyboard;
+
+    public function __construct(LoggerInterface $logger, TrackFinderSearchResponseKeyboard $trackFinderSearchResponseKeyboard)
     {
         $this->logger = $logger;
         $this->trackFinderService = new TrackFinderService();
+        $this->trackFinderSearchResponseKeyboard = $trackFinderSearchResponseKeyboard;
     }
 
     public function processing(Bot $bot, Update $update): bool
@@ -72,7 +78,7 @@ class MessagePipe extends BaseMessagePipe
             }
             $this->logger->error('-----4-----');
 
-            $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
+            $markup = $this->trackFinderSearchResponseKeyboard->build($searchResponse, $update);
 
             $newMessage = EditMessageText::withChatId(
                 '🎶 Результат поиска: ' . mb_convert_encoding(substr($update->getMessage()->getText(), 0, 20), 'UTF-8', 'UTF-8'),
