@@ -6,13 +6,11 @@ use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\BotonarioumPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DonatePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\DownloadCallbackPipe;
-use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Helpers\CallbackQueryHelper;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\MessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\NextCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\PipeInterface;
-use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Update;
 use Psr\Log\LoggerInterface;
@@ -25,12 +23,65 @@ class MusicDealerHandler extends AbstractHandler
 
     private $logger;
 
-    private $callbackQueryHelper;
+    /**
+     * @var StartPipe
+     */
+    private $startPipe;
 
-    public function __construct(LoggerInterface $logger, CallbackQueryHelper $callbackQueryHelper)
+    /**
+     * @var BotonarioumPipe
+     */
+    private $botonarioumPipe;
+
+    /**
+     * @var MessagePipe
+     */
+    private $messagePipe;
+
+    /**
+     * @var NextCallbackPipe
+     */
+    private $nextCallbackPipe;
+
+    /**
+     * @var PrevCallbackPipe
+     */
+    private $prevCallbackPipe;
+
+    /**
+     * @var DownloadCallbackPipe
+     */
+    private $downloadCallbackPipe;
+
+    /**
+     * @var DefaultPipe
+     */
+    private $defaultPipe;
+
+    /**
+     * @var DonatePipe
+     */
+    private $donatePipe;
+
+    public function __construct(LoggerInterface $logger,
+                                StartPipe $startPipe,
+                                DonatePipe $donatePipe,
+                                BotonarioumPipe $botonarioumPipe,
+                                MessagePipe $messagePipe,
+                                NextCallbackPipe $nextCallbackPipe,
+                                PrevCallbackPipe $prevCallbackPipe,
+                                DownloadCallbackPipe $downloadCallbackPipe,
+                                DefaultPipe $defaultPipe)
     {
         $this->logger = $logger;
-        $this->callbackQueryHelper = $callbackQueryHelper;
+        $this->startPipe = $startPipe;
+        $this->donatePipe = $donatePipe;
+        $this->botonarioumPipe = $botonarioumPipe;
+        $this->messagePipe = $messagePipe;
+        $this->nextCallbackPipe = $nextCallbackPipe;
+        $this->prevCallbackPipe = $prevCallbackPipe;
+        $this->downloadCallbackPipe = $downloadCallbackPipe;
+        $this->defaultPipe = $defaultPipe;
     }
 
 
@@ -55,13 +106,13 @@ class MusicDealerHandler extends AbstractHandler
     private function init(): void
     {
         $this
-            ->add(new StartPipe())
-            ->add(new DonatePipe())
-            ->add(new BotonarioumPipe())
-            ->add(new MessagePipe($this->logger))
-            ->add(new NextCallbackPipe($this->logger, $this->callbackQueryHelper))
-            ->add(new PrevCallbackPipe($this->logger, $this->callbackQueryHelper))
-            ->add(new DownloadCallbackPipe())
-            ->add(new DefaultPipe());
+            ->add($this->startPipe)
+            ->add($this->donatePipe)
+            ->add($this->botonarioumPipe)
+            ->add($this->messagePipe)
+            ->add($this->prevCallbackPipe)
+            ->add($this->nextCallbackPipe)
+            ->add($this->downloadCallbackPipe)
+            ->add($this->defaultPipe);
     }
 }

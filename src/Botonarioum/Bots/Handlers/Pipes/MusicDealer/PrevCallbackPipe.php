@@ -17,10 +17,16 @@ class PrevCallbackPipe extends MessagePipe
      */
     private $callbackQueryHelper;
 
-    public function __construct(LoggerInterface $logger, CallbackQueryHelper $callbackQueryHelper)
+    /**
+     * @var TrackFinderSearchResponseKeyboard
+     */
+    private $trackFinderSearchResponseKeyboard;
+
+    public function __construct(LoggerInterface $logger, CallbackQueryHelper $callbackQueryHelper, TrackFinderSearchResponseKeyboard $trackFinderSearchResponseKeyboard)
     {
         parent::__construct($logger);
         $this->callbackQueryHelper = $callbackQueryHelper;
+        $this->trackFinderSearchResponseKeyboard = $trackFinderSearchResponseKeyboard;
     }
 
     public function isSupported(Update $update): bool
@@ -51,7 +57,7 @@ class PrevCallbackPipe extends MessagePipe
 //        $searchThis = reset($searchThis);
 
         $searchResponse = $this->trackFinderService->search($this->callbackQueryHelper->getTextFromCallback($update), $limit, $offset);
-        $markup = (new TrackFinderSearchResponseKeyboard)->build($searchResponse, $update);
+        $markup = $this->trackFinderSearchResponseKeyboard->build($searchResponse, $update);
 
         $message->setReplyMarkup($markup);
 

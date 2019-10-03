@@ -3,7 +3,6 @@
 namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards;
 
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Helpers\CallbackQueryHelper;
-use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Helpers\UpdateHelper;
 use App\Botonarioum\TrackFinder\TrackFinderSearchResponse;
 use Formapro\TelegramBot\InlineKeyboardButton;
 use Formapro\TelegramBot\InlineKeyboardMarkup;
@@ -48,7 +47,11 @@ class TrackFinderSearchResponseKeyboard
     {
         $paginationKeyboard = [];
 
-        $text = (new UpdateHelper($update))->getText();
+        $text = $update->getCallbackQuery()
+            ? explode('.', $update->getCallbackQuery()->getData())[7]
+            : $update->getMessage()->getText();
+
+        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
 
         if ($response->getPager()->hasPrev()) {
             $prevCallbackData = $this->callbackQueryHelper->buildPrevCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
