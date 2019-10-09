@@ -101,6 +101,7 @@ class MessagePipe extends BaseMessagePipe
             $this->logger->error($exception->getMessage());
             $this->logger->error($exception->getFile());
             $this->logger->error($exception->getLine());
+            $this->logger->error($exception->getTraceAsString());
             $this->logger->error('--------------------------' . PHP_EOL);
         }
 
