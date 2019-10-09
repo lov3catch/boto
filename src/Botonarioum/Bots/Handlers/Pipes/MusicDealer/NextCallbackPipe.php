@@ -24,7 +24,7 @@ class NextCallbackPipe extends MessagePipe
 
     public function __construct(LoggerInterface $logger, CallbackQueryHelper $callbackQueryHelper, TrackFinderSearchResponseKeyboard $trackFinderSearchResponseKeyboard)
     {
-        parent::__construct($logger);
+        parent::__construct($logger, $trackFinderSearchResponseKeyboard);
         $this->callbackQueryHelper = $callbackQueryHelper;
         $this->trackFinderSearchResponseKeyboard = $trackFinderSearchResponseKeyboard;
     }
