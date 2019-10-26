@@ -5,10 +5,8 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer;
 use App\Botonarioum\Bots\Handlers\Pipes\CallbackPipe;
 use Formapro\TelegramBot\AnswerCallbackQuery;
 use Formapro\TelegramBot\Bot;
-use Formapro\TelegramBot\InputFile;
-use Formapro\TelegramBot\SendDocument;
+use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
-use Requests;
 
 class DownloadCallbackPipe extends CallbackPipe
 {
@@ -19,11 +17,17 @@ class DownloadCallbackPipe extends CallbackPipe
 
     public function processing(Bot $bot, Update $update): bool
     {
-        $this->sendAnswer($bot, $update);
-        $downloadUrl = $this->buildDownloadUrl($bot, $update);
-        $content = Requests::get($downloadUrl, [], ['proxy' => 'http://FqX3tB:46VjdC@91.243.52.252:8000']);
-        $inputFile = new InputFile('sound.mp3', $content->body);
-        $bot->sendDocument(SendDocument::withInputFile($update->getCallbackQuery()->getMessage()->getChat()->getId(), $inputFile));
+//        $this->sendAnswer($bot, $update);
+
+        $ulr = $this->buildDownloadUrl($bot, $update);
+
+
+        $message = new SendMessage(
+            $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+            $ulr
+        );
+
+        $bot->sendMessage($message);
 
         return true;
     }
