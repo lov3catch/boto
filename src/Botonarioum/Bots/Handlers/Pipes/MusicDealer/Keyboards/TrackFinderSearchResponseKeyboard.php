@@ -4,9 +4,11 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Keyboards;
 
 use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\Helpers\CallbackQueryHelper;
 use App\Botonarioum\TrackFinder\TrackFinderSearchResponse;
+use App\Storages\RedisStorage;
 use Formapro\TelegramBot\InlineKeyboardButton;
 use Formapro\TelegramBot\InlineKeyboardMarkup;
 use Formapro\TelegramBot\Update;
+use Rhumsaa\Uuid\Uuid;
 
 class TrackFinderSearchResponseKeyboard
 {
@@ -14,10 +16,15 @@ class TrackFinderSearchResponseKeyboard
      * @var CallbackQueryHelper
      */
     private $callbackQueryHelper;
+    /**
+     * @var RedisStorage
+     */
+    private $storage;
 
-    public function __construct(CallbackQueryHelper $callbackQueryHelper)
+    public function __construct(CallbackQueryHelper $callbackQueryHelper, RedisStorage $storage)
     {
         $this->callbackQueryHelper = $callbackQueryHelper;
+        $this->storage = $storage;
     }
 
     public function build(TrackFinderSearchResponse $response, Update $update): InlineKeyboardMarkup
@@ -47,21 +54,37 @@ class TrackFinderSearchResponseKeyboard
     {
         $paginationKeyboard = [];
 
-        $text = $update->getCallbackQuery()
-            ? explode('.', $update->getCallbackQuery()->getData())[7]
-            : $update->getMessage()->getText();
+//        $text = $update->getCallbackQuery()
+//            ? explode('.', $update->getCallbackQuery()->getData())[7]
+//            : $update->getMessage()->getText();
+//
+//        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
 
-        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+        $text = $this->callbackQueryHelper->getTextFromCallback($update);
+
+        // если есть ключ редиса - удаляем (тк далее мы создадим новый)
+        if ($update->getCallbackQuery()) {
+            $oldSchema = (bool)(explode('.', $update->getCallbackQuery()->getData())[7] ?? null);
+            if (!$oldSchema) $this->storage->client()->del($update->getCallbackQuery()->getData());
+        }
 
         if ($response->getPager()->hasPrev()) {
-            $prevCallbackData = $this->callbackQueryHelper->buildPrevCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
-//            $prevCallbackData = implode('.', ['pager', 'prev', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
+            $prevCallbackData = $this->callbackQueryHelper->buildPrevCallbackData(
+                $response->getPager()->limit(),
+                $response->getPager()->offset(),
+                $text,
+                (Uuid::uuid1())->toString());
+
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('◀️', $prevCallbackData);
         }
 
         if ($response->getPager()->hasNext()) {
-            $nextCallbackData = $this->callbackQueryHelper->buildNextCallbackData($response->getPager()->limit(), $response->getPager()->offset(), $text);
-//            $nextCallbackData = implode('.', ['pager', 'next', 'limit', $response->getPager()->limit(), 'offset', $response->getPager()->offset(), 'track_name', $text]);
+            $nextCallbackData = $this->callbackQueryHelper->buildNextCallbackData(
+                $response->getPager()->limit(),
+                $response->getPager()->offset(),
+                $text,
+                (Uuid::uuid1())->toString());
+
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('▶️', $nextCallbackData);
         }
 

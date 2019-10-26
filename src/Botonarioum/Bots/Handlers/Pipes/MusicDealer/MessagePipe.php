@@ -77,6 +77,7 @@ class MessagePipe extends BaseMessagePipe
                 return true;
             }
             $this->logger->error('-----4-----');
+            var_dump('------------------------------------');
 
             $markup = $this->trackFinderSearchResponseKeyboard->build($searchResponse, $update);
 
@@ -93,7 +94,8 @@ class MessagePipe extends BaseMessagePipe
 
             $this->logger->error('-----6-----');
 
-            $bot->editMessageText($newMessage);
+            $message = $bot->editMessageText($newMessage);
+            var_dump($message);
 
             $this->logger->error('-----7-----');
         } catch (\Throwable $exception) {

@@ -12,7 +12,8 @@ class Page
         PAGE_SIZE = 5,
         DIRECTION_CALLBACK_POSITION = 1,
         LIMIT_CALLBACK_POSITION = 3,
-        OFFSET_CALLBACK_POSITION = 5;
+        OFFSET_CALLBACK_POSITION = 5,
+        TEXT_CALLBACK_POSITION = 7;
 
     public const
         DEFAULT_LIMIT = 5,
