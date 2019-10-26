@@ -22,7 +22,7 @@ class DownloadCallbackPipe extends CallbackPipe
         $this->sendAnswer($bot, $update);
         $downloadUrl = $this->buildDownloadUrl($bot, $update);
         var_dump($downloadUrl);
-        $content = Requests::get($downloadUrl, [], ['proxy' => 'http://FqX3tB:46VjdC@91.243.52.252:8000']);
+        $content = Requests::get($downloadUrl, [], ['proxy' => 'http://DUUbe5:3623Pv@45.139.110.111:8000']);
         $inputFile = new InputFile('sound.mp3', $content->body);
         $bot->sendDocument(SendDocument::withInputFile($update->getCallbackQuery()->getMessage()->getChat()->getId(), $inputFile));
 
