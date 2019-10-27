@@ -29,7 +29,17 @@ class TrackFinderSearchResponseKeyboard
 
     public function build(TrackFinderSearchResponse $response, Update $update): InlineKeyboardMarkup
     {
+        $pagerPart = $this->attachPagerPart($response, $update);
+        $contentPart = $this->attachContentPart($response, $update);
+
         $keyboard = [];
+        $keyboard[] = $pagerPart;
+        $keyboard = array_merge($keyboard, $contentPart);
+        $keyboard[] = $pagerPart;
+
+//        var_dump($keyboard);die;
+
+        return new InlineKeyboardMarkup($keyboard);
 
         $this->attachPagerPart($keyboard, $response, $update);
         $this->attachContentPart($keyboard, $response, $update);
@@ -39,18 +49,18 @@ class TrackFinderSearchResponseKeyboard
         return new InlineKeyboardMarkup($keyboard);
     }
 
-    private function attachContentPart(array &$keyboard, TrackFinderSearchResponse $response, Update $update): void
+    private function attachContentPart(TrackFinderSearchResponse $response, Update $update): array
     {
-        $keyboard = array_merge($keyboard, array_map(function (array $item) {
+        return array_map(function (array $item) {
             $title = $item[0];
             $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
             // todo: Реализовать класс для работы с провайдерами
             $callbackData = implode('::', ['zn', $item[1]]);
             return [InlineKeyboardButton::withCallbackData($title, $callbackData)];
-        }, $response->getData()));
+        }, $response->getData());
     }
 
-    private function attachPagerPart(array &$keyboard, TrackFinderSearchResponse $response, Update $update): void
+    private function attachPagerPart(TrackFinderSearchResponse $response, Update $update): array
     {
         $paginationKeyboard = [];
 
@@ -62,10 +72,13 @@ class TrackFinderSearchResponseKeyboard
 
         $text = $this->callbackQueryHelper->getTextFromCallback($update);
 
-        // если есть ключ редиса - удаляем (тк далее мы создадим новый)
+        // если есть ключ редиса - ставим время жизни 5 минут (тк он нам нужен всего на один запрос)
         if ($update->getCallbackQuery()) {
-            $oldSchema = (bool)(explode('.', $update->getCallbackQuery()->getData())[7] ?? null);
-            if (!$oldSchema) $this->storage->client()->del($update->getCallbackQuery()->getData());
+//            $oldSchema = (bool)(explode('.', $update->getCallbackQuery()->getData())[7] ?? null);
+            if ($this->storage->client()->exists($update->getCallbackQuery()->getData())) {
+
+                $this->storage->client()->expire($update->getCallbackQuery()->getData(), 60 * 5);
+            }
         }
 
         if ($response->getPager()->hasPrev()) {
@@ -87,6 +100,8 @@ class TrackFinderSearchResponseKeyboard
 
             $paginationKeyboard[] = InlineKeyboardButton::withCallbackData('▶️', $nextCallbackData);
         }
+
+        return $paginationKeyboard;
 
         $keyboard[] = $paginationKeyboard;
     }

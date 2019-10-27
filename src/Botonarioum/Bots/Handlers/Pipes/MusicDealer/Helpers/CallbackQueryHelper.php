@@ -34,6 +34,7 @@ class CallbackQueryHelper
     public function getTextFromCallback(Update $update): string
     {
         if ($callbackData = $update->getCallbackQuery()) {
+            $callbackData = $update->getCallbackQuery()->getData();
             $result = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
                 ? explode('.', $callbackData)[Page::TEXT_CALLBACK_POSITION]
                 : explode('.', $this->storage->client()->get($callbackData))[Page::TEXT_CALLBACK_POSITION];
@@ -45,7 +46,7 @@ class CallbackQueryHelper
     public function getOffset(Update $update): int
     {
         // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
-        $callbackData = $update->getCallbackQuery();
+        $callbackData = $update->getCallbackQuery()->getData();
         $offset = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
             ? explode('.', $callbackData)[Page::OFFSET_CALLBACK_POSITION]
             : explode('.', $this->storage->client()->get($callbackData))[Page::OFFSET_CALLBACK_POSITION];
@@ -56,7 +57,7 @@ class CallbackQueryHelper
     public function getLimit(Update $update): int
     {
         // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
-        $callbackData = $update->getCallbackQuery();
+        $callbackData = $update->getCallbackQuery()->getData();
         $limit = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
             ? explode('.', $callbackData)[Page::LIMIT_CALLBACK_POSITION]
             : explode('.', $this->storage->client()->get($callbackData))[Page::LIMIT_CALLBACK_POSITION];
@@ -67,7 +68,8 @@ class CallbackQueryHelper
     public function getDirection(Update $update): string
     {
         // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
-        $callbackData = $update->getCallbackQuery();
+        $callbackData = $update->getCallbackQuery()->getData();
+//        var_dump($this->storage->client()->get($callbackData));die;
         $direction = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
             ? explode('.', $callbackData)[Page::DIRECTION_CALLBACK_POSITION]
             : explode('.', $this->storage->client()->get($callbackData))[Page::DIRECTION_CALLBACK_POSITION];
