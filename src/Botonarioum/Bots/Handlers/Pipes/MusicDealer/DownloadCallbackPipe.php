@@ -42,7 +42,9 @@ class DownloadCallbackPipe extends CallbackPipe
     private function buildDownloadUrl(Bot $bot, Update $update): string
     {
         // todo: инкапсулировать логику загрузки в отдельном классе
-        [$providerAlias, $url] = explode('::', $update->getCallbackQuery()->getData());
+//        [$providerAlias, $url] = explode('::', $update->getCallbackQuery()->getData());
+        $url = $update->getCallbackQuery()->getData();
+        $providerAlias = 'zn';
         $provider = ['zn' => 'zaycev_net', 'mr' => 'mail_ru'][$providerAlias];
         $args = ['url' => $url, 'provider' => $provider];
         $content = json_decode(file_get_contents(implode('', [self::DOWNLOAD_URL, '?', http_build_query($args)])), true);
