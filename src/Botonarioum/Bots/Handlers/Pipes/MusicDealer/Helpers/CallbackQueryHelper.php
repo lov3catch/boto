@@ -67,18 +67,24 @@ class CallbackQueryHelper
 
     public function getDirection(Update $update): string
     {
-        // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
-        $callbackData = $update->getCallbackQuery()->getData();
-        var_dump('-----------------------------------------------------');
-        var_dump($callbackData);
-        var_dump($this->storage->client()->get($callbackData));
-        var_dump('-----------------------------------------------------');
-        $data = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
-            ? explode('.', $callbackData)
-            : explode('.', $this->storage->client()->get($callbackData));
+        try {
+            // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
+            $callbackData = $update->getCallbackQuery()->getData();
+            var_dump('-----------------------------------------------------');
+            var_dump($callbackData);
+            var_dump($this->storage->client()->get($callbackData));
+            var_dump('-----------------------------------------------------');
+            $data = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
+                ? explode('.', $callbackData)
+                : explode('.', $this->storage->client()->get($callbackData));
 
-        $direction = $data[Page::DIRECTION_CALLBACK_POSITION];
-        return (string)$direction;
+            $direction = $data[Page::DIRECTION_CALLBACK_POSITION];
+            return (string)$direction;
+        } catch (\Throwable $exception) {
+            //
+            var_dump($exception->getMessage());
+            return '';
+        }
     }
 
     public function buildPrevCallbackData(int $limit, int $offset, string $text, string $uuid): string
