@@ -19,9 +19,12 @@ class DownloadCallbackPipe extends CallbackPipe
 
     public function processing(Bot $bot, Update $update): bool
     {
+        $refreshCookie = Requests::get('https://zaycev.net', [], ['verify' => false]);
+        $refreshCookie->cookies;
+
         $this->sendAnswer($bot, $update);
         $downloadUrl = $this->buildDownloadUrl($bot, $update);
-        $content = Requests::get($downloadUrl, [], ['proxy' => 'http://FqX3tB:46VjdC@91.243.52.252:8000']);
+        $content = Requests::get($downloadUrl, [], ['proxy' => 'http://1aWVou:z06dDD@37.9.36.234:8000', 'cookies' => $refreshCookie->cookies]);
         $inputFile = new InputFile('sound.mp3', $content->body);
         $bot->sendDocument(SendDocument::withInputFile($update->getCallbackQuery()->getMessage()->getChat()->getId(), $inputFile));
 
@@ -39,7 +42,9 @@ class DownloadCallbackPipe extends CallbackPipe
     private function buildDownloadUrl(Bot $bot, Update $update): string
     {
         // todo: инкапсулировать логику загрузки в отдельном классе
-        [$providerAlias, $url] = explode('::', $update->getCallbackQuery()->getData());
+//        [$providerAlias, $url] = explode('::', $update->getCallbackQuery()->getData());
+        $url = $update->getCallbackQuery()->getData();
+        $providerAlias = 'zn';
         $provider = ['zn' => 'zaycev_net', 'mr' => 'mail_ru'][$providerAlias];
         $args = ['url' => $url, 'provider' => $provider];
         $content = json_decode(file_get_contents(implode('', [self::DOWNLOAD_URL, '?', http_build_query($args)])), true);

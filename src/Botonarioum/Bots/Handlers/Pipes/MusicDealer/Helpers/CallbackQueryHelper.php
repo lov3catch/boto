@@ -9,7 +9,7 @@ use Formapro\TelegramBot\Update;
 class CallbackQueryHelper
 {
     private const REDIS_TTL = 60 * 60 * 24 * 3;        // 3 week
-    private const OLD_SCHEMA_PARTS_COUNT = 7;
+    private const OLD_SCHEMA_PARTS_COUNT = 8;
 
     /**
      * @var RedisStorage
@@ -70,10 +70,11 @@ class CallbackQueryHelper
         // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
         $callbackData = $update->getCallbackQuery()->getData();
 //        var_dump($this->storage->client()->get($callbackData));die;
-        $direction = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
-            ? explode('.', $callbackData)[Page::DIRECTION_CALLBACK_POSITION]
-            : explode('.', $this->storage->client()->get($callbackData))[Page::DIRECTION_CALLBACK_POSITION];
+        $data = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
+            ? explode('.', $callbackData)
+            : explode('.', $this->storage->client()->get($callbackData));
 
+        $direction = $data[Page::DIRECTION_CALLBACK_POSITION];
         return (string)$direction;
     }
 
