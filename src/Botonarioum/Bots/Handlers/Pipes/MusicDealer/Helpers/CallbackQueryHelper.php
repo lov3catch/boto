@@ -69,7 +69,10 @@ class CallbackQueryHelper
     {
         // todo: ключа может уже не быть -> реализовать соответственное сообщенте пользователю
         $callbackData = $update->getCallbackQuery()->getData();
-//        var_dump($this->storage->client()->get($callbackData));die;
+        var_dump('-----------------------------------------------------');
+        var_dump($callbackData);
+        var_dump($this->storage->client()->get($callbackData));
+        var_dump('-----------------------------------------------------');
         $data = (count(explode('.', $callbackData)) === self::OLD_SCHEMA_PARTS_COUNT)
             ? explode('.', $callbackData)
             : explode('.', $this->storage->client()->get($callbackData));
