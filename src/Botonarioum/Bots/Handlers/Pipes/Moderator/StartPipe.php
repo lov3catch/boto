@@ -11,21 +11,19 @@ use Formapro\TelegramBot\Update;
 
 class StartPipe extends AbstractPipe
 {
-    protected const
-        BOTONARIOUM_KEY = '🤖 BOTONARIOUM',
-        DONATE_KEY = '🍩 DONATE',
-        MESSAGE = 'I`m started';
+    public const
+        GROUPS_KEY = '👥 Мои группы';
 
     public function processing(Bot $bot, Update $update): bool
     {
         $message = new SendMessage(
             $update->getMessage()->getChat()->getId(),
-            $this::MESSAGE
+            'It`s working :)'
         );
 
         $keyboard = new ReplyKeyboardMarkup(
             [
-                [new KeyboardButton(self::DONATE_KEY), new KeyboardButton(self::BOTONARIOUM_KEY)]
+                [new KeyboardButton(self::GROUPS_KEY)]
             ]
         );
 

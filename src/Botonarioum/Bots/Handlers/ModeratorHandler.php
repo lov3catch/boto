@@ -11,6 +11,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\DefaultPipe;
 //use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\PrevCallbackPipe;
 //use App\Botonarioum\Bots\Handlers\Pipes\MusicDealer\StartPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessagePipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\MyGroupsPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\NewChatMemberPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\StartPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\PipeInterface;
@@ -74,11 +75,16 @@ class ModeratorHandler extends AbstractHandler
      * @var NewChatMemberPipe
      */
     private $newChatMemberPipe;
+    /**
+     * @var MyGroupsPipe
+     */
+    private $myGroupsPipe;
 
     public function __construct(LoggerInterface $logger,
                                 StartPipe $startPipe,
                                 GroupMessagePipe $groupMessagePipe,
-                                NewChatMemberPipe $newChatMemberPipe)
+                                NewChatMemberPipe $newChatMemberPipe,
+                                MyGroupsPipe $myGroupsPipe)
 //                                DonatePipe $donatePipe,
 //                                BotonarioumPipe $botonarioumPipe,
 //                                MessagePipe $messagePipe,
@@ -91,6 +97,7 @@ class ModeratorHandler extends AbstractHandler
         $this->startPipe = $startPipe;
         $this->groupMessagePipe = $groupMessagePipe;
         $this->newChatMemberPipe = $newChatMemberPipe;
+        $this->myGroupsPipe = $myGroupsPipe;
 //        $this->donatePipe = $donatePipe;
 //        $this->botonarioumPipe = $botonarioumPipe;
 //        $this->messagePipe = $messagePipe;
@@ -123,6 +130,7 @@ class ModeratorHandler extends AbstractHandler
     {
         $this
             ->add($this->startPipe)
+            ->add($this->myGroupsPipe)
             ->add($this->newChatMemberPipe)
             ->add($this->groupMessagePipe);
 
