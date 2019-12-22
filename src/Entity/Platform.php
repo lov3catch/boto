@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Platform
 {
+    public const TELEGRAM_TYPE = 'telegram';
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

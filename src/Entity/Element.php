@@ -13,6 +13,7 @@ class Element
 {
     /**
      * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -48,6 +49,11 @@ class Element
      * @ORM\Column(type="string", length=255)
      */
     private $url;
+
+    /**
+     * @ORM\Column(type="integer", options={"default" : 0})
+     */
+    private $group_id;
 
     public function setId(int $id): self
     {
@@ -129,6 +135,18 @@ class Element
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function getGroupId(): ?int
+    {
+        return $this->group_id;
+    }
+
+    public function setGroupId(int $group_id): self
+    {
+        $this->group_id = $group_id;
 
         return $this;
     }
