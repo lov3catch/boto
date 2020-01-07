@@ -4,7 +4,9 @@
 
 namespace App\Controller;
 
+use App\Entity\ModeratorSetting;
 use App\Storages\RedisStorage;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,5 +48,18 @@ class DefaultController
 //        $storage->client()->set($key, 'aaaa');
 //        var_dump($storage->client()->get($key));die;
         return new JsonResponse($storage->client()->get($key));
+    }
+
+    /**
+     * @Route("/php-info", name="php=info")
+     */
+    public function phpinfo(EntityManagerInterface $entityManager): Response
+    {
+        $settings = $entityManager->getRepository(ModeratorSetting::class)->findOneBy([]);
+        var_dump($settings);die;
+//        $storage->client()->set($key, 'aaaa');
+//        var_dump($storage->client()->get($key));die;
+        echo phpinfo();die;
+        return new JsonResponse([]);
     }
 }

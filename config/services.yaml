@@ -71,3 +71,7 @@ services:
               arguments:
                   - '%env(ZAYCEV_NET_4)%'
                   - '@botonarioum.handler.music_dealer'
+            - method: add
+              arguments:
+                  - '%env(SANDBOXBOT_TOKEN)%'
+                  - '@botonarioum.handler.moderator'
