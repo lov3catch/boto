@@ -12,7 +12,7 @@ class WordsCountChecker
 {
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        $message = $update->getMessage()->getText();
+        $message = $update->getMessage()->getText() ?? '';
 
         if (count(explode(' ', $message)) > $setting->getMaxWordsCount()) {
             throw new WordsCountException();

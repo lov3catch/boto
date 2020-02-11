@@ -3,12 +3,16 @@
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\MessagePipe as BaseMessagePipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\BlockAllChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\BlockAllGlobalChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\BlockChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\CharsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\DailyMessagesCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\HoldTimeChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\LinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ReferralsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\WordsCountChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\CharsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\DailyMessageCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\HoldTimeException;
@@ -16,11 +20,17 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
+use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
 use App\Entity\ModeratorSetting;
+use App\Storages\RedisStorage;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Parameter;
 use Formapro\TelegramBot\Bot;
+use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
+use Predis\Client;
 
 class GroupMessagePipe extends BaseMessagePipe
 {
@@ -56,8 +66,24 @@ class GroupMessagePipe extends BaseMessagePipe
      * @var DailyMessageLogger
      */
     private $dailyMessageLogger;
+    /**
+     * @var BlockChecker
+     */
+    private $blockChecker;
+    /**
+     * @var BlockAllChecker
+     */
+    private $blockAllChecker;
+    /**
+     * @var BlockAllGlobalChecker
+     */
+    private $blockAllGlobalChecker;
+    /**
+     * @var Client
+     */
+    private $client;
 
-    public function __construct(EntityManagerInterface $entityManager, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker)
     {
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;
@@ -66,35 +92,69 @@ class GroupMessagePipe extends BaseMessagePipe
         $this->dailyMessageCountChecker = $dailyMessagesCountChecker;
         $this->holdTimeChecker = $holdTimeChecker;
         $this->dailyMessageLogger = $dailyMessageLogger;
+        $this->blockChecker = $blockChecker;
+        $this->blockAllChecker = $blockAllChecker;
+        $this->blockAllGlobalChecker = $blockAllGlobalChecker;
         $this->em = $entityManager;
+        $this->client = $redisStorage->client();
     }
 
     public function processing(Bot $bot, Update $update): bool
     {
-        // todo: переход на репозиторий @makasim
-        $bot->sendMessage(new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            'Logging'
-        ));
+        $isUserAdmin = (new IsChatAdministrator($bot, $update->getMessage()->getChat()))->checkUser($update->getMessage()->getFrom());
+        $isBotAdmin = (new IsChatAdministrator($bot, $update->getMessage()->getChat()))->checkBot($bot);
 
-        /** @var ModeratorSetting $setting */
-        $setting = $this->em->getRepository(ModeratorSetting::class)->findOneBy([]);
+        // Если у бота нет админских прав - не модерируем
+        if (false === $isBotAdmin) return true;
+
+        // Если сообщение написал админ - не модерируем
+        if (true === $isUserAdmin) return true;
+
+
+//        var_dump($isBotAdmin);
+//        die;
+
+//        // todo: переход на репозиторий @makasim
+//        $bot->sendMessage(new SendMessage(
+//            $update->getMessage()->getChat()->getId(),
+//            'Logging'
+//        ));
+
+        $groupId = $update->getMessage()->getChat()->getId();
+
+        /** @var ModeratorSetting $settings */
+        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
+                       ->where('setting.is_default = :isd')
+                       ->orWhere('setting.group_id = :grid')
+                       ->orderBy('setting.is_default', 'ASC')
+                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
+                       ->getQuery()
+                       ->getResult()[0];
+
+//        /** @var ModeratorSetting $setting */
+//        $setting = $this->em->getRepository(ModeratorSetting::class)->findOneBy([]);
 
         try {
-            $this->dailyMessageCountChecker->check($update, $setting);
+
+
             $this->linkChecker->check($update, $setting);
+            $this->blockChecker->check($update, $setting);
+            $this->blockAllChecker->check($update, $setting);
+            $this->blockAllGlobalChecker->check($update, $setting);
+            $this->dailyMessageCountChecker->check($update, $setting);
             $this->wordsCountChecker->check($update, $setting);
             $this->charsCountChecker->check($update, $setting);
             $this->referralsCountChecker->check($update, $setting);
             $this->holdTimeChecker->check($update, $setting);
+
             // todo: нельзя приглашать ботов
 
             $this->dailyMessageLogger->set($update);
 
-            $bot->sendMessage(new SendMessage(
-                $update->getMessage()->getChat()->getId(),
-                'OK'
-            ));
+//            $bot->sendMessage(new SendMessage(
+//                $update->getMessage()->getChat()->getId(),
+//                'OK'
+//            ));
 
 
 //            (new DailyMessageLogger($this->))->set($update);      // логируем сообщение
@@ -113,16 +173,25 @@ class GroupMessagePipe extends BaseMessagePipe
             $errorMessage = 'Превышено максимально количество сообщений в сутки';
         } catch (HoldTimeException $holdTimeException) {
             $errorMessage = 'Период молчания не закончился. Подождите.';
+        } catch (BanException $banException) {
+            $errorMessage = 'Пользователь забанен админом.';
         } catch (\Exception $exception) {
             $errorMessage = $exception->getMessage();
         }
 
-        $bot->sendMessage(new SendMessage(
+        $tempMessage = $bot->sendMessage(new SendMessage(
             $update->getMessage()->getChat()->getId(),
             $errorMessage
         ));
-//        $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId()));
+        $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId()));
 
+        $tempMessageData = ['chat_id' => $update->getMessage()->getChat()->getId(), 'message_id' => $tempMessage->getMessageId(), 'created' => time(), 'token' => $bot->getToken()];
+        $this->client->lpush('moderator:temp:messages', [json_encode($tempMessageData)]);
+        $this->client->expire('moderator:temp:messages', 60 * 60 * 24);
+
+
+//        $this->client->set('foo', 'bar');
+//        $this->client->expire('foo', 15);
         return true;
     }
 

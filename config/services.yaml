@@ -47,30 +47,30 @@ services:
     App\Botonarioum\Bots\BotContainer:
         autowire: true
         calls:
-            - method: add
-              arguments:
-                  - '%env(BOTONARIOUMBOT_TOKEN)%'
-                  - '@botonarioum.handler.botonarioum'
-            - method: add
-              arguments:
-                  - '%env(BASHIM_TOKEN)%'
-                  - '@botonarioum.handler.bashim'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_1)%'
-                  - '@botonarioum.handler.music_dealer'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_2)%'
-                  - '@botonarioum.handler.music_dealer'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_3)%'
-                  - '@botonarioum.handler.music_dealer'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_4)%'
-                  - '@botonarioum.handler.music_dealer'
+#            - method: add
+#              arguments:
+#                  - '%env(BOTONARIOUMBOT_TOKEN)%'
+#                  - '@botonarioum.handler.botonarioum'
+#            - method: add
+#              arguments:
+#                  - '%env(BASHIM_TOKEN)%'
+#                  - '@botonarioum.handler.bashim'
+#            - method: add
+#              arguments:
+#                  - '%env(ZAYCEV_NET_1)%'
+#                  - '@botonarioum.handler.music_dealer'
+#            - method: add
+#              arguments:
+#                  - '%env(ZAYCEV_NET_2)%'
+#                  - '@botonarioum.handler.music_dealer'
+#            - method: add
+#              arguments:
+#                  - '%env(ZAYCEV_NET_3)%'
+#                  - '@botonarioum.handler.music_dealer'
+#            - method: add
+#              arguments:
+#                  - '%env(ZAYCEV_NET_4)%'
+#                  - '@botonarioum.handler.music_dealer'
             - method: add
               arguments:
                   - '%env(SANDBOXBOT_TOKEN)%'

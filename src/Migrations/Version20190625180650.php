@@ -22,7 +22,7 @@ final class Version20190625180650 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('ALTER TABLE element RENAME COLUMN title TO url');
+        $this->addSql('ALTER TABLE "222" RENAME COLUMN title TO url');
     }
 
     public function down(Schema $schema) : void
@@ -31,6 +31,6 @@ final class Version20190625180650 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('ALTER TABLE element RENAME COLUMN url TO title');
+        $this->addSql('ALTER TABLE "222" RENAME COLUMN url TO title');
     }
 }

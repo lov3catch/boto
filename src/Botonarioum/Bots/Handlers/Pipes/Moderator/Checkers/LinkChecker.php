@@ -14,7 +14,11 @@ class LinkChecker
 
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        $message = $update->getMessage()->getText();
+//        var_dump($setting->getAllowLink());die;
+//        var_dump('$expression');die;
+        if (true === $setting->getAllowLink()) return;
+
+        $message = $update->getMessage()->getText() ?? '';
 
         foreach (self::LINK_PATTERNS as $linkPattern) {
             if (strpos($message, $linkPattern) !== false) {

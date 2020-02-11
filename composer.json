@@ -1,11 +1,18 @@
 {
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:lov3catch/telegram-bot-php.git"
+        }
+    ],
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": "^7.1.3",
+        "php": "^7.3.9",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "formapro/telegram-bot": "^0.1.14",
+        "beberlei/assert": "^3.2",
+        "formapro/telegram-bot": "dev-support-left-chat-member-feature",
         "predis/predis": "^1.1",
         "ramsey/uuid": "2.9",
         "rmccue/requests": "v1.7.0",

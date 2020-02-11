@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
+use App\Entity\Element;
 use App\Entity\ModeratorGroupOwners;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
@@ -26,21 +27,36 @@ class MyGroupsPipe extends MessagePipe
 
     public function processing(Bot $bot, Update $update): bool
     {
-        $groups = $this->em->getRepository(ModeratorGroupOwners::class)->findBy(['partner_id' => $update->getMessage()->getFrom()->getId()]);
+        // добавить таблицу GroupData либо писать в JSON
+//        $groups = $this->em->getRepository(ModeratorGroupOwners::class)->findBy(['partner_id' => $update->getMessage()->getFrom()->getId()]);
+
+        $groupIds = array_map(function (ModeratorGroupOwners $groupOwners) {
+            return $groupOwners->getGroupId();
+        }, $this->em->getRepository(ModeratorGroupOwners::class)->findBy(['partner_id' => $update->getMessage()->getFrom()->getId(), 'is_active' => true]));
+
+        $elements = $this->em->getRepository(Element::class)->findBy(['group_id' => $groupIds]);
 
         $keyboard = [];
-        /** @var ModeratorGroupOwners $group */
-        foreach ($groups as $group) {
-            $keyboard[] = InlineKeyboardButton::withCallbackData('ID: ' . $group->getGroupId(), 'callback-data');
+        /** @var Element $element */
+        foreach ($elements as $element) {
+            $callbackData = implode(':', ['group', 'settings', 'get', $element->getGroupId()]);
+            $keyboard[] = [InlineKeyboardButton::withCallbackData(ucfirst($element->getName()), $callbackData), InlineKeyboardButton::withCallbackData('⚙️ Настройки', $callbackData)];
         }
 
-        $markup = new InlineKeyboardMarkup([$keyboard]);
+        if ($keyboard) {
+            $markup = new InlineKeyboardMarkup($keyboard);
+            $message = new SendMessage(
+                $update->getMessage()->getChat()->getId(),
+                'Вот список ваших групп: (всего ' . count($elements) . ' штук).'
+            );
+            $message->setReplyMarkup($markup);
+        } else {
+            $message = new SendMessage(
+                $update->getMessage()->getChat()->getId(),
+                'У вас еще нет групп.'
+            );
+        }
 
-        $message = new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            'Количество групп: ' . count($groups) . '.'
-        );
-        $message->setReplyMarkup($markup);
 
         $bot->sendMessage($message);
 

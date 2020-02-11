@@ -12,7 +12,7 @@ class CharsCountChecker
 {
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        $message = $update->getMessage()->getText();
+        $message = $update->getMessage()->getText() ?? '';
 
         if (strlen($message) > $setting->getMaxCharsCount()) {
             throw new CharsCountException();

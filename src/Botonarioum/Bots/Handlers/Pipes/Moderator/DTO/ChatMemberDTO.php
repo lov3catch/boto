@@ -7,7 +7,12 @@ use Formapro\TelegramBot\User;
 use function Formapro\Values\get_object;
 use function Formapro\Values\get_value;
 
-class NewChatMemberDTO extends Message
+/**
+ * Class ChatMemberDTO
+ * @package App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO
+ * @deprecated
+ */
+class ChatMemberDTO extends Message
 {
     private $values = [];
 

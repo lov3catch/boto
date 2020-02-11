@@ -58,10 +58,10 @@ class LogPartnerProgram implements EventSubscriberInterface
 
         $groupId = $update->getMessage()->getChat()->getId();
         $partnerId = $update->getMessage()->getFrom()->getId();
-        $referralId = (new MessageDTO($update->getMessage()))->getNewChatMember()->getId();
+        $referralId = $update->getMessage()->getNewChatMember()->getId();
 
         $alreadyLogged = (bool)$this->entityManager->getRepository(ModeratorPartnersProgram::class)->findOneBy(['group_id' => $groupId, 'partner_id' => $partnerId, 'referral_id' => $referralId]);
-        $isBot = (new MessageDTO($update->getMessage()))->getNewChatMember()->isBot();
+        $isBot = $event->getUpdate()->getMessage()->getNewChatMember()->isBot();
 
         if ($alreadyLogged || $isBot) return;
 

@@ -13,7 +13,8 @@ class BotChecker
 {
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        $member = (new MessageDTO($update->getMessage()))->getNewChatMember();
+        $member = $update->getMessage()->getNewChatMember();
+//        $member = (new MessageDTO($update->getMessage()))->getNewChatMember();
 
         if ($member->isBot()) throw new BotException();
     }

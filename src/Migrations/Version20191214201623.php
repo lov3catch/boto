@@ -23,7 +23,7 @@ final class Version20191214201623 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
         $this->addSql('DROP SEQUENCE element_id_seq CASCADE');
-        $this->addSql('ALTER TABLE element ADD group_id INT DEFAULT 0 NOT NULL');
+        $this->addSql('ALTER TABLE "222" ADD group_id INT DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -33,6 +33,6 @@ final class Version20191214201623 extends AbstractMigration
 
         $this->addSql('CREATE SCHEMA public');
         $this->addSql('CREATE SEQUENCE element_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('ALTER TABLE element DROP group_id');
+        $this->addSql('ALTER TABLE "222" DROP group_id');
     }
 }

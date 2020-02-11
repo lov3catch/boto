@@ -51,7 +51,7 @@ class Element
     private $url;
 
     /**
-     * @ORM\Column(type="integer", options={"default" : 0})
+     * @ORM\Column(type="bigint", options={"default" : 0})
      */
     private $group_id;
 

@@ -17,7 +17,7 @@ class ModeratorGroupOwners
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     private $group_id;
 
@@ -30,6 +30,11 @@ class ModeratorGroupOwners
      * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
      */
     private $created_at;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private $is_active;
 
     public function getId(): ?int
     {
@@ -68,6 +73,18 @@ class ModeratorGroupOwners
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIsActive(bool $is_active): self
+    {
+        $this->is_active = $is_active;
 
         return $this;
     }

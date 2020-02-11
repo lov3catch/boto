@@ -46,6 +46,31 @@ class ModeratorSetting
      */
     private $min_referrals_count;
 
+    /**
+     * @ORM\Column(type="bigint", nullable=true)
+     */
+    private $group_id;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $allow_link;
+
+    /**
+     * @ORM\Column(type="string", length=500)
+     */
+    private $greeting;
+
+    /**
+     * @ORM\Column(type="string", length=10000)
+     */
+    private $greeting_buttons;
+
+//    /**
+//     * @ORM\Column(type="integer", nullable=true)
+//     */
+//    private $last_greeting_id;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -122,4 +147,64 @@ class ModeratorSetting
 
         return $this;
     }
+
+    public function getGroupId(): ?int
+    {
+        return $this->group_id;
+    }
+
+    public function setGroupId(?int $group_id): self
+    {
+        $this->group_id = $group_id;
+
+        return $this;
+    }
+
+    public function getAllowLink(): ?bool
+    {
+        return $this->allow_link;
+    }
+
+    public function setAllowLink(bool $allow_link): self
+    {
+        $this->allow_link = $allow_link;
+
+        return $this;
+    }
+
+    public function getGreeting(): ?string
+    {
+        return $this->greeting;
+    }
+
+    public function setGreeting(string $greeting): self
+    {
+        $this->greeting = $greeting;
+
+        return $this;
+    }
+
+    public function getGreetingButtons(): ?string
+    {
+        return $this->greeting_buttons;
+    }
+
+    public function setGreetingButtons(string $greeting_buttons): self
+    {
+        $this->greeting_buttons = $greeting_buttons;
+
+        return $this;
+    }
+
+//    public function getLastGreetingId(): ?int
+//    {
+//        return $this->last_greeting_id;
+//    }
+//
+//    public function setLastGreetingId(?int $last_greeting_id): self
+//    {
+//        $this->last_greeting_id = $last_greeting_id;
+//
+//        return $this;
+//    }
 }

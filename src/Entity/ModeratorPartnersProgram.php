@@ -17,7 +17,7 @@ class ModeratorPartnersProgram
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     private $group_id;
 
