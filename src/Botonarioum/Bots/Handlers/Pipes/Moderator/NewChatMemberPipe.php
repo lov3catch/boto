@@ -6,17 +6,17 @@ use App\Botonarioum\Bots\Handlers\Pipes\AbstractPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\BotChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\JoinToChatLogger;
 use App\Botonarioum\Bots\Helpers\BuildKeyboard;
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Entity\ModeratorSetting;
 use App\Events\AddedUserInGroupEvent;
 use App\Storages\RedisStorage;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Parameter;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
+use Predis\Client;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class NewChatMemberPipe extends AbstractPipe
@@ -38,7 +38,7 @@ class NewChatMemberPipe extends AbstractPipe
      */
     private $em;
     /**
-     * @var \Predis\Client
+     * @var Client
      */
     private $client;
 
@@ -53,61 +53,66 @@ class NewChatMemberPipe extends AbstractPipe
 
     public function processing(Bot $bot, Update $update): bool
     {
-        $newMemberName = $update->getMessage()->getNewChatMember();
-//        $newMemberName = (new MessageDTO($update->getMessage()))->getNewChatMember();
+        $this->dispatcher->dispatch(AddedUserInGroupEvent::EVENT_NAME, new AddedUserInGroupEvent($update, $bot));
 
-        if ($newMemberName->isBot()) return true;
-
-
-        $this->dispatcher->dispatch(AddedUserInGroupEvent::EVENT_NAME, new AddedUserInGroupEvent($update));
+        if ($update->getMessage()->getNewChatMember()->isBot()) return true;
 
         $groupId = $update->getMessage()->getChat()->getId();
 
-        /** @var ModeratorSetting $setting */
-        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
-                       ->where('setting.is_default = :isd')
-                       ->orWhere('setting.group_id = :grid')
-                       ->orderBy('setting.is_default', 'ASC')
-                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
-                       ->getQuery()
-                       ->getResult()[0];
+        $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
+
+//        // todo: rewrite this!
+//        /** @var ModeratorSetting $setting */
+//        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
+//                       ->where('setting.is_default = :isd')
+//                       ->orWhere('setting.group_id = :grid')
+//                       ->orderBy('setting.is_default', 'ASC')
+//                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
+//                       ->getQuery()
+//                       ->getResult()[0];
+
+//        var_dump($setting);die;
 
         // удаляем старое приветствие
-        try {
-
-            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
-            if ($this->client->exists($lastGreetingIdKey)) {
-                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
-            }
-        } catch (\Exception $exception) {
-            //
-        }
+        $this->removeLastGreeting($bot, $update);
+//        try {
+//            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
+//            if ($this->client->exists($lastGreetingIdKey)) {
+//                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
+//            }
+//        } catch (\Exception $exception) {
+//            //
+//        }
 
 
         // формируем новое приветствие
-        $greeting = $setting->getGreeting();
-        $greeting = str_replace('{username}', $newMemberName->getUsername(), $greeting);
-        $greeting = str_replace('{chat_title}', $update->getMessage()->getChat()->getTitle(), $greeting);
+//        $greeting = $setting->getGreeting();
+//        $greeting = str_replace('{username}', $newChatMember->getUsername(), $greeting);
+//        $greeting = str_replace('{chat_title}', $update->getMessage()->getChat()->getTitle(), $greeting);
 
-        // удаляем стандартное сообщение
-        $deleteMessage = new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId());
-        $bot->deleteMessage($deleteMessage);
+        // удаляем стандартное приветствие
+        $this->removeStandardGreeting($bot, $update);
+//        $deleteMessage = new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId());
+//        $bot->deleteMessage($deleteMessage);
 
 
-        $msg = new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            $greeting
-        );
+//        $msg = new SendMessage(
+//            $update->getMessage()->getChat()->getId(),
+//            $greeting
+//        );
 
-        if ($setting->getGreetingButtons()) {
-            $msg->setReplyMarkup((new BuildKeyboard())->build($setting->getGreetingButtons()));
-        }
+//        if ($setting->getGreetingButtons()) {
+//            $msg->setReplyMarkup((new BuildKeyboard())->build($setting->getGreetingButtons()));
+//        }
 
-        $newGreetingMessage = $bot->sendMessage($msg);
+//        $newGreetingMessage = $bot->sendMessage($msg);
+
+        // создаем новое приветствие
+        $this->addNewGreeting($bot, $update, $setting);
 
         // todo: необходимо либо новая таблица с приветствиями, либо создавать настройки всегда для каждой группы
         // сохраняем lastGreetingId, что бы в следующий раз удалить
-        $this->client->set($lastGreetingIdKey, $newGreetingMessage->getMessageId());
+//        $this->client->set($lastGreetingIdKey, $newGreetingMessage->getMessageId());
 
 
         // todo: логировать JoinToChatLogger
@@ -123,5 +128,54 @@ class NewChatMemberPipe extends AbstractPipe
 //        if (null === $update->getMessage()) return false;
 
         return ($update->getMessage()->getNewChatMember() instanceof ChatMember);
+    }
+
+
+    private function removeLastGreeting(Bot $bot, Update $update): void
+    {
+        try {
+            $lastGreetingIdKey = RedisKeys::makeLastGreetingMessageIdKey($update->getMessage()->getChat()->getId());
+
+//            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
+            if ($this->client->exists($lastGreetingIdKey)) {
+                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
+            }
+        } catch (\Exception $exception) {
+            //
+        }
+    }
+
+    private function addNewGreeting(Bot $bot, Update $update, ModeratorSetting $setting): void
+    {
+        $greeting = $setting->getGreetingMessage();
+        $greeting = str_replace('{username}', $update->getMessage()->getNewChatMember()->getUsername(), $greeting);
+        $greeting = str_replace('{chat_title}', $update->getMessage()->getChat()->getTitle(), $greeting);
+
+        $msg = new SendMessage(
+            $update->getMessage()->getChat()->getId(),
+            $greeting
+        );
+
+        if ($setting->getGreetingButtons()) {
+            $msg->setReplyMarkup((new BuildKeyboard())->build($setting->getGreetingButtons()));
+        }
+
+        $newGreetingMessage = $bot->sendMessage($msg);
+
+        $lastGreetingIdKey = RedisKeys::makeLastGreetingMessageIdKey($update->getMessage()->getChat()->getId());
+        $this->client->set($lastGreetingIdKey, $newGreetingMessage->getMessageId());
+    }
+
+    private function removeStandardGreeting(Bot $bot, Update $update): void
+    {
+        try {
+            $deleteMessage = new DeleteMessage(
+                $update->getMessage()->getChat()->getId(),
+                $update->getMessage()->getMessageId());
+
+            $bot->deleteMessage($deleteMessage);
+        } catch (\Exception $exception) {
+            //
+        }
     }
 }

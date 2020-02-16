@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\M;
+use App\Entity\ModeratorBlock;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method M|null find($id, $lockMode = null, $lockVersion = null)
- * @method M|null findOneBy(array $criteria, array $orderBy = null)
- * @method M[]    findAll()
- * @method M[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ModeratorBlock|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ModeratorBlock|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ModeratorBlock[]    findAll()
+ * @method ModeratorBlock[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class MRepository extends ServiceEntityRepository
+class ModeratorBlockRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, M::class);
+        parent::__construct($registry, ModeratorBlock::class);
     }
 
     // /**
-    //  * @return M[] Returns an array of M objects
+    //  * @return ModeratorBlock[] Returns an array of ModeratorBlock objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class MRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?M
+    public function findOneBySomeField($value): ?ModeratorBlock
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.exampleField = :val')

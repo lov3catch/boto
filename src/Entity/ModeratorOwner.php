@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ModeratorBanListRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\ModeratorOwnerRepository")
  */
-class ModeratorBanList
+class ModeratorOwner
 {
     /**
      * @ORM\Id()
@@ -15,11 +15,6 @@ class ModeratorBanList
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $admin_id;
 
     /**
      * @ORM\Column(type="integer")
@@ -34,28 +29,16 @@ class ModeratorBanList
     /**
      * @ORM\Column(type="datetime")
      */
-    private $expired_at;
+    private $created_at;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $created_at;
+    private $updated_at;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getAdminId(): ?int
-    {
-        return $this->admin_id;
-    }
-
-    public function setAdminId(int $admin_id): self
-    {
-        $this->admin_id = $admin_id;
-
-        return $this;
     }
 
     public function getUserId(): ?int
@@ -82,18 +65,6 @@ class ModeratorBanList
         return $this;
     }
 
-    public function getExpiredAt(): ?\DateTimeInterface
-    {
-        return $this->expired_at;
-    }
-
-    public function setExpiredAt(\DateTimeInterface $expired_at): self
-    {
-        $this->expired_at = $expired_at;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
@@ -102,6 +73,18 @@ class ModeratorBanList
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

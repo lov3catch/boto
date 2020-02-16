@@ -38,17 +38,17 @@ class IsChatAdministrator
 
     public function checkBot(Bot $bot): bool
     {
-
-        $getMeUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getMe']);
-
-        $me = new User();
-        set_values($me, json_decode(file_get_contents($getMeUrl), true)['result']);
+        $me = (new GetMe())->me($bot);
+//        $getMeUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getMe']);
+//
+//        $me = new User();
+//        set_values($me, json_decode(file_get_contents($getMeUrl), true)['result']);
 
         /** @var User $chatAdministrator */
         foreach ($this->getChatAdministrators() as $chatAdministrator) {
             if ($chatAdministrator->getId() === $me->getId()) return true;
         }
-        
+
         return false;
     }
 

@@ -257,7 +257,7 @@ class ModeratorHandler extends AbstractHandler
 //            ->add($this->groupMessageReplyPipe)
             ->add($this->settingsGetterPipe)    // callback
             ->add($this->settingsChangerPipe)
-//            ->add($this->settingsCancelPipe)
+            ->add($this->settingsCancelPipe)
             ->add($this->settingsAwaitPipe);
 //            ->add($this->infoPipe)
 //            ->add($this->allSupportPipe);

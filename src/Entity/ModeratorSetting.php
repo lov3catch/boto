@@ -24,12 +24,12 @@ class ModeratorSetting
     /**
      * @ORM\Column(type="integer")
      */
-    private $max_words_count;
+    private $max_message_words_count;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $max_chars_count;
+    private $max_message_chars_count;
 
     /**
      * @ORM\Column(type="integer")
@@ -39,7 +39,7 @@ class ModeratorSetting
     /**
      * @ORM\Column(type="integer")
      */
-    private $max_daily_messages_count;
+    private $max_daily_message_count;
 
     /**
      * @ORM\Column(type="integer")
@@ -52,24 +52,29 @@ class ModeratorSetting
     private $group_id;
 
     /**
-     * @ORM\Column(type="boolean", options={"default": false})
+     * @ORM\Column(type="boolean")
      */
     private $allow_link;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $greeting;
+    private $greeting_message;
 
     /**
-     * @ORM\Column(type="string", length=10000)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $greeting_buttons;
 
-//    /**
-//     * @ORM\Column(type="integer", nullable=true)
-//     */
-//    private $last_greeting_id;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $created_at;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updated_at;
 
     public function getId(): ?int
     {
@@ -88,26 +93,26 @@ class ModeratorSetting
         return $this;
     }
 
-    public function getMaxWordsCount(): ?int
+    public function getMaxMessageWordsCount(): ?int
     {
-        return $this->max_words_count;
+        return $this->max_message_words_count;
     }
 
-    public function setMaxWordsCount(int $max_words_count): self
+    public function setMaxMessageWordsCount(int $max_message_words_count): self
     {
-        $this->max_words_count = $max_words_count;
+        $this->max_message_words_count = $max_message_words_count;
 
         return $this;
     }
 
-    public function getMaxCharsCount(): ?int
+    public function getMaxMessageCharsCount(): ?int
     {
-        return $this->max_chars_count;
+        return $this->max_message_chars_count;
     }
 
-    public function setMaxCharsCount(int $max_chars_count): self
+    public function setMaxMessageCharsCount(int $max_message_chars_count): self
     {
-        $this->max_chars_count = $max_chars_count;
+        $this->max_message_chars_count = $max_message_chars_count;
 
         return $this;
     }
@@ -124,14 +129,14 @@ class ModeratorSetting
         return $this;
     }
 
-    public function getMaxDailyMessagesCount(): ?int
+    public function getMaxDailyMessageCount(): ?int
     {
-        return $this->max_daily_messages_count;
+        return $this->max_daily_message_count;
     }
 
-    public function setMaxDailyMessagesCount(int $max_daily_messages_count): self
+    public function setMaxDailyMessageCount(int $max_daily_message_count): self
     {
-        $this->max_daily_messages_count = $max_daily_messages_count;
+        $this->max_daily_message_count = $max_daily_message_count;
 
         return $this;
     }
@@ -153,7 +158,7 @@ class ModeratorSetting
         return $this->group_id;
     }
 
-    public function setGroupId(?int $group_id): self
+    public function setGroupId(int $group_id): self
     {
         $this->group_id = $group_id;
 
@@ -172,14 +177,14 @@ class ModeratorSetting
         return $this;
     }
 
-    public function getGreeting(): ?string
+    public function getGreetingMessage(): ?string
     {
-        return $this->greeting;
+        return $this->greeting_message;
     }
 
-    public function setGreeting(string $greeting): self
+    public function setGreetingMessage(string $greeting_message): self
     {
-        $this->greeting = $greeting;
+        $this->greeting_message = $greeting_message;
 
         return $this;
     }
@@ -196,15 +201,27 @@ class ModeratorSetting
         return $this;
     }
 
-//    public function getLastGreetingId(): ?int
-//    {
-//        return $this->last_greeting_id;
-//    }
-//
-//    public function setLastGreetingId(?int $last_greeting_id): self
-//    {
-//        $this->last_greeting_id = $last_greeting_id;
-//
-//        return $this;
-//    }
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    {
+        $this->updated_at = $updated_at;
+
+        return $this;
+    }
 }

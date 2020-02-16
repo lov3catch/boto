@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Subscribers;
 
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
 use App\Entity\ModeratorPartnersProgram;
+use App\Entity\ModeratorReferral;
 use App\Events\AddedUserInGroupEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -54,29 +54,42 @@ class LogPartnerProgram implements EventSubscriberInterface
 
     public function onAction(AddedUserInGroupEvent $event): void
     {
-        $update = $event->getUpdate();
+        if ($event->getUpdate()->getMessage()->getNewChatMember()->isBot()) return;
 
-        $groupId = $update->getMessage()->getChat()->getId();
-        $partnerId = $update->getMessage()->getFrom()->getId();
-        $referralId = $update->getMessage()->getNewChatMember()->getId();
+        $referralRepository = $this->entityManager->getRepository(ModeratorReferral::class);
 
-        $alreadyLogged = (bool)$this->entityManager->getRepository(ModeratorPartnersProgram::class)->findOneBy(['group_id' => $groupId, 'partner_id' => $partnerId, 'referral_id' => $referralId]);
-        $isBot = $event->getUpdate()->getMessage()->getNewChatMember()->isBot();
+        $groupId = $event->getUpdate()->getMessage()->getChat()->getId();
+        $userId = $event->getUpdate()->getMessage()->getFrom()->getId();
+        $referralId = $event->getUpdate()->getMessage()->getNewChatMember()->getId();
 
-        if ($alreadyLogged || $isBot) return;
+        $options = ['referral_id' => $referralId, 'group_id' => $groupId];
+        $defaults = ['referral_id' => $referralId, 'group_id' => $groupId, 'user_id' => $userId];
 
-        try {
+        $referralRepository->getOrCreate($options, $defaults);
 
-            $row = new ModeratorPartnersProgram();
-            $row->setGroupId($groupId);
-            $row->setPartnerId($partnerId);
-            $row->setReferralId($referralId);
-            $row->setCreatedAt(new \DateTime());
+//        $update = $event->getUpdate();
+//
+//        $groupId = $update->getMessage()->getChat()->getId();
+//        $partnerId = $update->getMessage()->getFrom()->getId();
+//        $referralId = $update->getMessage()->getNewChatMember()->getId();
+//
+//        $alreadyLogged = (bool)$this->entityManager->getRepository(ModeratorPartnersProgram::class)->findOneBy(['group_id' => $groupId, 'partner_id' => $partnerId, 'referral_id' => $referralId]);
+//        $isBot = $event->getUpdate()->getMessage()->getNewChatMember()->isBot();
 
-            $this->entityManager->persist($row);
-            $this->entityManager->flush();
-        } catch (\Throwable $exception) {
-            $this->logger->error($exception->getMessage());
-        }
+//        if ($alreadyLogged || $isBot) return;
+
+//            try {
+//
+//                $row = new ModeratorPartnersProgram();
+//                $row->setGroupId($groupId);
+//                $row->setPartnerId($partnerId);
+//                $row->setReferralId($referralId);
+//                $row->setCreatedAt(new \DateTime());
+//
+//                $this->entityManager->persist($row);
+//                $this->entityManager->flush();
+//            } catch (\Throwable $exception) {
+//                $this->logger->error($exception->getMessage());
+//            }
     }
 }

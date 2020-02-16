@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\ModeratorSetting;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\Parameter;
 
 /**
  * @method ModeratorSetting|null find($id, $lockMode = null, $lockVersion = null)
@@ -47,4 +49,22 @@ class ModeratorSettingRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getForSelectedGroup(int $groupId): ModeratorSetting
+    {
+        return $this->createQueryBuilder('setting')
+                   ->where('setting.is_default = :isd')
+                   ->orWhere('setting.group_id = :grid')
+                   ->orderBy('setting.is_default', 'ASC')
+                   ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', $groupId)]))
+                   ->getQuery()
+                   ->getResult()[0];
+//        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
+//                       ->where('setting.is_default = :isd')
+//                       ->orWhere('setting.group_id = :grid')
+//                       ->orderBy('setting.is_default', 'ASC')
+//                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
+//                       ->getQuery()
+//                       ->getResult()[0];
+    }
 }

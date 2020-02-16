@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Subscribers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\ChatMemberDTO;
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
-use App\Entity\ModeratorGroupOwners;
+use App\Botonarioum\Bots\Helpers\GetMe;
+use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
+//use App\Entity\ModeratorGroupOwners;
+use App\Entity\ModeratorOwner;
 use App\Events\AddedUserInGroupEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -61,36 +63,62 @@ class LogAddGroupOwner implements EventSubscriberInterface
 
         /** @var ChatMemberDTO $newChatMember */
         $newChatMember = $event->getUpdate()->getMessage()->getNewChatMember();
-//        var_dump($newChatMember);die;
 
         if (!$newChatMember->isBot()) return;
-        if (!('botosandbox_bot' === $newChatMember->getUsername())) return;
 
-        $update = $event->getUpdate();
+        $currentBotId = (new GetMe())->me($event->getBot())->getId();
+        $newChatBotId = $newChatMember->getId();
 
-        /** @var ModeratorGroupOwners $alreadyLogged */
-        $alreadyLogged = $this->entityManager->getRepository(ModeratorGroupOwners::class)->findOneBy(['group_id' => $update->getMessage()->getChat()->getId()]);
+        if ($currentBotId !== $newChatBotId) return;
 
-        if ((bool)$alreadyLogged) {
-            $alreadyLogged->setPartnerId($update->getMessage()->getFrom()->getId());
-            $alreadyLogged->setIsActive(true);
+        $groupId = $event->getUpdate()->getMessage()->getChat()->getId();
+        $userId = $event->getUpdate()->getMessage()->getFrom()->getId();
 
-            $this->entityManager->persist($alreadyLogged);
-            $this->entityManager->flush();
-        } else {
-            try {
-                $row = new ModeratorGroupOwners();
-                $row->setGroupId($update->getMessage()->getChat()->getId());
-                $row->setPartnerId($update->getMessage()->getFrom()->getId());
-                $row->setIsActive(true);
-                $row->setCreatedAt(new \DateTime());
+        /** @var ModeratorOwner $groupOwnerEntity */
+        $groupOwnerEntity = $this->entityManager
+            ->getRepository(ModeratorOwner::class)
+            ->getOrCreate($userId, $groupId);
 
-                $this->entityManager->persist($row);
-                $this->entityManager->flush();
-            } catch (\Throwable $exception) {
-                $this->logger->error($exception->getMessage());
-            }
-        }
+        // если текущий пользователь и ранее был владельцем этой группы
+        if ($groupOwnerEntity->getUserId() === $userId) return;
+
+        // если пользователь ранее не являлся владельцем, но является админом - перезаписываем
+        if (false === (new IsChatAdministrator($event->getBot(), $event->getUpdate()->getMessage()->getChat()))->checkUser($event->getUpdate()->getMessage()->getFrom())) return;
+
+        $groupOwnerEntity->setUserId($userId);
+
+        $this->entityManager->getRepository(ModeratorOwner::class)->save($groupOwnerEntity);
+
+//        $isChatAdministrator = (new IsChatAdministrator($bot, $chat))->checkUser($user)
+
+
+//        if (!('botosandbox_bot' === $newChatMember->getUsername())) return;
+
+//        $update = $event->getUpdate();
+
+//        /** @var ModeratorGroupOwners $alreadyLogged */
+//        $alreadyLogged = $this->entityManager->getRepository(ModeratorGroupOwners::class)->findOneBy(['group_id' => $update->getMessage()->getChat()->getId()]);
+//
+//        if ((bool)$alreadyLogged) {
+//            $alreadyLogged->setPartnerId($update->getMessage()->getFrom()->getId());
+//            $alreadyLogged->setIsActive(true);
+//
+//            $this->entityManager->persist($alreadyLogged);
+//            $this->entityManager->flush();
+//        } else {
+//            try {
+//                $row = new ModeratorGroupOwners();
+//                $row->setGroupId($update->getMessage()->getChat()->getId());
+//                $row->setPartnerId($update->getMessage()->getFrom()->getId());
+//                $row->setIsActive(true);
+//                $row->setCreatedAt(new \DateTime());
+//
+//                $this->entityManager->persist($row);
+//                $this->entityManager->flush();
+//            } catch (\Throwable $exception) {
+//                $this->logger->error($exception->getMessage());
+//            }
+//        }
 
 //        if ($alreadyLogged) return;
 

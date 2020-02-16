@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ModeratorPartnersProgramRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\ModeratorReferralRepository")
  */
-class ModeratorPartnersProgram
+class ModeratorReferral
 {
     /**
      * @ORM\Id()
@@ -24,7 +24,7 @@ class ModeratorPartnersProgram
     /**
      * @ORM\Column(type="integer")
      */
-    private $partner_id;
+    private $user_id;
 
     /**
      * @ORM\Column(type="integer")
@@ -32,7 +32,7 @@ class ModeratorPartnersProgram
     private $referral_id;
 
     /**
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @ORM\Column(type="datetime")
      */
     private $created_at;
 
@@ -53,14 +53,14 @@ class ModeratorPartnersProgram
         return $this;
     }
 
-    public function getPartnerId(): ?int
+    public function getUserId(): ?int
     {
-        return $this->partner_id;
+        return $this->user_id;
     }
 
-    public function setPartnerId(int $partner_id): self
+    public function setUserId(int $user_id): self
     {
-        $this->partner_id = $partner_id;
+        $this->user_id = $user_id;
 
         return $this;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\CallbackPipe;
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Storages\RedisStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
@@ -68,12 +69,12 @@ class SettingsChangerPipe extends CallbackPipe
 
             $groupId = array_reverse(explode(':', $update->getCallbackQuery()->getData()))[0];
             $callbackData = implode(':', ['group', 'settings', 'cancel', $groupId]);
+
             $sendMessage->setReplyMarkup(new InlineKeyboardMarkup([[InlineKeyboardButton::withCallbackData('Я передумал менять настройки', $callbackData)]]));
 
-            // Сохраняем ключ в кэшэ, который указывает на то, что следующее сообщение меняет настройку
-            // todo: проверять или выбранна нужная группа, а так же может ли данный пользователь изменять настройки группы
-            $target = implode(':', ['moderator', 'group', 'settings', 'await', $update->getCallbackQuery()->getFrom()->getId()]);              // группа
+            $target = RedisKeys::makeAwaitSettingChangeKey($update->getCallbackQuery()->getFrom()->getId());              // группа
             $groupIdAndSettingName = implode(':', [$groupId, $selectedSetting]);                                                                    // настройка
+
             $this->redisStorage->client()->set($target, $groupIdAndSettingName);
             $this->redisStorage->client()->expire($target, 60 * 60 * 24 * 7);
 

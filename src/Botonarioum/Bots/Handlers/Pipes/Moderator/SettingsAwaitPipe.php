@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Helpers\BuildKeyboard;
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Entity\ModeratorSetting;
 use App\Storages\RedisStorage;
 use Assert\Assertion;
 use Assert\AssertionFailedException;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Parameter;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
@@ -71,7 +70,7 @@ class SettingsAwaitPipe extends MessagePipe
             $chatId = $update->getMessage()->getChat()->getId();
         }
 
-        $target = implode(':', ['moderator', 'group', 'settings', 'await', $fromId]);
+        $target = RedisKeys::makeAwaitSettingChangeKey($fromId);
 
 
         [$groupId, $selectedSetting] = explode(':', $this->redisStorage->client()->get($target));
@@ -113,26 +112,27 @@ class SettingsAwaitPipe extends MessagePipe
 
             $message = 'Настройки изменены. Новое значение: ' . $update->getMessage()->getText();
 
-            /** @var ModeratorSetting $settings */
-            $settings = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
-                            ->where('setting.is_default = :isd')
-                            ->orWhere('setting.group_id = :grid')
-                            ->orderBy('setting.is_default', 'ASC')
-                            ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
-                            ->getQuery()
-                            ->getResult()[0];
+            /** @var ModeratorSetting $setting */
+            $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup((int)$groupId);
+//            $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
+//                           ->where('setting.is_default = :isd')
+//                           ->orWhere('setting.group_id = :grid')
+//                           ->orderBy('setting.is_default', 'ASC')
+//                           ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
+//                           ->getQuery()
+//                           ->getResult()[0];
 
 
             /** @var ModeratorSetting $newSettings */
-            if ($settings->getIsDefault()) {
-                $settings = clone $settings;
+            if ($setting->getIsDefault()) {
+                $setting = clone $setting;
             }
 
-            $this->changeSettings($settings, $selectedSetting, $update->getMessage()->getText());
-            $settings->setGroupId((int)$groupId);
-            $settings->setIsDefault(false);
+            $this->changeSettings($setting, $selectedSetting, $update->getMessage()->getText());
+            $setting->setGroupId((int)$groupId);
+            $setting->setIsDefault(false);
 
-            $this->em->persist($settings);
+            $this->em->persist($setting);
             $this->em->flush();
 
             $this->redisStorage->client()->del([$target]);
@@ -159,7 +159,7 @@ class SettingsAwaitPipe extends MessagePipe
         }
 
         if ('max_daily_messages_count' === $selectedSetting) {
-            $setting->setMaxDailyMessagesCount((int)$value);
+            $setting->setMaxDailyMessageCount((int)$value);
         }
 
         if ('min_referrals_count' === $selectedSetting) {
@@ -171,15 +171,15 @@ class SettingsAwaitPipe extends MessagePipe
         }
 
         if ('max_chars_count' === $selectedSetting) {
-            $setting->setMaxCharsCount((int)$value);
+            $setting->setMaxMessageCharsCount((int)$value);
         }
 
         if ('max_words_count' === $selectedSetting) {
-            $setting->setMaxWordsCount((int)$value);
+            $setting->setMaxMessageWordsCount((int)$value);
         }
 
         if ('greeting' === $selectedSetting) {
-            $setting->setGreeting($value);
+            $setting->setGreetingMessage($value);
         }
 
         return $setting;
