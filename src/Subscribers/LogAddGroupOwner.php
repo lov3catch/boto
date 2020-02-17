@@ -7,12 +7,13 @@ namespace App\Subscribers;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\ChatMemberDTO;
 use App\Botonarioum\Bots\Helpers\GetMe;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
-//use App\Entity\ModeratorGroupOwners;
 use App\Entity\ModeratorOwner;
 use App\Events\AddedUserInGroupEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+//use App\Entity\ModeratorGroupOwners;
 
 class LogAddGroupOwner implements EventSubscriberInterface
 {
@@ -78,6 +79,10 @@ class LogAddGroupOwner implements EventSubscriberInterface
         $groupOwnerEntity = $this->entityManager
             ->getRepository(ModeratorOwner::class)
             ->getOrCreate($userId, $groupId);
+
+        $groupOwnerEntity->setIsActive(true);
+
+        $this->entityManager->getRepository(ModeratorOwner::class)->save($groupOwnerEntity);
 
         // если текущий пользователь и ранее был владельцем этой группы
         if ($groupOwnerEntity->getUserId() === $userId) return;

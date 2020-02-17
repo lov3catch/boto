@@ -32,7 +32,7 @@ class MyGroupsPipe extends MessagePipe
     {
         $groupOwnersRepository = $this->em->getRepository(ModeratorOwner::class);
 
-        $myGroups = $groupOwnersRepository->findBy(['user_id' => $update->getMessage()->getFrom()->getId()]);
+        $myGroups = $groupOwnersRepository->findBy(['user_id' => $update->getMessage()->getFrom()->getId(), 'is_active' => true]);
 
         if ([] === $myGroups) {
             $bot->sendMessage(new SendMessage(

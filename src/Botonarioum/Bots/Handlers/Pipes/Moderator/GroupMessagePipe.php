@@ -170,7 +170,8 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (LinkException $linkException) {
             $errorMessage = 'Ссылки запрещенны';
         } catch (ReferralsCountException $referralsCountException) {
-            $errorMessage = 'Пригласите больше людей в группу';
+            $errorMessage = $referralsCountException->getMessage();
+//            $errorMessage = 'Пригласите больше людей в группу';
         } catch (DailyMessageCountException $dailyMessageCountException) {
             $errorMessage = 'Превышено максимально количество сообщений в сутки';
         } catch (HoldTimeException $holdTimeException) {
@@ -178,7 +179,8 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (BanException $banException) {
             $errorMessage = 'Пользователь забанен админом.';
         } catch (\Exception $exception) {
-            $errorMessage = $exception->getMessage();
+            $errorMessage = 'Что-то пошло не так :(';
+//            $errorMessage = $exception->getMessage();
         }
 
         $tempMessage = $bot->sendMessage(new SendMessage(

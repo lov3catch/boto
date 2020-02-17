@@ -57,6 +57,7 @@ class ModeratorOwnerRepository extends ServiceEntityRepository
         $moderatorOwner = new ModeratorOwner();
         $moderatorOwner->setUserId($userId);
         $moderatorOwner->setGroupId($groupId);
+        $moderatorOwner->setIsActive(true);
         $moderatorOwner->setCreatedAt(new \DateTimeImmutable());
         $moderatorOwner->setUpdatedAt(new \DateTimeImmutable());
 

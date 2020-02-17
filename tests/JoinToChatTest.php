@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests;
 
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\JoinToChatLogger;
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Chat;
 use Formapro\TelegramBot\Message;
@@ -62,7 +63,7 @@ class JoinToChatTest extends KernelTestCase
 
     protected function tearDown()
     {
-        $this->client->del([JoinToChatLogger::key(self::CHAT_ID, self::USER_ID)]);
+        $this->client->del([RedisKeys::makeJoinToChatDateTimeKey(self::CHAT_ID, self::USER_ID)]);
     }
 
     public function testShouldBeZeroIfEmpty()

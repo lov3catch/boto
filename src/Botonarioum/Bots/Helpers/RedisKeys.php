@@ -29,4 +29,9 @@ class RedisKeys
 
         return implode(':', ['moderator', 'message', $chatId, $userId, $todayTimestamp]);
     }
+
+    public static function makeJoinToChatDateTimeKey(int $chatId, int $userId): string
+    {
+        return implode(':', ['moderator', 'join', $chatId, $userId]);
+    }
 }

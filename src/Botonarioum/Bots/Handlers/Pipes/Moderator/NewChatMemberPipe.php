@@ -148,7 +148,7 @@ class NewChatMemberPipe extends AbstractPipe
     private function addNewGreeting(Bot $bot, Update $update, ModeratorSetting $setting): void
     {
         $greeting = $setting->getGreetingMessage();
-        $greeting = str_replace('{username}', $update->getMessage()->getNewChatMember()->getUsername(), $greeting);
+        $greeting = str_replace('{username}', $update->getMessage()->getNewChatMember()->getFirstName(), $greeting);
         $greeting = str_replace('{chat_title}', $update->getMessage()->getChat()->getTitle(), $greeting);
 
         $msg = new SendMessage(

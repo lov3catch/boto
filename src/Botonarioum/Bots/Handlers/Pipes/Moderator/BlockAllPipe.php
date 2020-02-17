@@ -8,6 +8,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\CommandPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
 use App\Entity\ModeratorBlock;
+use App\Entity\ModeratorMember;
 use App\Repository\ModeratorBlockRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
@@ -55,6 +56,15 @@ class BlockAllPipe extends CommandPipe
                 $message->getReplyToMessage()->getFrom()->getId(),
                 $update->getMessage()->getFrom()->getId(),
                 $update->getMessage()->getChat()->getId());
+
+        $options = ['member_id' => $update->getMessage()->getFrom()->getId()];
+        $defaults = [
+            'member_id'         => $update->getMessage()->getFrom()->getId(),
+            'member_first_name' => $update->getMessage()->getFrom()->getFirstName() ?? '',
+            'member_username'   => $update->getMessage()->getFrom()->getUsername() ?? '',
+            'member_is_bot'     => $update->getMessage()->getFrom()->isBot(),
+        ];
+        $this->em->getRepository(ModeratorMember::class)->getOrCreate($options, $defaults);
 
         $bot->sendMessage(new SendMessage(
             $update->getMessage()->getChat()->getId(),

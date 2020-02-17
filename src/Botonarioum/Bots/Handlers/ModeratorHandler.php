@@ -9,6 +9,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockAllPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisableLinkPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\EnableLinkPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessageEditPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessageReplyPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupSettingsPipe;
@@ -159,6 +160,10 @@ class ModeratorHandler extends AbstractHandler
      * @var BlockAllGlobalPipe
      */
     private $blockAllGlobalPipe;
+    /**
+     * @var GroupMessageEditPipe
+     */
+    private $groupMessageEditPipe;
 
     public function __construct(LoggerInterface $logger,
                                 StartPipe $startPipe,
@@ -179,7 +184,8 @@ class ModeratorHandler extends AbstractHandler
                                 EnableLinkPipe $enableLinkPipe,
                                 BlockPipe $blockPipe,
                                 BlockAllPipe $blockAllPipe,
-                                BlockAllGlobalPipe $blockAllGlobalPipe)
+                                BlockAllGlobalPipe $blockAllGlobalPipe,
+                                GroupMessageEditPipe $groupMessageEditPipe)
 //                                DonatePipe $donatePipe,
 //                                BotonarioumPipe $botonarioumPipe,
 //                                MessagePipe $messagePipe,
@@ -208,6 +214,7 @@ class ModeratorHandler extends AbstractHandler
         $this->blockPipe = $blockPipe;
         $this->blockAllPipe = $blockAllPipe;
         $this->blockAllGlobalPipe = $blockAllGlobalPipe;
+        $this->groupMessageEditPipe = $groupMessageEditPipe;
 
 //        $this->donatePipe = $donatePipe;
 //        $this->botonarioumPipe = $botonarioumPipe;
@@ -240,6 +247,7 @@ class ModeratorHandler extends AbstractHandler
     private function init(): void
     {
         $this
+//            ->add($this->allSupportPipe)
             ->add($this->startPipe)             // message
             ->add($this->disableLinkPipe)
             ->add($this->enableLinkPipe)
@@ -249,9 +257,11 @@ class ModeratorHandler extends AbstractHandler
             ->add($this->blockPipe)
             ->add($this->blockAllPipe)
             ->add($this->blockAllGlobalPipe)
+            ->add($this->removeBotFromGroup)
+            ->add($this->groupMessageEditPipe)
             ->add($this->newChatMemberPipe)
             ->add($this->groupMessagePipe)
-//            ->add($this->removeBotFromGroup)
+
 
 //            ->add($this->groupMessageReplyPipe)
             ->add($this->settingsGetterPipe)    // callback

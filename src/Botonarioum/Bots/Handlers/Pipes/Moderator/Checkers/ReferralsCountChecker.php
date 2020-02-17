@@ -24,8 +24,13 @@ class ReferralsCountChecker
     {
         $minReferralsCount = $setting->getMinReferralsCount();
 
-        if (count($this->em->getRepository(ModeratorReferral::class)->findBy(['user_id' => $update->getMessage()->getFrom()->getId()])) < $minReferralsCount) {
-            throw new ReferralsCountException();
+        $referrals = $this->em->getRepository(ModeratorReferral::class)
+            ->findBy([
+                'user_id'  => $update->getMessage()->getFrom()->getId(),
+                'group_id' => $update->getMessage()->getChat()->getId()]);
+
+        if (count($referrals) < $minReferralsCount) {
+            throw new ReferralsCountException('Необходимо пригласить ' . $setting->getMinReferralsCount() . ' человек, вы пригласили ' . count($referrals) . '. Пригласите еще.');
         }
     }
 }
