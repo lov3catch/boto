@@ -6,8 +6,9 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\CommandPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
-use App\Entity\ModeratorBlocks;
-use App\Entity\ModeratorGroupOwners;
+use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
+use App\Entity\ModeratorBlock;
+use App\Repository\ModeratorBlockRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
@@ -29,50 +30,35 @@ class BlockAllPipe extends CommandPipe
     {
         if (!parent::isSupported($update)) return false;
 
-        // check is from admin
-        $groupId = $update->getMessage()->getChat()->getId();
-        $adminId = ($this->em->getRepository(ModeratorGroupOwners::class)->findOneBy(['group_id' => $groupId]))->getPartnerId();
-
-        if ((int)$adminId !== (int)$update->getMessage()->getFrom()->getId()) return false;
-
         $command = explode(' ', $update->getMessage()->getText())[1];
 
-        return '/block-all' === $command;
+        return ModeratorBlockRepository::BAN_STRATEGY_GLOBAL === $command;
     }
 
     public function processing(Bot $bot, Update $update): bool
     {
-        // todo: проверка админ ли это либо пригласивший бота
+        $isAdmin = (new IsChatAdministrator($bot, $update->getMessage()->getChat()))->checkUser($update->getMessage()->getFrom());
 
-        $bot->sendMessage(new SendMessage($update->getMessage()->getChat()->getId(), 'Блокировка во всех группах администратора'));
+        if (!$isAdmin) return true;
 
-        $message = new MessageDTO($update->getMessage());
-        $bot->sendMessage(new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getUsername() . 'получает бан.'
-        ));
-        
-        $this->doBlock($update, '/block-all');
+        $this->doBlock($update, $bot);
 
         return true;
     }
 
-    private function doBlock(Update $update, string $strategy): void
+    private function doBlock(Update $update, Bot $bot): void
     {
         $message = new MessageDTO($update->getMessage());
 
-        $groupId = $update->getMessage()->getChat()->getId();
-        $userId = $message->getReplyToMessage()->getFrom()->getId();
-        $adminId = $update->getMessage()->getFrom()->getId();
+        $this->em->getRepository(ModeratorBlock::class)
+            ->doBlockGlobal(
+                $message->getReplyToMessage()->getFrom()->getId(),
+                $update->getMessage()->getFrom()->getId(),
+                $update->getMessage()->getChat()->getId());
 
-        $ban = new ModeratorBlocks();
-        $ban->setUserId((string)$userId);
-        $ban->setGroupId((string)$groupId);
-        $ban->setAdminId($adminId);
-        $ban->setCreatedAt(new \DateTime());
-        $ban->setStrategy($strategy);
-
-        $this->em->persist($ban);
-        $this->em->flush();
+        $bot->sendMessage(new SendMessage(
+            $update->getMessage()->getChat()->getId(),
+            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getUsername() . 'получает бан.'
+        ));
     }
 }

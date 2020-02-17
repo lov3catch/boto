@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
-use App\Entity\ModeratorPartnersProgram;
+use App\Entity\ModeratorReferral;
 use App\Entity\ModeratorSetting;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Update;
@@ -24,7 +24,7 @@ class ReferralsCountChecker
     {
         $minReferralsCount = $setting->getMinReferralsCount();
 
-        if (count($this->em->getRepository(ModeratorPartnersProgram::class)->findBy(['partner_id' => $update->getMessage()->getFrom()->getId()])) < $minReferralsCount) {
+        if (count($this->em->getRepository(ModeratorReferral::class)->findBy(['user_id' => $update->getMessage()->getFrom()->getId()])) < $minReferralsCount) {
             throw new ReferralsCountException();
         }
     }

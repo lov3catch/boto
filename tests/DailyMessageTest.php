@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests;
 
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Chat;
 use Formapro\TelegramBot\Message;
@@ -62,7 +63,7 @@ class DailyMessageTest extends KernelTestCase
 
     protected function tearDown()
     {
-        $this->client->del([DailyMessageLogger::key(self::CHAT_ID, self::USER_ID)]);
+        $this->client->del([RedisKeys::makeDailyMessageCountKey(self::CHAT_ID, self::USER_ID)]);
     }
 
     public function testShouldBeZeroIfEmpty()

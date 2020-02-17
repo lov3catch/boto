@@ -14,7 +14,7 @@ class WordsCountChecker
     {
         $message = $update->getMessage()->getText() ?? '';
 
-        if (count(explode(' ', $message)) > $setting->getMaxWordsCount()) {
+        if (count(explode(' ', $message)) > $setting->getMaxMessageWordsCount()) {
             throw new WordsCountException();
         }
     }

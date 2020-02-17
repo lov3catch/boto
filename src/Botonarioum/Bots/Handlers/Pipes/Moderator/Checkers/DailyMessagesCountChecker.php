@@ -23,7 +23,7 @@ class DailyMessagesCountChecker
 
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        if ($this->dailyMessageLogger->get($update) > $setting->getMaxDailyMessagesCount()) {
+        if ($this->dailyMessageLogger->get($update) > $setting->getMaxDailyMessageCount()) {
             throw new DailyMessageCountException();
         }
     }

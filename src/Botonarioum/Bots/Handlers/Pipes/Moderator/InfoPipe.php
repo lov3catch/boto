@@ -19,10 +19,10 @@ class InfoPipe extends MessagePipe
 
     public function processing(Bot $bot, Update $update): bool
     {
-        $bot->sendMessage(new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            'Общая информация о боте...'
-        ));
+//        $bot->sendMessage(new SendMessage(
+//            $update->getMessage()->getChat()->getId(),
+//            'Общая информация о боте...'
+//        ));
 
         return true;
     }

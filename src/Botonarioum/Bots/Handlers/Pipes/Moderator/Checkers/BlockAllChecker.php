@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers;
 
-
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
-use App\Entity\ModeratorBlocks;
-use App\Entity\ModeratorGroupOwners;
+use App\Entity\ModeratorBlock;
+use App\Entity\ModeratorOwner;
 use App\Entity\ModeratorSetting;
+use App\Repository\ModeratorBlockRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Update;
 
@@ -31,12 +30,12 @@ class BlockAllChecker
         $groupId = $update->getMessage()->getChat()->getId();
 
         // ищем хозяина группы
-        $groupOwner = ($this->em->getRepository(ModeratorGroupOwners::class))->findOneBy(['group_id' => $groupId]);
+        $groupOwner = ($this->em->getRepository(ModeratorOwner::class))->findOneBy(['group_id' => $groupId]);
 
-        if (!$groupOwner instanceof ModeratorGroupOwners) return;
+        if (!$groupOwner instanceof ModeratorOwner) return;
 
         // ищем забанен ли пользователь для всех групп текущего админа
-        $ban = $this->em->getRepository(ModeratorBlocks::class)->findOneBy(['admin_id' => $groupOwner->getPartnerId(), 'user_id' => $userId, 'strategy' => '/block-all']);
+        $ban = $this->em->getRepository(ModeratorBlock::class)->findOneBy(['admin_id' => $groupOwner->getUserId(), 'user_id' => $userId, 'strategy' => ModeratorBlockRepository::BAN_STRATEGY_GLOBAL]);
 
         if ($ban) {
             throw new BanException();

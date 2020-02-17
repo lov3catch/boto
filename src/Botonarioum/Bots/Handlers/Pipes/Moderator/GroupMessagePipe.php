@@ -21,11 +21,10 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountExcep
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Entity\ModeratorSetting;
 use App\Storages\RedisStorage;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Parameter;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\SendMessage;
@@ -122,14 +121,17 @@ class GroupMessagePipe extends BaseMessagePipe
 
         $groupId = $update->getMessage()->getChat()->getId();
 
+        /** @var ModeratorSetting $setting */
+        $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
+
         /** @var ModeratorSetting $settings */
-        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
-                       ->where('setting.is_default = :isd')
-                       ->orWhere('setting.group_id = :grid')
-                       ->orderBy('setting.is_default', 'ASC')
-                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
-                       ->getQuery()
-                       ->getResult()[0];
+//        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
+//                       ->where('setting.is_default = :isd')
+//                       ->orWhere('setting.group_id = :grid')
+//                       ->orderBy('setting.is_default', 'ASC')
+//                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
+//                       ->getQuery()
+//                       ->getResult()[0];
 
 //        /** @var ModeratorSetting $setting */
 //        $setting = $this->em->getRepository(ModeratorSetting::class)->findOneBy([]);
@@ -147,9 +149,9 @@ class GroupMessagePipe extends BaseMessagePipe
             $this->referralsCountChecker->check($update, $setting);
             $this->holdTimeChecker->check($update, $setting);
 
-            // todo: нельзя приглашать ботов
-
             $this->dailyMessageLogger->set($update);
+
+//            var_dump($this->dailyMessageLogger->get($update));die;
 
 //            $bot->sendMessage(new SendMessage(
 //                $update->getMessage()->getChat()->getId(),
@@ -162,9 +164,9 @@ class GroupMessagePipe extends BaseMessagePipe
 
             return true;
         } catch (CharsCountException $charsCountException) {
-            $errorMessage = 'Максимальное количество символов: ' . $setting->getMaxCharsCount();
+            $errorMessage = 'Максимальное количество символов: ' . $setting->getMaxMessageCharsCount();
         } catch (WordsCountException $wordsCountException) {
-            $errorMessage = 'Максимальное количество слов: ' . $setting->getMaxWordsCount();
+            $errorMessage = 'Максимальное количество слов: ' . $setting->getMaxMessageWordsCount();
         } catch (LinkException $linkException) {
             $errorMessage = 'Ссылки запрещенны';
         } catch (ReferralsCountException $referralsCountException) {
@@ -185,9 +187,10 @@ class GroupMessagePipe extends BaseMessagePipe
         ));
         $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId()));
 
-        $tempMessageData = ['chat_id' => $update->getMessage()->getChat()->getId(), 'message_id' => $tempMessage->getMessageId(), 'created' => time(), 'token' => $bot->getToken()];
-        $this->client->lpush('moderator:temp:messages', [json_encode($tempMessageData)]);
-        $this->client->expire('moderator:temp:messages', 60 * 60 * 24);
+//        $tempMessageData = ['chat_id' => $update->getMessage()->getChat()->getId(), 'message_id' => $tempMessage->getMessageId(), 'created' => time(), 'token' => $bot->getToken()];
+
+        $this->client->lpush(RedisKeys::makeTempMessageKey(), [json_encode(['chat_id' => $update->getMessage()->getChat()->getId(), 'message_id' => $tempMessage->getMessageId(), 'created' => time(), 'token' => $bot->getToken()])]);
+        $this->client->expire(RedisKeys::makeTempMessageKey(), 60 * 60 * 24);
 
 
 //        $this->client->set('foo', 'bar');

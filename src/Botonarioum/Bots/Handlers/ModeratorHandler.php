@@ -241,15 +241,14 @@ class ModeratorHandler extends AbstractHandler
     {
         $this
             ->add($this->startPipe)             // message
-//            ->add($this->disableLinkPipe)
-//            ->add($this->enableLinkPipe)
+            ->add($this->disableLinkPipe)
+            ->add($this->enableLinkPipe)
             ->add($this->myGroupsPipe)          // message
             ->add($this->groupSettingsPipe)     // callback
 
             ->add($this->blockPipe)
             ->add($this->blockAllPipe)
             ->add($this->blockAllGlobalPipe)
-
             ->add($this->newChatMemberPipe)
             ->add($this->groupMessagePipe)
 //            ->add($this->removeBotFromGroup)
@@ -258,8 +257,8 @@ class ModeratorHandler extends AbstractHandler
             ->add($this->settingsGetterPipe)    // callback
             ->add($this->settingsChangerPipe)
             ->add($this->settingsCancelPipe)
-            ->add($this->settingsAwaitPipe);
-//            ->add($this->infoPipe)
+            ->add($this->settingsAwaitPipe)
+            ->add($this->infoPipe);
 //            ->add($this->allSupportPipe);
 
 

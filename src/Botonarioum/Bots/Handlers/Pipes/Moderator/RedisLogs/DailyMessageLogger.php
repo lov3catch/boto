@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs;
 
+use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Storages\RedisStorage;
 use DateTime;
 use Formapro\TelegramBot\Update;
@@ -33,7 +34,7 @@ class DailyMessageLogger
         $chatId = $update->getMessage()->getChat()->getId();
         $memberId = $update->getMessage()->getFrom()->getId();;
 
-        $key = self::key($chatId, $memberId);
+        $key = RedisKeys::makeDailyMessageCountKey($chatId, $memberId);
 
         if ((int)$this->client->exists($key)) {
             $this->client->incr($key);
@@ -52,13 +53,14 @@ class DailyMessageLogger
         $chatId = $update->getMessage()->getChat()->getId();
         $memberId = $update->getMessage()->getFrom()->getId();
 
-        return (int)($this->client->get(self::key($chatId, $memberId)) ?? 0);
+        return (int)($this->client->get(RedisKeys::makeDailyMessageCountKey($chatId, $memberId)) ?? 0);
+//        return (int)($this->client->get(self::key($chatId, $memberId)) ?? 0);
     }
 
-    public static function key(int $chatId, int $memberId): string
-    {
-        $todayTimestamp = (DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->setTime(0, 0))->getTimestamp();
-
-        return implode(':', ['moderator', 'message', $chatId, $memberId, $todayTimestamp]);
-    }
+//    public static function key(int $chatId, int $memberId): string
+//    {
+//        $todayTimestamp = (DateTime::createFromFormat('Y-m-d', date('Y-m-d'))->setTime(0, 0))->getTimestamp();
+//
+//        return implode(':', ['moderator', 'message', $chatId, $memberId, $todayTimestamp]);
+//    }
 }

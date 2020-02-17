@@ -14,8 +14,6 @@ class LinkChecker
 
     public function check(Update $update, ModeratorSetting $setting): void
     {
-//        var_dump($setting->getAllowLink());die;
-//        var_dump('$expression');die;
         if (true === $setting->getAllowLink()) return;
 
         $message = $update->getMessage()->getText() ?? '';
@@ -26,5 +24,4 @@ class LinkChecker
             }
         }
     }
-
 }

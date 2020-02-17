@@ -6,7 +6,10 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\CommandPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
-use App\Entity\ModeratorBlocks;
+use App\Botonarioum\Bots\Helpers\GetMe;
+use App\Entity\ModeratorBlock;
+use App\Entity\ModeratorStart;
+use App\Repository\ModeratorBlockRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
@@ -28,46 +31,49 @@ class BlockAllGlobalPipe extends CommandPipe
     {
         if (!parent::isSupported($update)) return false;
 
-        if ('@omnamas' !== $update->getMessage()->getFrom()->getUsername()) return false;
+//        $botId = (new GetMe())->me($bot);
+//        $userId = '';
+//
+//        $isSuperuser = $this->em->getRepository(ModeratorStart::class)->findOneBy(['bot_id' => $botId, 'user_id' => $userId, 'is_superuser' => true]);
+//
+////        if ('@omnamas' !== $update->getMessage()->getFrom()->getUsername()) return false;
 
         $command = explode(' ', $update->getMessage()->getText())[1];
 
-        return '/block-all-global' === $command;
+        return ModeratorBlockRepository::BAN_STRATEGY_TOTAL === $command;
     }
 
     public function processing(Bot $bot, Update $update): bool
     {
-        // todo: проверка админ ли это либо пригласивший бота
+        $botId = (new GetMe())->me($bot)->getId();
+        $userId = $update->getMessage()->getFrom()->getId();
 
-        $bot->sendMessage(new SendMessage($update->getMessage()->getChat()->getId(), 'Блокировка глобальная (супер-админ)'));
+        $isSuperuser = $this->em->getRepository(ModeratorStart::class)
+            ->findOneBy([
+                'bot_id'       => $botId,
+                'user_id'      => $userId,
+                'is_superuser' => true]);
 
-        $message = new MessageDTO($update->getMessage());
-        $bot->sendMessage(new SendMessage(
-            $update->getMessage()->getChat()->getId(),
-            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getUsername() . 'получает бан.'
-        ));
+        if (!$isSuperuser) return true;
 
-        $this->doBlock($update, '/block-all-global');
+        $this->doBlock($update, $bot);
 
         return true;
     }
 
-    private function doBlock(Update $update, string $strategy): void
+    private function doBlock(Update $update, Bot $bot): void
     {
         $message = new MessageDTO($update->getMessage());
 
-        $groupId = $update->getMessage()->getChat()->getId();
-        $userId = $message->getReplyToMessage()->getFrom()->getId();
-        $adminId = $update->getMessage()->getFrom()->getId();
+        $this->em->getRepository(ModeratorBlock::class)
+            ->doBlockTotal(
+                $message->getReplyToMessage()->getFrom()->getId(),
+                $update->getMessage()->getFrom()->getId(),
+                $update->getMessage()->getChat()->getId());
 
-        $ban = new ModeratorBlocks();
-        $ban->setUserId((string)$userId);
-        $ban->setGroupId((string)$groupId);
-        $ban->setAdminId($adminId);
-        $ban->setCreatedAt(new \DateTime());
-        $ban->setStrategy($strategy);
-
-        $this->em->persist($ban);
-        $this->em->flush();
+        $bot->sendMessage(new SendMessage(
+            $update->getMessage()->getChat()->getId(),
+            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getUsername() . 'получает бан.'
+        ));
     }
 }

@@ -14,6 +14,11 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class ModeratorBlockRepository extends ServiceEntityRepository
 {
+    public const BAN_STRATEGY_LOCAL = '/block';
+    public const BAN_STRATEGY_GLOBAL = '/block-all';
+    public const BAN_STRATEGY_TOTAL = '/block-all-total';
+
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ModeratorBlock::class);
@@ -47,4 +52,39 @@ class ModeratorBlockRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function doBlocLocal(int $userId, int $adminId, int $groupId)
+    {
+        return $this->doBlock($userId, $adminId, $groupId, self::BAN_STRATEGY_LOCAL);
+    }
+
+
+    public function doBlockGlobal(int $userId, int $adminId, int $groupId)
+    {
+        return $this->doBlock($userId, $adminId, $groupId, self::BAN_STRATEGY_GLOBAL);
+    }
+
+    public function doBlockTotal(int $userId, int $adminId, int $groupId)
+    {
+        return $this->doBlock($userId, $adminId, $groupId, self::BAN_STRATEGY_TOTAL);
+    }
+
+    private function doBlock(int $userId, int $adminId, int $groupId, string $strategy)
+    {
+        $block = new ModeratorBlock();
+        $block->setUserId($userId);
+        $block->setAdminId($adminId);
+        $block->setGroupId($groupId);
+        $block->setStrategy($strategy);
+        $block->setCreatedAt(new \DateTimeImmutable());
+        $block->setUpdatedAt(new \DateTimeImmutable());
+
+        $this->save($block);
+    }
+
+    public function save(ModeratorBlock $entity): void
+    {
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush();
+    }
 }

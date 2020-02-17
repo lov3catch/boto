@@ -2,7 +2,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@github.com:lov3catch/telegram-bot-php.git"
+            "url": "git@github.com:makasim/telegram-bot-php.git"
         }
     ],
     "type": "project",
@@ -12,7 +12,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "beberlei/assert": "^3.2",
-        "formapro/telegram-bot": "dev-support-left-chat-member-feature",
+        "formapro/telegram-bot": "0.2.0",
         "predis/predis": "^1.1",
         "ramsey/uuid": "2.9",
         "rmccue/requests": "v1.7.0",

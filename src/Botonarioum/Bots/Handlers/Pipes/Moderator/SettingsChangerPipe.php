@@ -60,8 +60,7 @@ class SettingsChangerPipe extends CallbackPipe
         }
 
         if ('greeting_buttons' === $selectedSetting) {
-            $message = 'Изменить кнопки под приветствием.
-            Пример: (Моя ссылка 1: http://example1.com)';
+            $message = 'Изменить кнопки под приветствием. Пример: (Моя ссылка 1: http://example1.com)';
         }
 
         if ($message ?? false) {

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
-use App\Entity\ModeratorBlocks;
+use App\Entity\ModeratorBlock;
 use App\Entity\ModeratorSetting;
+use App\Repository\ModeratorBlockRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Update;
 
@@ -27,7 +28,7 @@ class BlockChecker
         $userId = $update->getMessage()->getFrom()->getId();
         $groupId = $update->getMessage()->getChat()->getId();
 
-        $ban = $this->em->getRepository(ModeratorBlocks::class)->findOneBy(['group_id' => $groupId, 'user_id' => $userId, 'strategy' => '/block']);
+        $ban = $this->em->getRepository(ModeratorBlock::class)->findOneBy(['group_id' => $groupId, 'user_id' => $userId, 'strategy' => ModeratorBlockRepository::BAN_STRATEGY_LOCAL]);
 
         if ($ban) {
             throw new BanException();
