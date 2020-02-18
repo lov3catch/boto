@@ -14,7 +14,7 @@ class CharsCountChecker
     {
         $message = $update->getMessage()->getText() ?? '';
 
-        if (strlen($message) > $setting->getMaxMessageCharsCount()) {
+        if (mb_strlen($message) > $setting->getMaxMessageCharsCount()) {
             throw new CharsCountException();
         }
     }

@@ -102,8 +102,12 @@ class RemoveBotFromGroupPipe extends GroupMessagePipeAlias
 
     public function isSupported(Update $update): bool
     {
+
+//        if (!$this->isSupported($update)) return false;
         // если пользователь, который вышел из группы - текущий бот (проверяется в procesing())
         // если есть пользователь, который вышел и он бот
+
+        if ($update->getCallbackQuery()) return false;
 
         $leftChatMember = $update->getMessage()->getLeftChatMember();
 

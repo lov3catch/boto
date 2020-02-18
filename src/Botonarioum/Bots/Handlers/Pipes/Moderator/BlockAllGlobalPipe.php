@@ -6,6 +6,7 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\CommandPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\ReplyToMessageDTO;
 use App\Botonarioum\Bots\Helpers\GetMe;
 use App\Entity\ModeratorBlock;
 use App\Entity\ModeratorMember;
@@ -31,6 +32,10 @@ class BlockAllGlobalPipe extends CommandPipe
     public function isSupported(Update $update): bool
     {
         if (!parent::isSupported($update)) return false;
+
+        $message = new MessageDTO($update->getMessage());
+
+        if (!$message->getReplyToMessage() instanceof ReplyToMessageDTO) return false;
 
 //        $botId = (new GetMe())->me($bot);
 //        $userId = '';
@@ -83,7 +88,7 @@ class BlockAllGlobalPipe extends CommandPipe
 
         $bot->sendMessage(new SendMessage(
             $update->getMessage()->getChat()->getId(),
-            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getUsername() . 'получает бан.'
+            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getFirstName() . ' получает бан.'
         ));
     }
 }

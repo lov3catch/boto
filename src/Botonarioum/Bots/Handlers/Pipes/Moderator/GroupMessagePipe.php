@@ -11,6 +11,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\DailyMessagesCountChe
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\HoldTimeChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\LinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ReferralsCountChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\RepostChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\WordsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\CharsCountException;
@@ -18,6 +19,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\DailyMessageCountEx
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\HoldTimeException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\RepostException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
@@ -81,8 +83,12 @@ class GroupMessagePipe extends BaseMessagePipe
      * @var Client
      */
     private $client;
+    /**
+     * @var RepostChecker
+     */
+    private $repostChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, RepostChecker $repostChecker)
     {
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;
@@ -94,6 +100,7 @@ class GroupMessagePipe extends BaseMessagePipe
         $this->blockChecker = $blockChecker;
         $this->blockAllChecker = $blockAllChecker;
         $this->blockAllGlobalChecker = $blockAllGlobalChecker;
+        $this->repostChecker = $repostChecker;
         $this->em = $entityManager;
         $this->client = $redisStorage->client();
     }
@@ -139,6 +146,7 @@ class GroupMessagePipe extends BaseMessagePipe
         try {
 
 
+            $this->repostChecker->check($update, $setting);
             $this->linkChecker->check($update, $setting);
             $this->blockChecker->check($update, $setting);
             $this->blockAllChecker->check($update, $setting);
@@ -163,6 +171,8 @@ class GroupMessagePipe extends BaseMessagePipe
 //            (new JoinToChatLogger($this->client))->set($update);        // todo: если группа старая - надо как-то создать запись о holdtime
 
             return true;
+        } catch (RepostException $repostException) {
+            $errorMessage = 'Перепост сообщений запрещен.';
         } catch (CharsCountException $charsCountException) {
             $errorMessage = 'Максимальное количество символов: ' . $setting->getMaxMessageCharsCount();
         } catch (WordsCountException $wordsCountException) {

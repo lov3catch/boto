@@ -82,7 +82,7 @@ class GroupMessageReplyPipe extends MessagePipe
 
         $bot->sendMessage(new SendMessage(
             $update->getMessage()->getChat()->getId(),
-            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getUsername() . 'получает бан.'
+            'Пользователь ' . $message->getReplyToMessage()->getFrom()->getFirstName() . ' получает бан.'
         ));
 
         return true;
