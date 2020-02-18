@@ -185,7 +185,7 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (DailyMessageCountException $dailyMessageCountException) {
             $errorMessage = 'Превышено максимально количество сообщений в сутки';
         } catch (HoldTimeException $holdTimeException) {
-            $errorMessage = 'Период молчания не закончился. Подождите.';
+            $errorMessage = 'Вы недавно подключились в группу. Скоро сможете опубликовать пост. Период молчания не закончился. Подождите.';
         } catch (BanException $banException) {
             $errorMessage = 'Пользователь забанен админом.';
         } catch (\Exception $exception) {
