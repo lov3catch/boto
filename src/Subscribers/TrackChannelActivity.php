@@ -80,9 +80,9 @@ class TrackChannelActivity implements EventSubscriberInterface
     private function isNeedToLogging(BotHandlerInterface $botHandler): bool
     {
         foreach (self::NON_LOGGING_HANDLERS as $NON_LOGGING_HANDLER) {
-            if (get_class($botHandler) === $NON_LOGGING_HANDLER) return true;
+            if (get_class($botHandler) === $NON_LOGGING_HANDLER) return false;
         }
 
-        return false;
+        return true;
     }
 }
