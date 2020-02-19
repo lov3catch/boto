@@ -99,7 +99,7 @@ class SettingsAwaitPipe extends MessagePipe
 
 
                 $markup = (new BuildKeyboard())->build($update->getMessage()->getText());
-                $msg = new SendMessage($chatId, 'Так будет выглядить клавиатура под приветствием:');
+                $msg = new SendMessage($chatId, 'Так будут выглядить кнопки под приветствием:');
                 $msg->setReplyMarkup($markup);
                 $bot->sendMessage($msg);
 

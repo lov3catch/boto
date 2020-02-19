@@ -17,7 +17,7 @@ class GroupSettingsPipe extends CallbackPipe
     {
         $settings = [
             'greeting'                 => 'Приветствие новых пользователей',
-            'greeting_buttons'         => 'Клавиатура под приветствием',
+            'greeting_buttons'         => 'Кнопки под приветствием',
             'max_daily_messages_count' => 'Максимальное к-во сообщений в день',
             'min_referrals_count'      => 'Минимальное к-во рефералов',
             'holdtime'                 => 'Заглушить новичков на (в секундах)',
