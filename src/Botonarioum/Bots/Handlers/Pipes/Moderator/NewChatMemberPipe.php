@@ -61,61 +61,15 @@ class NewChatMemberPipe extends AbstractPipe
 
         $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
 
-//        // todo: rewrite this!
-//        /** @var ModeratorSetting $setting */
-//        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
-//                       ->where('setting.is_default = :isd')
-//                       ->orWhere('setting.group_id = :grid')
-//                       ->orderBy('setting.is_default', 'ASC')
-//                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
-//                       ->getQuery()
-//                       ->getResult()[0];
 
-//        var_dump($setting);die;
-
-        // удаляем старое приветствие
-        $this->removeLastGreeting($bot, $update);
-//        try {
-//            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
-//            if ($this->client->exists($lastGreetingIdKey)) {
-//                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
-//            }
-//        } catch (\Exception $exception) {
-//            //
-//        }
-
-
-        // формируем новое приветствие
-//        $greeting = $setting->getGreeting();
-//        $greeting = str_replace('{username}', $newChatMember->getUsername(), $greeting);
-//        $greeting = str_replace('{chat_title}', $update->getMessage()->getChat()->getTitle(), $greeting);
-
-        // удаляем стандартное приветствие
         $this->removeStandardGreeting($bot, $update);
-//        $deleteMessage = new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId());
-//        $bot->deleteMessage($deleteMessage);
 
+        $this->removeLastGreeting($bot, $update);
 
-//        $msg = new SendMessage(
-//            $update->getMessage()->getChat()->getId(),
-//            $greeting
-//        );
-
-//        if ($setting->getGreetingButtons()) {
-//            $msg->setReplyMarkup((new BuildKeyboard())->build($setting->getGreetingButtons()));
-//        }
-
-//        $newGreetingMessage = $bot->sendMessage($msg);
-
-        // создаем новое приветствие
         $this->addNewGreeting($bot, $update, $setting);
 
-        // todo: необходимо либо новая таблица с приветствиями, либо создавать настройки всегда для каждой группы
-        // сохраняем lastGreetingId, что бы в следующий раз удалить
-//        $this->client->set($lastGreetingIdKey, $newGreetingMessage->getMessageId());
-
-
         // todo: логировать JoinToChatLogger
+        // todo: тут баг в том, что мы трекаем подключение пользователя в группу, но только одного, а их может быть несколько
         $this->joinChannelLogger->set($update);
 
         return true;
@@ -135,13 +89,16 @@ class NewChatMemberPipe extends AbstractPipe
     {
         try {
             $lastGreetingIdKey = RedisKeys::makeLastGreetingMessageIdKey($update->getMessage()->getChat()->getId());
+            var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey);
 
 //            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
             if ($this->client->exists($lastGreetingIdKey)) {
                 $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
+            } else {
+                var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey . ' NOT FOUND!');
             }
         } catch (\Exception $exception) {
-            //
+            var_dump('GREETING EXCEPTION: ' . $exception->getMessage());
         }
     }
 
