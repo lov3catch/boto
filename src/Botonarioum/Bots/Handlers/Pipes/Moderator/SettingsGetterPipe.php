@@ -43,7 +43,7 @@ class SettingsGetterPipe extends CallbackPipe
         }
 
         if ('holdtime' === $selectedSetting) {
-            $message = 'Новички смогут оставлять соодщение спустя указаный период (в секундах). Текущее значение: ' . $setting->getHoldtime() . '.';
+            $message = 'Новички смогут оставлять сообщение спустя указаный период (в секундах). Текущее значение: ' . $setting->getHoldtime() . '.';
         }
 
         if ('max_chars_count' === $selectedSetting) {
@@ -59,7 +59,7 @@ class SettingsGetterPipe extends CallbackPipe
         }
 
         if ('greeting_buttons' === $selectedSetting) {
-            $message = 'Изменить клавиатуру под приветствием.';
+            $message = 'Изменить кнопки под приветствием.';
         }
 
         if ('is_link_enable' === $selectedSetting) {
