@@ -56,7 +56,7 @@ class SettingsChangerPipe extends CallbackPipe
         }
 
         if ('greeting' === $selectedSetting) {
-            $message = 'Изменить приветсвие для новый участников группы. Ключи: {username} - ник пользователя, {chat_title} - название группы';
+            $message = 'Отправьте мне текст приветствия. Например:{username} Здравствуйте, вы в группе: {chat_title}. Внимание! {username} это Имя вступившего, а {chat_title} это ваша группа.' . PHP_EOL . PHP_EOL . 'Значит, приветствие будет такое: «Ирина Здравствуйте, вы в группе: Аренда». Далее в приветствие можно вписать любой ваш текст с ссылками.';
         }
 
         if ('greeting_buttons' === $selectedSetting) {
