@@ -35,27 +35,27 @@ class SettingsGetterPipe extends CallbackPipe
         $selectedSetting = explode(':', $update->getCallbackQuery()->getData())[3];
 
         if ('max_daily_messages_count' === $selectedSetting) {
-            $message = 'Максимальное количество сообщений в день от определенного пользователя. Текущее значение: ' . $setting->getMaxDailyMessageCount() . '.';
+            $message = 'Максимальное количество сообщений в день от определенного пользователя.' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getMaxDailyMessageCount() . '.';
         }
 
         if ('min_referrals_count' === $selectedSetting) {
-            $message = 'Минимальное количество рефералов, которых должен пригласить пользователь группы, что бы иметь возможность оставлять сообщения. Текущее значение: ' . $setting->getMinReferralsCount() . '.';
+            $message = 'Минимальное количество рефералов, которых должен пригласить пользователь группы, что бы иметь возможность оставлять сообщения.' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getMinReferralsCount() . '.';
         }
 
         if ('holdtime' === $selectedSetting) {
-            $message = 'Новички смогут оставлять сообщение спустя указаный период (в секундах). Текущее значение: ' . $setting->getHoldtime() . '.';
+            $message = 'Новички смогут оставлять сообщение спустя указаный период (в секундах).' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getHoldtime() . '.';
         }
 
         if ('max_chars_count' === $selectedSetting) {
-            $message = 'Максимально количество символов в сообщении. Текущее значение: ' . $setting->getMaxMessageCharsCount() . '.';
+            $message = 'Максимально количество символов в сообщении.' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getMaxMessageCharsCount() . '.';
         }
 
         if ('max_words_count' === $selectedSetting) {
-            $message = 'Максимальное количество слов в сообщении. Текущее значение: ' . $setting->getMaxMessageWordsCount() . '.';
+            $message = 'Максимальное количество слов в сообщении.' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getMaxMessageWordsCount() . '.';
         }
 
         if ('greeting' === $selectedSetting) {
-            $message = 'Изменить приветсвие для новый участников группы. Текущее значение: ' . $setting->getGreetingMessage() . '.';
+            $message = 'Изменить приветсвие для новых участников группы.' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getGreetingMessage() . '.';
         }
 
         if ('greeting_buttons' === $selectedSetting) {
