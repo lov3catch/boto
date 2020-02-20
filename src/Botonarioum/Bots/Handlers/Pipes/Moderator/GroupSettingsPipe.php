@@ -16,12 +16,12 @@ class GroupSettingsPipe extends CallbackPipe
     public function processing(Bot $bot, Update $update): bool
     {
         $settings = [
-            'greeting'                 => 'Приветствие новых пользователей',
+            'greeting'                 => 'Приветствие',
             'greeting_buttons'         => 'Кнопки под приветствием',
             'max_daily_messages_count' => 'Максимальное к-во сообщений в день',
             'min_referrals_count'      => 'Минимальное к-во рефералов',
             'holdtime'                 => 'Заглушить новичков на (в секундах)',
-            'max_chars_count'          => 'Максимально к-во символов в сообщении',
+            'max_chars_count'          => 'Максимальное к-во символов в сообщении',
             'max_words_count'          => 'Максимальное к-во слов в сообщении',
             'is_link_enable'           => 'Разрешить/Запретить ссылки',
         ];
