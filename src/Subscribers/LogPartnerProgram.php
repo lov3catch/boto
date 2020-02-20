@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Subscribers;
 
-use App\Entity\ModeratorPartnersProgram;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
 use App\Entity\ModeratorReferral;
 use App\Events\AddedUserInGroupEvent;
 use Doctrine\ORM\EntityManagerInterface;
+use Formapro\TelegramBot\ChatMember;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+//use App\Entity\ModeratorPartnersProgram;
 
 class LogPartnerProgram implements EventSubscriberInterface
 {
@@ -54,18 +57,36 @@ class LogPartnerProgram implements EventSubscriberInterface
 
     public function onAction(AddedUserInGroupEvent $event): void
     {
-        if ($event->getUpdate()->getMessage()->getNewChatMember()->isBot()) return;
+        if (!$event->getUpdate()->getMessage()->getNewChatMember() instanceof ChatMember) return;
+
+        $messageDTO = new MessageDTO($event->getUpdate()->getMessage());
+
+        $newChatMembers = $messageDTO->getNewChatMembers();
+
 
         $referralRepository = $this->entityManager->getRepository(ModeratorReferral::class);
 
         $groupId = $event->getUpdate()->getMessage()->getChat()->getId();
         $userId = $event->getUpdate()->getMessage()->getFrom()->getId();
-        $referralId = $event->getUpdate()->getMessage()->getNewChatMember()->getId();
 
-        $options = ['referral_id' => $referralId, 'group_id' => $groupId];
-        $defaults = ['referral_id' => $referralId, 'group_id' => $groupId, 'user_id' => $userId];
 
-        $referralRepository->getOrCreate($options, $defaults);
+        /** @var ChatMember $newChatMember */
+        foreach ($newChatMembers as $newChatMember) {
+            if ($newChatMember->isBot()) continue;
+
+//            $referralId = $event->getUpdate()->getMessage()->getNewChatMember()->getId();
+            $referralId = $newChatMember->getId();
+
+            $options = ['referral_id' => $referralId, 'group_id' => $groupId];
+            $defaults = ['referral_id' => $referralId, 'group_id' => $groupId, 'user_id' => $userId];
+
+            $referralRepository->getOrCreate($options, $defaults);
+        }
+
+//        die;
+
+//        if ($event->getUpdate()->getMessage()->getNewChatMember()->isBot()) return;
+
 
 //        $update = $event->getUpdate();
 //

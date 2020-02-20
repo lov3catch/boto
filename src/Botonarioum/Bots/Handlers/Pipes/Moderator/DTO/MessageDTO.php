@@ -2,6 +2,7 @@
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO;
 
+use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\Message;
 use function Formapro\Values\get_object;
 use function Formapro\Values\get_objects;
@@ -21,6 +22,11 @@ class MessageDTO extends Message
     public function getEntities(): ?\Generator
     {
         return get_objects($this->message, 'entities', EntityDTO::class);
+    }
+
+    public function getNewChatMembers()
+    {
+        return get_objects($this->message, 'new_chat_members', ChatMember::class);
     }
 
 //    /**

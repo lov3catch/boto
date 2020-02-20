@@ -60,7 +60,7 @@ class SettingsChangerPipe extends CallbackPipe
         }
 
         if ('greeting_buttons' === $selectedSetting) {
-            $message = 'Изменить кнопки под приветствием. Пример: (Моя ссылка 1: http://example1.com)';
+            $message = 'Вставьте своё название кнопки вместо слова «Текст 1». Затем после двоеточия вставьте вашу ссылку:' . PHP_EOL . '(Текст 1: http://example1.com)' . PHP_EOL . PHP_EOL . 'Если вам надо 2 или 3 кнопки в ряд, тогда без пробела заполняйте следующую конструкцию:' . PHP_EOL . '(Текст 1: http://example1.com)(Текст 2: http://example2.com)' . PHP_EOL . PHP_EOL . 'Следующие кнопки в столбик через нажатие Enter.';
         }
 
         if ($message ?? false) {
