@@ -36,24 +36,24 @@ class PlayWithNewMessageLogInRedisCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->client->lpush(RedisKeys::makeLastGreetingMessageIdKey(1), [1]);
-        $this->client->lpush(RedisKeys::makeLastGreetingMessageIdKey(1), [2]);
-        $this->client->lpush(RedisKeys::makeLastGreetingMessageIdKey(1), [3]);
+        $this->client->lpush(RedisKeys::makeLastGreetingsMessageIdKey(1), [1]);
+        $this->client->lpush(RedisKeys::makeLastGreetingsMessageIdKey(1), [2]);
+        $this->client->lpush(RedisKeys::makeLastGreetingsMessageIdKey(1), [3]);
 
-        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingMessageIdKey(1), 0, -1));
+        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingsMessageIdKey(1), 0, -1));
 
-        $this->client->del([RedisKeys::makeLastGreetingMessageIdKey(1)]);
+        $this->client->del([RedisKeys::makeLastGreetingsMessageIdKey(1)]);
 
         foreach ($elements as $element) {
             try {
                 echo 'MODERATOR GREETING TO REMOVE: ' . $element . PHP_EOL;
             } catch (\Exception $exception) {
-                $this->client->lpush(RedisKeys::makeLastGreetingMessageIdKey(1), $element);
+                $this->client->lpush(RedisKeys::makeLastGreetingsMessageIdKey(1), $element);
             }
         }
 
         var_dump('--------------------' . PHP_EOL);
-        var_dump($this->client->lrange(RedisKeys::makeLastGreetingMessageIdKey(1), 0, -1));
+        var_dump($this->client->lrange(RedisKeys::makeLastGreetingsMessageIdKey(1), 0, -1));
 
 
         die;

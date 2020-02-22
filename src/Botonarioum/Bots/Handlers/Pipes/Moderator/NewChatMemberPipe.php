@@ -87,19 +87,39 @@ class NewChatMemberPipe extends AbstractPipe
 
     private function removeLastGreeting(Bot $bot, Update $update): void
     {
-        try {
-            $lastGreetingIdKey = RedisKeys::makeLastGreetingMessageIdKey($update->getMessage()->getChat()->getId());
-            var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey);
+        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId()), 0, -1));
 
-//            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
-            if ($this->client->exists($lastGreetingIdKey)) {
-                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
-            } else {
-                var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey . ' NOT FOUND!');
+        $this->client->del([RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId())]);
+
+        foreach ($elements as $element) {
+            try {
+                echo 'MODERATOR GREETING TO REMOVE: ' . $element . PHP_EOL;
+
+                $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
+//                if ($this->client->exists($lastGreetingIdKey)) {
+                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$element));
+//                }
+
+            } catch (\Exception $exception) {
+                var_dump($exception);
+                $this->client->lpush(RedisKeys::makeLastGreetingsMessageIdKey(1), $element);
             }
-        } catch (\Exception $exception) {
-            var_dump('GREETING EXCEPTION: ' . $exception->getMessage());
         }
+
+
+//        try {
+//            $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
+//            var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey);
+//
+////            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
+//            if ($this->client->exists($lastGreetingIdKey)) {
+//                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
+//            } else {
+//                var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey . ' NOT FOUND!');
+//            }
+//        } catch (\Exception $exception) {
+//            var_dump('GREETING EXCEPTION: ' . $exception->getMessage());
+//        }
     }
 
     private function addNewGreeting(Bot $bot, Update $update, ModeratorSetting $setting): void
@@ -119,8 +139,8 @@ class NewChatMemberPipe extends AbstractPipe
 
         $newGreetingMessage = $bot->sendMessage($msg);
 
-        $lastGreetingIdKey = RedisKeys::makeLastGreetingMessageIdKey($update->getMessage()->getChat()->getId());
-        $this->client->set($lastGreetingIdKey, $newGreetingMessage->getMessageId());
+        $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
+        $this->client->lpush($lastGreetingIdKey, [$newGreetingMessage->getMessageId()]);
     }
 
     private function removeStandardGreeting(Bot $bot, Update $update): void

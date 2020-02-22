@@ -268,8 +268,8 @@ class ModeratorHandler extends AbstractHandler
             ->add($this->settingsChangerPipe)
             ->add($this->settingsCancelPipe)
             ->add($this->settingsAwaitPipe)
-            ->add($this->infoPipe);
-//            ->add($this->allSupportPipe);
+            ->add($this->infoPipe)
+            ->add($this->allSupportPipe);
 
 
         //            ->add($this->showGroupMenuPipe)
