@@ -8,9 +8,19 @@ use DateTime;
 
 class RedisKeys
 {
+    /**
+     * @param int $chatId
+     * @return string
+     * @deprecated
+     */
     public static function makeLastGreetingMessageIdKey(int $chatId): string
     {
         return implode(':', ['moderator', 'last_greeting', $chatId]);
+    }
+
+    public static function makeLastGreetingsMessageIdKey(int $chatId): string
+    {
+        return implode(':', ['moderator', 'last_greeting', 'queue', $chatId]);
     }
 
     public static function makeAwaitSettingChangeKey(int $chatId): string

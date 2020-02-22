@@ -11,6 +11,7 @@ use App\Entity\ModeratorStart;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\ChatMember;
+use Formapro\TelegramBot\Message;
 use Formapro\TelegramBot\Update;
 
 //use App\Entity\ModeratorGroupOwners;
@@ -108,6 +109,8 @@ class RemoveBotFromGroupPipe extends GroupMessagePipeAlias
         // если есть пользователь, который вышел и он бот
 
         if ($update->getCallbackQuery()) return false;
+
+        if (!$update->getMessage() instanceof Message) return false;
 
         $leftChatMember = $update->getMessage()->getLeftChatMember();
 
