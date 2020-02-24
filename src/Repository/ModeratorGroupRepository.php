@@ -57,7 +57,7 @@ class ModeratorGroupRepository extends ServiceEntityRepository
         $moderatorGroup = new ModeratorGroup();
         $moderatorGroup->setGroupId($defaults['group_id']);
         $moderatorGroup->setGroupTitle($defaults['group_title']);
-        $moderatorGroup->setGroupUsername($defaults['group_username']);
+        $moderatorGroup->setGroupUsername($defaults['group_username'] ?? 'unknown-group-username');
         $moderatorGroup->setGroupType($defaults['group_type']);
         $moderatorGroup->setCreatedAt(new \DateTimeImmutable());
         $moderatorGroup->setUpdatedAt(new \DateTimeImmutable());
