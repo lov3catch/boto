@@ -50,6 +50,7 @@ class ModeratorGroupRepository extends ServiceEntityRepository
 
     public function getOrCreate(array $options, array $defaults): ModeratorGroup
     {
+        die;
         $entity = $this->findOneBy($options);
 
         if ($entity instanceof ModeratorGroup) return $entity;

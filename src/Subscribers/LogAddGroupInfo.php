@@ -61,7 +61,7 @@ class LogAddGroupInfo implements EventSubscriberInterface
         $defaults = [
             'group_id'       => $event->getUpdate()->getMessage()->getChat()->getId(),
             'group_title'    => $event->getUpdate()->getMessage()->getChat()->getTitle(),
-            'group_username' => $event->getUpdate()->getMessage()->getChat()->getUsername(),
+            'group_username' => $event->getUpdate()->getMessage()->getChat()->getUsername() ?? 'username-not-found',
             'group_type'     => $event->getUpdate()->getMessage()->getChat()->getType(),
         ];
 
