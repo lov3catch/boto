@@ -50,7 +50,6 @@ class ModeratorGroupRepository extends ServiceEntityRepository
 
     public function getOrCreate(array $options, array $defaults): ModeratorGroup
     {
-        die;
         $entity = $this->findOneBy($options);
 
         if ($entity instanceof ModeratorGroup) return $entity;
@@ -58,7 +57,7 @@ class ModeratorGroupRepository extends ServiceEntityRepository
         $moderatorGroup = new ModeratorGroup();
         $moderatorGroup->setGroupId($defaults['group_id']);
         $moderatorGroup->setGroupTitle($defaults['group_title']);
-        $moderatorGroup->setGroupUsername($defaults['group_username'] ?? 'unknown-group-username');
+        $moderatorGroup->setGroupUsername($defaults['group_username']);
         $moderatorGroup->setGroupType($defaults['group_type']);
         $moderatorGroup->setCreatedAt(new \DateTimeImmutable());
         $moderatorGroup->setUpdatedAt(new \DateTimeImmutable());
