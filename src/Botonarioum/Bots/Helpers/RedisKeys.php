@@ -18,9 +18,19 @@ class RedisKeys
         return implode(':', ['moderator', 'last_greeting', $chatId]);
     }
 
+    /**
+     * @param int $chatId
+     * @return string
+     * @deprecated
+     */
     public static function makeLastGreetingsMessageIdKey(int $chatId): string
     {
         return implode(':', ['moderator', 'last_greeting', 'queue', $chatId]);
+    }
+
+    public static function makeLastGreetingsMessageQueueIdKey(): string
+    {
+        return implode(':', ['moderator', 'last_greeting', 'queue']);
     }
 
     public static function makeAwaitSettingChangeKey(int $chatId): string
