@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\DeleteMessage;
+use Formapro\TelegramBot\Message;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Predis\Client;
@@ -78,6 +79,8 @@ class NewChatMemberPipe extends AbstractPipe
     public function isSupported(Update $update): bool
     {
         if ($update->getCallbackQuery()) return false;
+
+        if (!$update->getMessage() instanceof Message) return false;
 
 //        if (null === $update->getMessage()) return false;
 
