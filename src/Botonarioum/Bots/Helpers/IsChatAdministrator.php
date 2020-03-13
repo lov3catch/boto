@@ -47,6 +47,7 @@ class IsChatAdministrator
 
         /** @var User $chatAdministrator */
         foreach ($this->getChatAdministrators() as $chatAdministrator) {
+            if (!$chatAdministrator instanceof User) continue;
             if ($chatAdministrator->getId() === $me->getId()) return true;
         }
 
