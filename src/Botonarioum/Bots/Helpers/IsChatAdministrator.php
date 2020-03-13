@@ -65,7 +65,7 @@ class IsChatAdministrator
 
             yield $admin;
         }
-        } catch(Exception $exception) {
+        } catch(Throwable $exception) {
         }
         
         yield;
