@@ -54,7 +54,7 @@ class IsChatAdministrator
 
     private function getChatAdministrators(): iterable
     {
-
+        yield;
         try {
                     $getChatAdministratorsUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getChatAdministrators?chat_id=' . $this->chat->getId()]);
 
