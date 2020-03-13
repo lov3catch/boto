@@ -194,6 +194,10 @@ class ModeratorHandler extends AbstractHandler
 //                                DownloadCallbackPipe $downloadCallbackPipe,
 //                                DefaultPipe $defaultPipe)
     {
+        $this->allSupportPipe = $allSupportPipe;
+
+
+
         $this->logger = $logger;
         $this->startPipe = $startPipe;
         $this->groupMessagePipe = $groupMessagePipe;
