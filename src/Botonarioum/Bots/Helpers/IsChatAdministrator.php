@@ -28,6 +28,7 @@ class IsChatAdministrator
 
     public function checkUser(User $user): bool
     {
+        return false;// todo: check this
         /** @var User $chatAdministrator */
         foreach ($this->getChatAdministrators() as $chatAdministrator) {
             if ($chatAdministrator->getId() === $user->getId()) return true;
