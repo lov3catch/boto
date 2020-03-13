@@ -7,6 +7,7 @@ namespace App\Botonarioum\Bots\Helpers;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\Chat;
 use Formapro\TelegramBot\User;
+use Throwable;
 use function Formapro\Values\set_values;
 
 class IsChatAdministrator
@@ -56,21 +57,20 @@ class IsChatAdministrator
 
     private function getChatAdministrators(): iterable
     {
-        yield;
 //        try {
-//                    $getChatAdministratorsUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getChatAdministrators?chat_id=' . $this->chat->getId()]);
-//
-//        $adminsJson = json_decode(file_get_contents($getChatAdministratorsUrl), true)['result'] ?? [];
-//        foreach ($adminsJson as $adminJson) {
-//            $admin = new User();
-//            set_values($admin, $adminJson['user']);
-//
-//            yield $admin;
+            $getChatAdministratorsUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getChatAdministrators?chat_id=' . $this->chat->getId()]);
+
+            $adminsJson = json_decode(file_get_contents($getChatAdministratorsUrl), true)['result'] ?? [];
+            foreach ($adminsJson as $adminJson) {
+                $admin = new User();
+                set_values($admin, $adminJson['user']);
+
+                yield $admin;
+            }
+//        } catch (Throwable $exception) {
+//            yield;
 //        }
-//        } catch(Throwable $exception) {
-//        }
-//
-//        yield;
+
 
     }
 }
