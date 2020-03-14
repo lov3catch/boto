@@ -1,0 +1,24 @@
+version: '3'
+services: 
+    web:
+        container_name: boto_php
+        build: ./Dockerfiles/php
+        volumes: 
+            - .:/var/www/boto
+        restart: on-failure
+    redis:
+        container_name: boto_redis
+        image: redis
+        restart: always
+    db:
+        container_name: boto_postgres
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: example
+    adminer:
+        container_name: boto_adminer
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080

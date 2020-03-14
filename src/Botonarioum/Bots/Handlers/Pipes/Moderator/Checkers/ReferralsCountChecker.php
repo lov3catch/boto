@@ -30,7 +30,7 @@ class ReferralsCountChecker
                 'group_id' => $update->getMessage()->getChat()->getId()]);
 
         if (count($referrals) < $minReferralsCount) {
-            throw new ReferralsCountException('Необходимо пригласить ' . $setting->getMinReferralsCount() . ' человек, вы пригласили ' . count($referrals) . '. Пригласите еще.');
+            throw new ReferralsCountException('Необходимо добавить ' . $setting->getMinReferralsCount() . ' человек, вы добавили ' . count($referrals) . '. Добавьте еще.');
         }
     }
 }
