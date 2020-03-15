@@ -65,7 +65,7 @@ class NewChatMemberPipe extends AbstractPipe
 
         $this->removeStandardGreeting($bot, $update);
 
-//        $this->removeLastGreeting($bot, $update);
+        $this->removeLastGreeting($bot, $update);
 
         $this->addNewGreeting($bot, $update, $setting);
 
@@ -85,15 +85,32 @@ class NewChatMemberPipe extends AbstractPipe
     }
 
 
-//    private function removeLastGreeting(Bot $bot, Update $update): void
-//    {
-//        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId()), 0, -1));
-//
-//        $this->client->del([RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId())]);
-//
-//        foreach ($elements as $element) {
-//            try {
-//                echo 'MODERATOR GREETING TO REMOVE: ' . $element . PHP_EOL;
+    private function removeLastGreeting(Bot $bot, Update $update): void
+    {
+        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId()), 0, -1));
+
+        $this->client->del([RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId())]);
+
+        foreach ($elements as $element) {
+            try {
+                echo 'MODERATOR GREETING TO REMOVE: ' . $element . PHP_EOL;
+
+                $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
+//                if ($this->client->exists($lastGreetingIdKey)) {
+                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$element));
+//                }
+
+            } catch (\Exception $exception) {
+                var_dump($exception);
+                $this->client->lpush(RedisKeys::makeLastGreetingsMessageIdKey(1), $element);
+            }
+        }
+    }
+
+
+//        try {
+//            $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
+//            var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey);
 //
 //                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$element));
 //            } catch (\Exception $exception) {
@@ -134,15 +151,8 @@ class NewChatMemberPipe extends AbstractPipe
 
         $newGreetingMessage = $bot->sendMessage($msg);
 
-        $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageQueueIdKey();
-        $data = json_encode([
-            'chat_id'    => $update->getMessage()->getChat()->getId(),
-            'message_id' => $newGreetingMessage->getMessageId(),
-            'token'      => $bot->getToken(),
-        ]);
-
-//        var_dump($data);
-        $this->client->lpush($lastGreetingIdKey, [$data]);
+        $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
+        $this->client->lpush($lastGreetingIdKey, [$newGreetingMessage->getMessageId()]);
     }
 
     private function removeStandardGreeting(Bot $bot, Update $update): void
