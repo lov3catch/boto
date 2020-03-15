@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\DeleteMessage;
+use Formapro\TelegramBot\Message;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Predis\Client;
@@ -78,42 +79,43 @@ class NewChatMemberPipe extends AbstractPipe
     public function isSupported(Update $update): bool
     {
         if ($update->getCallbackQuery()) return false;
+        if (!$update->getMessage() instanceof Message) return false;
 
         return ($update->getMessage()->getNewChatMember() instanceof ChatMember);
     }
 
 
-    private function removeLastGreeting(Bot $bot, Update $update): void
-    {
-        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId()), 0, -1));
-
-        $this->client->del([RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId())]);
-
-        foreach ($elements as $element) {
-            try {
-                echo 'MODERATOR GREETING TO REMOVE: ' . $element . PHP_EOL;
-
-                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$element));
-            } catch (\Exception $exception) {
-                $this->client->lpush(RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId()), $element);
-            }
-        }
-
-
-//        try {
-//            $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageQueueIdKey();
-//            var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey);
+//    private function removeLastGreeting(Bot $bot, Update $update): void
+//    {
+//        $elements = array_unique($this->client->lrange(RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId()), 0, -1));
 //
-////            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
-//            if ($this->client->exists($lastGreetingIdKey)) {
-//                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
-//            } else {
-//                var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey . ' NOT FOUND!');
+//        $this->client->del([RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId())]);
+//
+//        foreach ($elements as $element) {
+//            try {
+//                echo 'MODERATOR GREETING TO REMOVE: ' . $element . PHP_EOL;
+//
+//                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$element));
+//            } catch (\Exception $exception) {
+//                $this->client->lpush(RedisKeys::makeLastGreetingsMessageQueueIdKey($update->getMessage()->getChat()->getId()), $element);
 //            }
-//        } catch (\Exception $exception) {
-//            var_dump('GREETING EXCEPTION: ' . $exception->getMessage());
 //        }
-    }
+//
+//
+////        try {
+////            $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageQueueIdKey();
+////            var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey);
+////
+//////            $lastGreetingIdKey = implode(':', ['moderator', 'last_greeting', $update->getMessage()->getChat()->getId()]);
+////            if ($this->client->exists($lastGreetingIdKey)) {
+////                $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), (int)$this->client->get($lastGreetingIdKey)));
+////            } else {
+////                var_dump('GREETING ID TO DELETE: ' . $lastGreetingIdKey . ' NOT FOUND!');
+////            }
+////        } catch (\Exception $exception) {
+////            var_dump('GREETING EXCEPTION: ' . $exception->getMessage());
+////        }
+//    }
 
     private function addNewGreeting(Bot $bot, Update $update, ModeratorSetting $setting): void
     {
@@ -134,7 +136,7 @@ class NewChatMemberPipe extends AbstractPipe
 
         $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageQueueIdKey();
         $data = json_encode([
-            'group_id'   => $update->getMessage()->getChat()->getId(),
+            'chat_id'    => $update->getMessage()->getChat()->getId(),
             'message_id' => $newGreetingMessage->getMessageId(),
             'token'      => $bot->getToken(),
         ]);

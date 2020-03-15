@@ -46,22 +46,31 @@ class IsChatAdministrator
 
         /** @var User $chatAdministrator */
         foreach ($this->getChatAdministrators() as $chatAdministrator) {
+            if (!$chatAdministrator instanceof User) continue;
             if ($chatAdministrator->getId() === $me->getId()) return true;
         }
 
         return false;
     }
 
-    private function getChatAdministrators(): iterable
+    private function getChatAdministrators(): array
     {
-        $getChatAdministratorsUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getChatAdministrators?chat_id=' . $this->chat->getId()]);
+        $admins = [];
 
-        $adminsJson = json_decode(file_get_contents($getChatAdministratorsUrl), true)['result'] ?? [];
-        foreach ($adminsJson as $adminJson) {
-            $admin = new User();
-            set_values($admin, $adminJson['user']);
+        try {
+            $getChatAdministratorsUrl = implode('/', ['https://api.telegram.org', 'bot' . $this->bot->getToken(), 'getChatAdministrators?chat_id=' . $this->chat->getId()]);
 
-            yield $admin;
+            $adminsJson = json_decode(file_get_contents($getChatAdministratorsUrl), true)['result'] ?? [];
+            foreach ($adminsJson as $adminJson) {
+                $admin = new User();
+                set_values($admin, $adminJson['user']);
+
+                $admins[] = $admin;
+            }
+        } catch (\Throwable $exception) {
+            echo 'ERROR: ' . $exception->getMessage();
         }
+
+        return $admins;
     }
 }

@@ -194,6 +194,9 @@ class ModeratorHandler extends AbstractHandler
 //                                DownloadCallbackPipe $downloadCallbackPipe,
 //                                DefaultPipe $defaultPipe)
     {
+        $this->allSupportPipe = $allSupportPipe;
+
+
         $this->logger = $logger;
         $this->startPipe = $startPipe;
         $this->groupMessagePipe = $groupMessagePipe;
@@ -237,8 +240,12 @@ class ModeratorHandler extends AbstractHandler
     {
         $this->init();
 
-        foreach ($this->pipes as $pipe) {
-            if ($pipe->handle($bot, $update)) break;
+        try {
+            foreach ($this->pipes as $pipe) {
+                if ($pipe->handle($bot, $update)) break;
+            }
+        } catch (\Throwable $exception) {
+            var_dump('EXCEPTION: ' . $exception->getMessage());
         }
 
         return true;
