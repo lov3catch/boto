@@ -43,8 +43,6 @@ class MyGroupsPipe extends MessagePipe
             return true;
         }
 
-//        var_dump($myGroups);die;
-
         $groupInfoRepository = $this->em->getRepository(ModeratorGroup::class);
 
         $myGroupsInfo = $groupInfoRepository->findBy([
@@ -52,16 +50,18 @@ class MyGroupsPipe extends MessagePipe
                 return $group->getGroupId();
             }, $myGroups)]);
 
-//        var_dump($myGroupsInfo);die;
-
         $keyboard = [];
         /** @var ModeratorGroup $myGroupInfo */
         foreach ($myGroupsInfo as $myGroupInfo) {
             $callbackData = implode(':', ['group', 'settings', 'get', $myGroupInfo->getGroupId()]);
-            $keyboard[] = [InlineKeyboardButton::withCallbackData(ucfirst($myGroupInfo->getGroupTitle()), $callbackData), InlineKeyboardButton::withCallbackData('⚙️ Настройки', $callbackData)];
+            $callbackData = implode(':', ['group', 'menu', 'get', $myGroupInfo->getGroupId()]);
+            $keyboard[] = [
+                InlineKeyboardButton::withCallbackData(ucfirst($myGroupInfo->getGroupTitle()), $callbackData)
+            ];
+//                InlineKeyboardButton::withCallbackData('⚙️ Настройки', $callbackData),
+//                InlineKeyboardButton::withCallbackData('🚫 Баны', $callbackData)];
         }
 
-//        $markup = new InlineKeyboardMarkup($keyboard);
         $message = new SendMessage(
             $update->getMessage()->getChat()->getId(),
             'Вот список ваших групп: (всего ' . count($myGroupsInfo) . ' штук).'

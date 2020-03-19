@@ -144,9 +144,11 @@ class NewChatMemberPipe extends AbstractPipe
             $update->getMessage()->getChat()->getId(),
             $greeting
         );
+        $msg->setParseMode('Markdown');
 
         if ($setting->getGreetingButtons()) {
             $msg->setReplyMarkup((new BuildKeyboard())->build($setting->getGreetingButtons()));
+
         }
 
         $newGreetingMessage = $bot->sendMessage($msg);

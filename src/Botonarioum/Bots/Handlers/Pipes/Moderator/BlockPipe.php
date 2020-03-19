@@ -62,13 +62,20 @@ class BlockPipe extends CommandPipe
                 $update->getMessage()->getFrom()->getId(),
                 $update->getMessage()->getChat()->getId());
 
-        $options = ['member_id' => $update->getMessage()->getFrom()->getId()];
+        $options = ['member_id' => $message->getReplyToMessage()->getFrom()->getId()];
+//        $defaults = [
+//            'member_id'         => $update->getMessage()->getFrom()->getId(),
+//            'member_first_name' => $update->getMessage()->getFrom()->getFirstName() ?? '',
+//            'member_username'   => $update->getMessage()->getFrom()->getUsername() ?? '',
+//            'member_is_bot'     => $update->getMessage()->getFrom()->isBot(),
+//        ];
         $defaults = [
-            'member_id'         => $update->getMessage()->getFrom()->getId(),
-            'member_first_name' => $update->getMessage()->getFrom()->getFirstName() ?? '',
-            'member_username'   => $update->getMessage()->getFrom()->getUsername() ?? '',
-            'member_is_bot'     => $update->getMessage()->getFrom()->isBot(),
+            'member_id'         => $message->getReplyToMessage()->getFrom()->getId() ?? '',
+            'member_first_name' => $message->getReplyToMessage()->getFrom()->getFirstName() ?? '',
+            'member_username'   => $message->getReplyToMessage()->getFrom()->getUsername() ?? '',
+            'member_is_bot'     => false
         ];
+
         $this->em->getRepository(ModeratorMember::class)->getOrCreate($options, $defaults);
 
         $bot->sendMessage(new SendMessage(

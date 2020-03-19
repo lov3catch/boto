@@ -9,6 +9,10 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockAllPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisableLinkPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\EnableLinkPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupBlockListDetailPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupBlockRemovePipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupGetBlockListPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMenuPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessageEditPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessageReplyPipe;
@@ -164,6 +168,22 @@ class ModeratorHandler extends AbstractHandler
      * @var GroupMessageEditPipe
      */
     private $groupMessageEditPipe;
+    /**
+     * @var GroupMenuPipe
+     */
+    private $groupMenuPipe;
+    /**
+     * @var GroupGetBlockListPipe
+     */
+    private $groupGetBlockListPipe;
+    /**
+     * @var GroupBlockListDetailPipe
+     */
+    private $blockListDetailPipe;
+    /**
+     * @var GroupBlockRemovePipe
+     */
+    private $blockRemovePipe;
 
     public function __construct(LoggerInterface $logger,
                                 StartPipe $startPipe,
@@ -185,7 +205,11 @@ class ModeratorHandler extends AbstractHandler
                                 BlockPipe $blockPipe,
                                 BlockAllPipe $blockAllPipe,
                                 BlockAllGlobalPipe $blockAllGlobalPipe,
-                                GroupMessageEditPipe $groupMessageEditPipe)
+                                GroupMessageEditPipe $groupMessageEditPipe,
+                                GroupMenuPipe $groupMenuPipe,
+                                GroupGetBlockListPipe $groupGetBlockListPipe,
+                                GroupBlockListDetailPipe $blockListDetailPipe,
+                                GroupBlockRemovePipe $blockRemovePipe)
 //                                DonatePipe $donatePipe,
 //                                BotonarioumPipe $botonarioumPipe,
 //                                MessagePipe $messagePipe,
@@ -195,8 +219,10 @@ class ModeratorHandler extends AbstractHandler
 //                                DefaultPipe $defaultPipe)
     {
         $this->allSupportPipe = $allSupportPipe;
+        $this->blockRemovePipe = $blockRemovePipe;
 
 
+        $this->blockListDetailPipe = $blockListDetailPipe;
         $this->logger = $logger;
         $this->startPipe = $startPipe;
         $this->groupMessagePipe = $groupMessagePipe;
@@ -218,6 +244,8 @@ class ModeratorHandler extends AbstractHandler
         $this->blockAllPipe = $blockAllPipe;
         $this->blockAllGlobalPipe = $blockAllGlobalPipe;
         $this->groupMessageEditPipe = $groupMessageEditPipe;
+        $this->groupMenuPipe = $groupMenuPipe;
+        $this->groupGetBlockListPipe = $groupGetBlockListPipe;
 
 //        $this->donatePipe = $donatePipe;
 //        $this->botonarioumPipe = $botonarioumPipe;
@@ -259,6 +287,10 @@ class ModeratorHandler extends AbstractHandler
             ->add($this->disableLinkPipe)
             ->add($this->enableLinkPipe)
             ->add($this->myGroupsPipe)          // message
+            ->add($this->groupMenuPipe)
+            ->add($this->groupGetBlockListPipe)
+            ->add($this->blockListDetailPipe)
+            ->add($this->blockRemovePipe)
             ->add($this->groupSettingsPipe)     // callback
 
             ->add($this->blockPipe)
