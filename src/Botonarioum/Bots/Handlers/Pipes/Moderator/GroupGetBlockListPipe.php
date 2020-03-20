@@ -34,7 +34,7 @@ class GroupGetBlockListPipe extends CallbackPipe
 
         $groupOwnersRepository = $this->em->getRepository(ModeratorBlock::class);
 //
-        $blockList = $groupOwnersRepository->findBy(['admin_id' => $update->getCallbackQuery()->getFrom()->getId()]);
+        $blockList = $groupOwnersRepository->findBy(['admin_id' => $update->getCallbackQuery()->getFrom()->getId()], ['created_at' => 'DESC']);
 //
         if ([] === $blockList) {
             $bot->sendMessage(new SendMessage(
