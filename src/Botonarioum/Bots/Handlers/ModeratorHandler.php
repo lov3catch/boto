@@ -282,7 +282,7 @@ class ModeratorHandler extends AbstractHandler
     private function init(): void
     {
         $this
-//            ->add($this->allSupportPipe)
+            ->add($this->allSupportPipe)
             ->add($this->startPipe)             // message
             ->add($this->disableLinkPipe)
             ->add($this->enableLinkPipe)
