@@ -22,6 +22,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class NewChatMemberPipe extends AbstractPipe
 {
+    private const HTML_PARSE_MODE = 'HTML',
+        MARKDOWN_PARSE_MODE = 'Markdown',
+        MARKDOWN_V2_PARSE_MODE = 'MarkdownV2';
+
     /**
      * @var EventDispatcherInterface
      */
@@ -144,7 +148,7 @@ class NewChatMemberPipe extends AbstractPipe
             $update->getMessage()->getChat()->getId(),
             $greeting
         );
-        $msg->setParseMode('Markdown');
+        $msg->setParseMode(self::HTML_PARSE_MODE);
 
         if ($setting->getGreetingButtons()) {
             $msg->setReplyMarkup((new BuildKeyboard())->build($setting->getGreetingButtons()));
