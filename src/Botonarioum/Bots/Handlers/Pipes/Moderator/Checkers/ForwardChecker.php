@@ -10,25 +10,20 @@ use Formapro\TelegramBot\Message;
 use Formapro\TelegramBot\Update;
 use function Formapro\Values\get_values;
 
-class RepostChecker
+class ForwardChecker
 {
     public function check(Update $update, ModeratorSetting $setting): void
     {
+
+
         if (!$update->getMessage() instanceof Message) return;
+
+        if ($setting->getAllowForward() === true) return;
+
         $messageData = get_values($update->getMessage());
 
-//        var_dump($messageData['forward_from_chat']);die;
-
-        if (isset($messageData['forward_from_chat'])) {
+        if (isset($messageData['forward_from_chat']) || isset($messageData['forward_from'])) {
             throw new RepostException();
         }
-//        var_dump(get_values($update->getMessage()));die;
-//
-//
-//        $message = $update->getMessage()->getText() ?? '';
-//
-//        if (count(explode(' ', $message)) > $setting->getMaxMessageWordsCount()) {
-//            throw new WordsCountException();
-//        }
     }
 }

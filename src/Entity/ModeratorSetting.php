@@ -76,6 +76,11 @@ class ModeratorSetting
      */
     private $updated_at;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $allow_forward;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -221,6 +226,18 @@ class ModeratorSetting
     public function setUpdatedAt(\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getAllowForward(): ?bool
+    {
+        return $this->allow_forward;
+    }
+
+    public function setAllowForward(bool $allow_forward): self
+    {
+        $this->allow_forward = $allow_forward;
 
         return $this;
     }

@@ -11,7 +11,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\DailyMessagesCountChe
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\HoldTimeChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\LinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ReferralsCountChecker;
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\RepostChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ForwardChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\WordsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\CharsCountException;
@@ -84,11 +84,11 @@ class GroupMessagePipe extends BaseMessagePipe
      */
     private $client;
     /**
-     * @var RepostChecker
+     * @var ForwardChecker
      */
     private $repostChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, RepostChecker $repostChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
     {
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;

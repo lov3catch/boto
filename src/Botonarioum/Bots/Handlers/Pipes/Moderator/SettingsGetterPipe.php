@@ -62,6 +62,21 @@ class SettingsGetterPipe extends CallbackPipe
             $message = 'Изменить кнопки под приветствием.';
         }
 
+        if ('is_forward_enable' === $selectedSetting) {
+            $groupId = explode(':', $update->getCallbackQuery()->getData())[4];
+
+            $forwardEnableCallback = implode(':', ['moderator', 'group', 'settings', 'forward', 'enable', $groupId]);
+            $forwardDisableCallback = implode(':', ['moderator', 'group', 'settings', 'forward', 'disable', $groupId]);
+
+            $message = 'Разрешить/запретить пользователям группы перепост сообщений?';
+            $sendMessage = new SendMessage($update->getCallbackQuery()->getMessage()->getChat()->getId(), $message);
+            $sendMessage->setReplyMarkup(new InlineKeyboardMarkup([[InlineKeyboardButton::withCallbackData('Разрешить', $forwardEnableCallback), InlineKeyboardButton::withCallbackData('Запретить', $forwardDisableCallback)]]));
+            $bot->sendMessage($sendMessage);
+
+            return true;
+        }
+
+
         if ('is_link_enable' === $selectedSetting) {
             $groupId = explode(':', $update->getCallbackQuery()->getData())[4];
 

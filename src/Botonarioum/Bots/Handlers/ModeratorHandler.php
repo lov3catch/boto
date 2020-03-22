@@ -7,7 +7,9 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\AllSupportPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockAllGlobalPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockAllPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\BlockPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisableForwardPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisableLinkPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\EnableForwardPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\EnableLinkPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupBlockListDetailPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupBlockRemovePipe;
@@ -184,6 +186,14 @@ class ModeratorHandler extends AbstractHandler
      * @var GroupBlockRemovePipe
      */
     private $blockRemovePipe;
+    /**
+     * @var DisableForwardPipe
+     */
+    private $disableForwardPipe;
+    /**
+     * @var EnableForwardPipe
+     */
+    private $enableForwardPipe;
 
     public function __construct(LoggerInterface $logger,
                                 StartPipe $startPipe,
@@ -209,7 +219,9 @@ class ModeratorHandler extends AbstractHandler
                                 GroupMenuPipe $groupMenuPipe,
                                 GroupGetBlockListPipe $groupGetBlockListPipe,
                                 GroupBlockListDetailPipe $blockListDetailPipe,
-                                GroupBlockRemovePipe $blockRemovePipe)
+                                GroupBlockRemovePipe $blockRemovePipe,
+                                EnableForwardPipe $enableForwardPipe,
+                                DisableForwardPipe $disableForwardPipe)
 //                                DonatePipe $donatePipe,
 //                                BotonarioumPipe $botonarioumPipe,
 //                                MessagePipe $messagePipe,
@@ -239,6 +251,10 @@ class ModeratorHandler extends AbstractHandler
         $this->allSupportPipe = $allSupportPipe;
         $this->disableLinkPipe = $disableLinkPipe;
         $this->enableLinkPipe = $enableLinkPipe;
+
+        $this->disableForwardPipe = $disableForwardPipe;
+        $this->enableForwardPipe = $enableForwardPipe;
+
         $this->removeBotFromGroup = $removeBotFromGroupPipe;
         $this->blockPipe = $blockPipe;
         $this->blockAllPipe = $blockAllPipe;
@@ -284,6 +300,8 @@ class ModeratorHandler extends AbstractHandler
         $this
 //            ->add($this->allSupportPipe)
             ->add($this->startPipe)             // message
+            ->add($this->disableForwardPipe)
+            ->add($this->enableForwardPipe)
             ->add($this->disableLinkPipe)
             ->add($this->enableLinkPipe)
             ->add($this->myGroupsPipe)          // message

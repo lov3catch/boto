@@ -6,6 +6,7 @@ use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\Message;
 use function Formapro\Values\get_object;
 use function Formapro\Values\get_objects;
+use function Formapro\Values\get_value;
 
 class MessageDTO extends Message
 {
@@ -17,6 +18,11 @@ class MessageDTO extends Message
     public function __construct(Message $message)
     {
         $this->message = $message;
+    }
+
+    public function getCaption(): ?string
+    {
+        return get_value($this->message, 'caption');
     }
 
     public function getEntities(): ?\Generator
