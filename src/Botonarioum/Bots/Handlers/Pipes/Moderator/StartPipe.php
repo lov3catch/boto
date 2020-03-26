@@ -19,6 +19,7 @@ class StartPipe extends AbstractPipe
 {
     /**
      * @var EntityManager
+     * @example
      */
     private $em;
 
