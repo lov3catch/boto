@@ -113,6 +113,9 @@ class MyGroupsPipe extends MessagePipe
 
     public function isSupported(Update $update): bool
     {
-        return parent::isSupported($update) && $update->getMessage()->getText() === StartPipe::GROUPS_KEY;
+        if (parent::isSupported($update) === false) return false;
+        if ($update->getMessage()->getChat()->getId() < 0) return false;
+
+        return $update->getMessage()->getText() === StartPipe::GROUPS_KEY;
     }
 }
