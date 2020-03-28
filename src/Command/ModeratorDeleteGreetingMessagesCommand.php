@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Botonarioum\Bots\Helpers\RedisKeys;
-use App\Repository\ModeratorGroupRepository;
 use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\DeleteMessage;
@@ -22,16 +21,11 @@ class ModeratorDeleteGreetingMessagesCommand extends Command
      * @var Client
      */
     private $client;
-    /**
-     * @var ModeratorGroupRepository
-     */
-    private $groupRepository;
 
-    public function __construct(RedisStorage $redisStorage, ModeratorGroupRepository $groupRepository, string $name = null)
+    public function __construct(RedisStorage $redisStorage, string $name = null)
     {
         parent::__construct($name);
         $this->client = $redisStorage->client();
-        $this->groupRepository = $groupRepository;
     }
 
 
@@ -49,9 +43,9 @@ class ModeratorDeleteGreetingMessagesCommand extends Command
         $io->title('Remove greeting messages');
 
         while (true) {
-            $groups = $this->groupRepository->findAll();
-            foreach ($groups as $group) {
-                $key = RedisKeys::makeLastGreetingsMessageIdKey($group->getGroupId());
+            $groupIds = json_decode(file_get_contents('https://boto-all-in-one.herokuapp.com/group_ids'));
+            foreach ($groupIds as $groupId) {
+                $key = RedisKeys::makeLastGreetingsMessageIdKey($groupId);
                 try {
                     $this->clear($key, $io);
                 } catch (\Exception $exception) {

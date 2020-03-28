@@ -4,14 +4,17 @@
 
 namespace App\Controller;
 
+use App\Entity\ModeratorGroup;
 use App\Entity\ModeratorGroupOwners;
+use App\Repository\ModeratorGroupRepository;
 use App\Storages\RedisStorage;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DefaultController
+class DefaultController extends AbstractController
 {
     /**
      * @Route("/", name="homepage")
@@ -77,5 +80,17 @@ class DefaultController
     public function phpinfo()
     {
         echo phpinfo();
+    }
+
+    /**
+     * @Route("/group_ids", name="group_ids")
+     * @param ModeratorGroupRepository $groupRepository
+     * @return JsonResponse
+     */
+    public function groups(ModeratorGroupRepository $groupRepository): JsonResponse
+    {
+        return $this->json(array_map(function (ModeratorGroup $group) {
+            return $group->getGroupId();
+        }, $groupRepository->findAll()));
     }
 }
