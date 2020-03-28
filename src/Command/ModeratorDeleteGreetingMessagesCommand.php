@@ -74,6 +74,8 @@ class ModeratorDeleteGreetingMessagesCommand extends Command
 
                 $data = json_decode($greeting, true);
 
+                if ($data['token'] ?? false) continue;
+
                 $bot = new Bot($data['token']);
                 $chatId = $data['chat_id'];
                 $messageId = $data['message_id'];
