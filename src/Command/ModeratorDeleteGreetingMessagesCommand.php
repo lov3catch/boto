@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Botonarioum\Bots\Helpers\RedisKeys;
+use App\Repository\ModeratorGroupRepository;
 use App\Storages\RedisStorage;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\DeleteMessage;
@@ -21,11 +22,16 @@ class ModeratorDeleteGreetingMessagesCommand extends Command
      * @var Client
      */
     private $client;
+    /**
+     * @var ModeratorGroupRepository
+     */
+    private $groupRepository;
 
-    public function __construct(RedisStorage $redisStorage, string $name = null)
+    public function __construct(RedisStorage $redisStorage, ModeratorGroupRepository $groupRepository, string $name = null)
     {
         parent::__construct($name);
         $this->client = $redisStorage->client();
+        $this->groupRepository = $groupRepository;
     }
 
 
@@ -42,30 +48,35 @@ class ModeratorDeleteGreetingMessagesCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Remove greeting messages');
 
-        $key = RedisKeys::makeLastGreetingsMessageQueueIdKey();
-
         while (true) {
-            try {
-                $this->clear($key);
-            } catch (\Exception $exception) {
-                var_dump($exception->getMessage());
+            $groups = $this->groupRepository->findAll();
+            foreach ($groups as $group) {
+                $key = RedisKeys::makeLastGreetingsMessageIdKey($group->getGroupId());
+                try {
+                    $this->clear($key, $io);
+                } catch (\Exception $exception) {
+                    var_dump($exception->getMessage());
+                }
             }
+
+            sleep(5);
         }
 
         return 0;
     }
 
-    private function clear(string $greetingsRedisKey): void
+    private function clear(string $greetingsRedisKey, SymfonyStyle $io): void
     {
         // если нет чего удалять - выходим
         if ((int)$this->client->llen($greetingsRedisKey) < 2) return;
 
         $lastGreeting = $this->client->lpop($greetingsRedisKey);
-        $otherGreeting = array_unique($this->client->lrange($greetingsRedisKey, 0, -1));
+        $otherGreeting = array_values(array_unique($this->client->lrange($greetingsRedisKey, 0, -1)));
+        $this->client->del([$greetingsRedisKey]);
 
         foreach ($otherGreeting as $greeting) {
             try {
-                echo 'MODERATOR REMOVE GREETING';
+                $io->note('MODERATOR REMOVE GREETING');
 
                 $data = json_decode($greeting, true);
 
@@ -73,16 +84,18 @@ class ModeratorDeleteGreetingMessagesCommand extends Command
                 $chatId = $data['chat_id'];
                 $messageId = $data['message_id'];
 
-                $bot->deleteMessage(new DeleteMessage($chatId, $messageId));
+                $isDeleted = $bot->deleteMessage(new DeleteMessage($chatId, $messageId));
+
+                if ($isDeleted === false) {
+                    $this->client->lpush($greetingsRedisKey, [$greeting]);
+                    $unremovedGreeting[] = $greeting;
+                }
+
             } catch (\Throwable $exception) {
                 var_dump($exception->getMessage());
             }
         }
 
-        $this->client->del([$greetingsRedisKey]);
-
-//        if ($lastGreeting) {
         $this->client->rpush($greetingsRedisKey, [$lastGreeting]);
-//        }
     }
 }

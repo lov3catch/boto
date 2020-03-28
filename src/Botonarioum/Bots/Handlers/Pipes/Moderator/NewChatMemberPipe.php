@@ -69,7 +69,7 @@ class NewChatMemberPipe extends AbstractPipe
 
         $this->removeStandardGreeting($bot, $update);
 
-        $this->removeLastGreeting($bot, $update);
+//        $this->removeLastGreeting($bot, $update);
 
         $this->addNewGreeting($bot, $update, $setting);
 
@@ -158,7 +158,11 @@ class NewChatMemberPipe extends AbstractPipe
         $newGreetingMessage = $bot->sendMessage($msg);
 
         $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
-        $this->client->lpush($lastGreetingIdKey, [$newGreetingMessage->getMessageId()]);
+        $this->client->lpush($lastGreetingIdKey, json_encode([
+            'token'      => $bot->getToken(),
+            'chat_id'    => $update->getMessage()->getChat()->getId(),
+            'message_id' => $newGreetingMessage->getMessageId()
+        ]));
     }
 
     private function removeStandardGreeting(Bot $bot, Update $update): void
