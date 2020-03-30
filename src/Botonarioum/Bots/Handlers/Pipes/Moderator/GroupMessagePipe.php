@@ -12,6 +12,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\HoldTimeChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\LinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ReferralsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ForwardChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\StopWordChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\WordsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\CharsCountException;
@@ -20,6 +21,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\HoldTimeException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\RepostException;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\StopWordException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
@@ -87,9 +89,14 @@ class GroupMessagePipe extends BaseMessagePipe
      * @var ForwardChecker
      */
     private $repostChecker;
+    /**
+     * @var StopWordChecker
+     */
+    private $stopWordChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker, StopWordChecker $stopWordChecker)
     {
+        $this->stopWordChecker = $stopWordChecker;
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;
         $this->charsCountChecker = $charsCountChecker;
@@ -146,6 +153,7 @@ class GroupMessagePipe extends BaseMessagePipe
         try {
 
 
+            $this->stopWordChecker->check($update, $setting);
             $this->repostChecker->check($update, $setting);
             $this->linkChecker->check($update, $setting);
             $this->blockChecker->check($update, $setting);
@@ -188,6 +196,8 @@ class GroupMessagePipe extends BaseMessagePipe
             $errorMessage = 'Вы недавно подключились в группу. Скоро сможете опубликовать пост. Период молчания не закончился. Подождите.';
         } catch (BanException $banException) {
             $errorMessage = 'Пользователь забанен админом.';
+        } catch (StopWordException $stopWordException) {
+            $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
         } catch (\Exception $exception) {
             $errorMessage = 'Что-то пошло не так :(';
 //            $errorMessage = $exception->getMessage();

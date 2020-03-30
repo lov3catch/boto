@@ -34,6 +34,10 @@ class SettingsGetterPipe extends CallbackPipe
 
         $selectedSetting = explode(':', $update->getCallbackQuery()->getData())[3];
 
+        if ('stop_words' === $selectedSetting) {
+            $message = 'Список стоп-слов' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . implode(', ', $setting->getStopWords()) . '.';
+        }
+
         if ('max_daily_messages_count' === $selectedSetting) {
             $message = 'Максимальное количество сообщений в день от определенного пользователя.' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getMaxDailyMessageCount() . '.';
         }

@@ -35,6 +35,10 @@ class SettingsChangerPipe extends CallbackPipe
     {
         $selectedSetting = explode(':', $update->getCallbackQuery()->getData())[3];
 
+        if ('stop_words' === $selectedSetting) {
+            $message = 'Вы собираетесь изменить список СТОП-слов. Сообщение, в котором будет обнаружено хоть одно слово из этого списка - будет заблокировано. Отправьте список слов через запятую, например: казино, негодяй, кукушка';
+        }
+
         if ('max_daily_messages_count' === $selectedSetting) {
             $message = 'Вы собираетесь изменить максимальное количество сообщений в день от определенного пользователя. Допустимые значения: от 0 до 9999.';
         }

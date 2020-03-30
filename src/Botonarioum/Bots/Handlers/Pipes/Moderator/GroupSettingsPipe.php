@@ -24,7 +24,8 @@ class GroupSettingsPipe extends CallbackPipe
             'max_chars_count'          => 'Максимальное к-во символов в сообщении',
             'max_words_count'          => 'Максимальное к-во слов в сообщении',
             'is_link_enable'           => 'Разрешить/Запретить ссылки',
-            'is_forward_enable'        => 'Разрешить/Запретить перепосты'
+            'is_forward_enable'        => 'Разрешить/Запретить перепосты',
+            'stop_words'               => 'Стоп-слова'
         ];
 
         $keyboard = [];

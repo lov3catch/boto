@@ -8,10 +8,11 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\BlockAll
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\BlockChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\CharsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\DailyMessagesCountChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\ForwardChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\HoldTimeChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\LinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\ReferralsCountChecker;
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\ForwardChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\StopWordChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\WordsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\CharsCountException;
@@ -20,6 +21,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\HoldTimeException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\RepostException;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\StopWordException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
@@ -87,9 +89,14 @@ class GroupMessageEditPipe extends BaseMessagePipe
      * @var ForwardChecker
      */
     private $repostChecker;
+    /**
+     * @var StopWordChecker
+     */
+    private $stopWordChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, StopWordChecker $stopWordChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
     {
+        $this->stopWordChecker = $stopWordChecker;
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;
         $this->charsCountChecker = $charsCountChecker;
@@ -122,6 +129,7 @@ class GroupMessageEditPipe extends BaseMessagePipe
         $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
 
         try {
+            $this->stopWordChecker->check($update, $setting);
             $this->repostChecker->check($update, $setting);
             $this->linkChecker->check($update, $setting);
             $this->blockChecker->check($update, $setting);
@@ -148,6 +156,8 @@ class GroupMessageEditPipe extends BaseMessagePipe
             $errorMessage = 'Вы недавно подключились в группу. Скоро сможете опубликовать пост. Период молчания не закончился. Подождите.';
         } catch (BanException $banException) {
             $errorMessage = 'Пользователь забанен админом.';
+        } catch (StopWordException $stopWordException) {
+            $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
         } catch (\Exception $exception) {
             $errorMessage = 'Что-то пошло не так :(';
         }

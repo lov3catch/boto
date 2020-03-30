@@ -90,7 +90,7 @@ class SettingsAwaitPipe extends MessagePipe
         ////////
 
         try {
-            if ($selectedSetting === 'greeting') {
+            if ($selectedSetting === 'greeting' || $selectedSetting === 'stop_words') {
                 Assertion::string($update->getMessage()->getText(), 'Должна быть строка');
                 Assertion::notBlank($update->getMessage()->getText(), 'Строка не может быть пустой');
             } else if ($selectedSetting === 'greeting_buttons') {
@@ -153,6 +153,11 @@ class SettingsAwaitPipe extends MessagePipe
 
     private function changeSettings(ModeratorSetting $setting, string $selectedSetting, $value): ModeratorSetting
     {
+        if ('stop_words' === $selectedSetting) {
+            $setting->setStopWords(array_map(function (string $str) {
+                return trim($str);
+            }, explode(',', $value)));
+        }
 
         if ('greeting_buttons' === $selectedSetting) {
             $setting->setGreetingButtons($value);

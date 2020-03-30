@@ -81,6 +81,11 @@ class ModeratorSetting
      */
     private $allow_forward;
 
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $stop_words = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -238,6 +243,18 @@ class ModeratorSetting
     public function setAllowForward(bool $allow_forward): self
     {
         $this->allow_forward = $allow_forward;
+
+        return $this;
+    }
+
+    public function getStopWords(): ?array
+    {
+        return $this->stop_words;
+    }
+
+    public function setStopWords(array $stop_words): self
+    {
+        $this->stop_words = $stop_words;
 
         return $this;
     }
