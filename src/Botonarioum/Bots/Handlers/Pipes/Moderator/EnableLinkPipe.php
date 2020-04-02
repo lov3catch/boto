@@ -51,7 +51,7 @@ class EnableLinkPipe extends CallbackPipe
             $this->em->flush();
 
             $answer = new AnswerCallbackQuery($update->getCallbackQuery()->getId());
-            $answer->setText('✅ Настройки обновленны');
+            $answer->setText('✅ Настройки обновлены');
 
             $bot->answerCallbackQuery($answer);
         } catch (\Exception $exception) {
