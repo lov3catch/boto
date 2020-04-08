@@ -37,7 +37,6 @@ class SettingsAwaitPipe extends MessagePipe
         if (!parent::isSupported($update)) return false;
 
         if (!$update->getMessage()) return false;
-//        if (!$update->getCallbackQuery()) return false;
 
         if ((bool)$update->getCallbackQuery()) {
             $fromId = $update->getCallbackQuery()->getFrom()->getId();
@@ -54,10 +53,6 @@ class SettingsAwaitPipe extends MessagePipe
         if (is_string($result)) return (bool)explode(':', $this->redisStorage->client()->get($target));
 
         return false;
-
-        return (bool)explode(':', $this->redisStorage->client()->get($target));
-
-
     }
 
     public function processing(Bot $bot, Update $update): bool
@@ -74,38 +69,27 @@ class SettingsAwaitPipe extends MessagePipe
 
 
         [$groupId, $selectedSetting] = explode(':', $this->redisStorage->client()->get($target));
-/////
-//
-//        try {
-//
-//            $markup = (new BuildKeyboard())->build($update->getMessage()->getText());
-//            $msg = new SendMessage($chatId, '$text');
-//            $msg->setReplyMarkup($markup);
-//            $bot->sendMessage($msg);
-//            var_dump($update->getMessage()->getText());
-//            die;
-//        } catch (\Exception $exception) {
-//            $bot->sendMessage(new SendMessage($chatId, 'Не верный формат записи'));
-//        }
-        ////////
 
         try {
             if ($selectedSetting === 'greeting' || $selectedSetting === 'stop_words') {
                 Assertion::string($update->getMessage()->getText(), 'Должна быть строка');
                 Assertion::notBlank($update->getMessage()->getText(), 'Строка не может быть пустой');
+            } else if ($selectedSetting === 'sleep_mode') {
+                Assertion::string($update->getMessage()->getText(), 'Должна быть строка');
+                Assertion::notBlank($update->getMessage()->getText(), 'Строка не может быть пустой');
+
+                if (strtolower(trim($update->getMessage()->getText())) !== 'off') {
+                    $pattern = "/^\s*(2[0-3]|[01]?[0-9]):([0-5]?[0-9])\s*-\s*(2[0-3]|[01]?[0-9]):([0-5]?[0-9])\s*$/";
+
+                    Assertion::regex($update->getMessage()->getText(), $pattern, 'Не верный формат вемени. Пример: 14:00 - 23:30, или например 22:00 - 06:25');
+                }
             } else if ($selectedSetting === 'greeting_buttons') {
-//                Assertion::digit($update->getMessage()->getText(), 'Число от 0 до 9999');
-//                (new BuildKeyboard())->build($update->getMessage()->getText());
-
-
                 $markup = (new BuildKeyboard())->build($update->getMessage()->getText());
                 $msg = new SendMessage($chatId, 'Так будут выглядить кнопки под приветствием:');
                 $msg->setReplyMarkup($markup);
                 $bot->sendMessage($msg);
 
             } else {
-                // greeting
-
                 Assertion::digit($update->getMessage()->getText(), 'Число от 0 до 9999');
             }
 
@@ -114,14 +98,6 @@ class SettingsAwaitPipe extends MessagePipe
 
             /** @var ModeratorSetting $setting */
             $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup((int)$groupId);
-//            $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
-//                           ->where('setting.is_default = :isd')
-//                           ->orWhere('setting.group_id = :grid')
-//                           ->orderBy('setting.is_default', 'ASC')
-//                           ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
-//                           ->getQuery()
-//                           ->getResult()[0];
-
 
             /** @var ModeratorSetting $newSettings */
             if ($setting->getIsDefault()) {
@@ -153,6 +129,19 @@ class SettingsAwaitPipe extends MessagePipe
 
     private function changeSettings(ModeratorSetting $setting, string $selectedSetting, $value): ModeratorSetting
     {
+        if ('sleep_mode' === $selectedSetting) {
+            if ('off' === strtolower(trim($value))) {
+                $setting->resetSleepMode();
+            } else {
+                [$from, $until] = $input = array_map(function (string $inp) {
+
+                    return trim($inp);
+                }, explode('-', trim($value)));
+                $setting->setSleepFrom($from);
+                $setting->setSleepUntil($until);
+            }
+        }
+
         if ('stop_words' === $selectedSetting) {
             $setting->setStopWords(array_map(function (string $str) {
                 return trim($str);

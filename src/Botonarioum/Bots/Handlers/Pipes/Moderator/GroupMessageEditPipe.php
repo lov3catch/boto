@@ -14,6 +14,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\LinkChec
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\ReferralsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\StopWordChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\WordsCountChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\SleepChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\CharsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\DailyMessageCountException;
@@ -21,6 +22,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\HoldTimeException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\RepostException;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\SleepException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\StopWordException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
@@ -93,9 +95,14 @@ class GroupMessageEditPipe extends BaseMessagePipe
      * @var StopWordChecker
      */
     private $stopWordChecker;
+    /**
+     * @var SleepChecker
+     */
+    private $sleepChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, StopWordChecker $stopWordChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, SleepChecker $sleepChecker, HoldTimeChecker $holdTimeChecker, StopWordChecker $stopWordChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
     {
+        $this->sleepChecker = $sleepChecker;
         $this->stopWordChecker = $stopWordChecker;
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;
@@ -129,6 +136,7 @@ class GroupMessageEditPipe extends BaseMessagePipe
         $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
 
         try {
+            $this->sleepChecker->check($update, $setting);
             $this->stopWordChecker->check($update, $setting);
             $this->repostChecker->check($update, $setting);
             $this->linkChecker->check($update, $setting);
@@ -140,6 +148,8 @@ class GroupMessageEditPipe extends BaseMessagePipe
             $this->holdTimeChecker->check($update, $setting);
 
             return true;
+        } catch (SleepException $sleepException) {
+            $errorMessage = 'Действует режим сна. С ' . $setting->getSleepFrom() . ' по ' . $setting->getSleepUntil() . ' Часовой пояс: Москва.';
         } catch (RepostException $repostException) {
             $errorMessage = 'Перепост сообщений запрещен.';
         } catch (CharsCountException $charsCountException) {

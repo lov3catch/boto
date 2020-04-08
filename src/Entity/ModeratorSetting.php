@@ -86,6 +86,16 @@ class ModeratorSetting
      */
     private $stop_words = [];
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sleep_from;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sleep_until;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -247,14 +257,48 @@ class ModeratorSetting
         return $this;
     }
 
-    public function getStopWords(): ?array
+    public function getStopWords(): array
     {
-        return $this->stop_words;
+        return array_filter($this->stop_words ?? [], function ($value) {
+            return '' !== $value;
+        });
     }
 
     public function setStopWords(array $stop_words): self
     {
         $this->stop_words = $stop_words;
+
+        return $this;
+    }
+
+    public function getSleepFrom(): ?string
+    {
+        return $this->sleep_from;
+    }
+
+    public function setSleepFrom(string $sleep_from): self
+    {
+        $this->sleep_from = $sleep_from;
+
+        return $this;
+    }
+
+    public function getSleepUntil(): ?string
+    {
+        return $this->sleep_until;
+    }
+
+    public function setSleepUntil(string $sleep_until): self
+    {
+        $this->sleep_until = $sleep_until;
+
+        return $this;
+    }
+
+    public function resetSleepMode(): self
+    {
+        $this->sleep_from = null;
+        $this->sleep_until = null;
 
         return $this;
     }

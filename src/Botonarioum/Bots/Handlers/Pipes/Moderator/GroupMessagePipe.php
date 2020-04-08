@@ -8,10 +8,11 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\BlockAllGlobalChecker
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\BlockChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\CharsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\DailyMessagesCountChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ForwardChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\HoldTimeChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\LinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ReferralsCountChecker;
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\ForwardChecker;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\SleepChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\StopWordChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\WordsCountChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\BanException;
@@ -21,6 +22,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\HoldTimeException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\ReferralsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\RepostException;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\SleepException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\StopWordException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\WordsCountException;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
@@ -93,9 +95,14 @@ class GroupMessagePipe extends BaseMessagePipe
      * @var StopWordChecker
      */
     private $stopWordChecker;
+    /**
+     * @var SleepChecker
+     */
+    private $sleepChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker, StopWordChecker $stopWordChecker)
+    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, SleepChecker $sleepChecker, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker, StopWordChecker $stopWordChecker)
     {
+        $this->sleepChecker = $sleepChecker;
         $this->stopWordChecker = $stopWordChecker;
         $this->referralsCountChecker = $referralsCountChecker;
         $this->wordsCountChecker = $wordsCountChecker;
@@ -153,6 +160,7 @@ class GroupMessagePipe extends BaseMessagePipe
         try {
 
 
+            $this->sleepChecker->check($update, $setting);
             $this->stopWordChecker->check($update, $setting);
             $this->repostChecker->check($update, $setting);
             $this->linkChecker->check($update, $setting);
@@ -179,6 +187,18 @@ class GroupMessagePipe extends BaseMessagePipe
 //            (new JoinToChatLogger($this->client))->set($update);        // todo: если группа старая - надо как-то создать запись о holdtime
 
             return true;
+        } catch (SleepException $sleepException) {
+            $errorMessage = 'Действует спящий режим.' . PHP_EOL;
+            $errorMessage .= 'Чат закрыт с ' . $setting->getSleepFrom() . ' до ' . $setting->getSleepUntil() . PHP_EOL;
+            $errorMessage .= 'Часовой пояс: Москва.';
+
+            $errorMessage .= PHP_EOL . PHP_EOL;
+
+            $errorMessage .= 'There is a sleep mode.' . PHP_EOL;
+            $errorMessage .= 'Chat is closed from ' . $setting->getSleepFrom() . ' to ' . $setting->getSleepUntil() . PHP_EOL;
+            $errorMessage .= 'Time zone: Moscow.';
+
+//            $errorMessage = 'Действует режим сна. С ' . $setting->getSleepFrom() . ' по ' . $setting->getSleepUntil() . ' Часовой пояс: Москва.';
         } catch (RepostException $repostException) {
             $errorMessage = 'Перепост сообщений запрещен.';
         } catch (CharsCountException $charsCountException) {
@@ -199,6 +219,7 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (StopWordException $stopWordException) {
             $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
         } catch (\Exception $exception) {
+//            var_dump($exception);die;
             $errorMessage = 'Что-то пошло не так :(';
 //            $errorMessage = $exception->getMessage();
         }

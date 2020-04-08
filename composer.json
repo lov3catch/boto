@@ -14,6 +14,7 @@
         "ext-iconv": "*",
         "beberlei/assert": "^3.2",
         "formapro/telegram-bot": "0.2.0",
+        "nesbot/carbon": "^2.0@dev",
         "predis/predis": "^1.1",
         "ramsey/uuid": "2.9",
         "rmccue/requests": "v1.7.0",

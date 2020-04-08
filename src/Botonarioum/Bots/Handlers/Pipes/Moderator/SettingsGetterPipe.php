@@ -6,6 +6,7 @@ namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\CallbackPipe;
 use App\Entity\ModeratorSetting;
+use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\InlineKeyboardButton;
@@ -33,6 +34,19 @@ class SettingsGetterPipe extends CallbackPipe
         $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
 
         $selectedSetting = explode(':', $update->getCallbackQuery()->getData())[3];
+
+        if ('sleep_mode' === $selectedSetting) {
+            if ($setting->getSleepFrom() === null && $setting->getSleepUntil() === null) {
+                $message = 'Режим сна' . PHP_EOL . 'Функция не активна.';
+            } else {
+                $message = 'Режим сна' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getSleepFrom() . ' - ' . $setting->getSleepUntil();
+                $message .= PHP_EOL;
+                $message .= PHP_EOL . 'Серверное время: ' . Carbon::now()->toRfc850String();
+                $message .= PHP_EOL . 'Московское время: ' . Carbon::now(new \DateTimeZone('Europe/Moscow'))->toRfc850String();
+            }
+
+
+        }
 
         if ('stop_words' === $selectedSetting) {
             $message = 'Список стоп-слов' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . implode(', ', $setting->getStopWords()) . '.';
