@@ -96,6 +96,11 @@ class ModeratorSetting
      */
     private $sleep_until;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $greeting_files = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -299,6 +304,18 @@ class ModeratorSetting
     {
         $this->sleep_from = null;
         $this->sleep_until = null;
+
+        return $this;
+    }
+
+    public function getGreetingFiles(): ?array
+    {
+        return $this->greeting_files;
+    }
+
+    public function setGreetingFiles(?array $greeting_files): self
+    {
+        $this->greeting_files = $greeting_files;
 
         return $this;
     }

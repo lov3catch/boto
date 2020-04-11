@@ -14,7 +14,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\DeleteMessage;
+use Formapro\TelegramBot\FileId;
+use Formapro\TelegramBot\GetFile;
 use Formapro\TelegramBot\Message;
+use Formapro\TelegramBot\SendDocument;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Predis\Client;
@@ -72,6 +75,7 @@ class NewChatMemberPipe extends AbstractPipe
 //        $this->removeLastGreeting($bot, $update);
 
         $this->addNewGreeting($bot, $update, $setting);
+        $this->addNewGreetingMedia($bot, $update, $setting);
 
         // todo: логировать JoinToChatLogger
         // todo: тут баг в том, что мы трекаем подключение пользователя в группу, но только одного, а их может быть несколько
@@ -163,6 +167,48 @@ class NewChatMemberPipe extends AbstractPipe
             'chat_id'    => $update->getMessage()->getChat()->getId(),
             'message_id' => $newGreetingMessage->getMessageId()
         ]));
+    }
+
+    private function addNewGreetingMedia(Bot $bot, Update $update, ModeratorSetting $setting): void
+    {
+        if (null === $setting->getGreetingFiles()) return;
+
+        try {
+            $updateData = $setting->getGreetingFiles();
+
+            if (isset($updateData['message']['video'])) {
+                $message = 'VIDEO';
+                $fileId = $updateData['message']['video']['file_id'];
+            }
+
+            if (isset($updateData['message']['audio'])) {
+                $message = 'AUDIO';
+                $fileId = $updateData['message']['audio']['file_id'];
+            }
+
+            if (isset($updateData['message']['animation'])) {
+                $message = 'ANIMATION';
+                $fileId = $updateData['message']['animation']['file_id'];
+            }
+
+            if (isset($updateData['message']['photo'])) {
+                $message = 'PHOTO';
+                $photoInstances = $updateData['message']['photo'];
+                $photo = array_pop($photoInstances);
+                $fileId = $photo['file_id'];
+            }
+
+            if (isset($updateData['message']['document'])) {
+                $message = 'DOCUMENT';
+                $fileId = $updateData['message']['document']['file_id'];
+            }
+
+            $bot->sendDocument(SendDocument::withFileId($update->getMessage()->getChat()->getId(), new FileId($fileId)));
+        } catch (\Throwable $exception) {
+            //
+        }
+
+
     }
 
     private function removeStandardGreeting(Bot $bot, Update $update): void

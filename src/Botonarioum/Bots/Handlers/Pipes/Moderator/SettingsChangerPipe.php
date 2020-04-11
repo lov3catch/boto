@@ -35,6 +35,14 @@ class SettingsChangerPipe extends CallbackPipe
     {
         $selectedSetting = explode(':', $update->getCallbackQuery()->getData())[3];
 
+        if ('greeting_files' === $selectedSetting) {
+            $message = 'Добавление медиа-файлов под приветствием пользователей.';
+            $message .= PHP_EOL;
+            $message .= 'Поддерживаемые форматы: .gif, .pdf, .mp3, .zip, .txt';
+            $message .= PHP_EOL . PHP_EOL;
+            $message .= 'Отправьте: off - чтобы деактивировать функцию.';
+        }
+
         if ('sleep_mode' === $selectedSetting) {
             $message = 'Вы собираетесь изменить расписание функции: «режим сна» в чате. Период ОТ и ДО, во время которого пользователи не смогут отправлять сообщения. Задайте настройки.';
             $message .= PHP_EOL . PHP_EOL;

@@ -48,6 +48,10 @@ class SettingsGetterPipe extends CallbackPipe
 
         }
 
+        if ('greeting_files' === $selectedSetting) {
+            $message = 'Медиа-файлы под приветствием.';
+        }
+
         if ('stop_words' === $selectedSetting) {
             $message = 'Список стоп-слов' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . implode(', ', $setting->getStopWords()) . '.';
         }

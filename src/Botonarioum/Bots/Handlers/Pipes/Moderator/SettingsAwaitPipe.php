@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
+use function Formapro\Values\get_values;
 
 class SettingsAwaitPipe extends MessagePipe
 {
@@ -70,6 +71,8 @@ class SettingsAwaitPipe extends MessagePipe
 
         [$groupId, $selectedSetting] = explode(':', $this->redisStorage->client()->get($target));
 
+        $message = 'Настройки изменены. Новое значение: ' . $update->getMessage()->getText();
+
         try {
             if ($selectedSetting === 'greeting' || $selectedSetting === 'stop_words') {
                 Assertion::string($update->getMessage()->getText(), 'Должна быть строка');
@@ -89,12 +92,12 @@ class SettingsAwaitPipe extends MessagePipe
                 $msg->setReplyMarkup($markup);
                 $bot->sendMessage($msg);
 
+            } else if ($selectedSetting === 'greeting_files') {
+                $message = 'Настройки изменены.';
             } else {
                 Assertion::digit($update->getMessage()->getText(), 'Число от 0 до 9999');
             }
 
-
-            $message = 'Настройки изменены. Новое значение: ' . $update->getMessage()->getText();
 
             /** @var ModeratorSetting $setting */
             $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup((int)$groupId);
@@ -104,7 +107,7 @@ class SettingsAwaitPipe extends MessagePipe
                 $setting = clone $setting;
             }
 
-            $this->changeSettings($setting, $selectedSetting, $update->getMessage()->getText());
+            $this->changeSettings($setting, $selectedSetting, $update->getMessage()->getText(), $update);
             $setting->setGroupId((int)$groupId);
             $setting->setIsDefault(false);
 
@@ -127,8 +130,16 @@ class SettingsAwaitPipe extends MessagePipe
         return true;
     }
 
-    private function changeSettings(ModeratorSetting $setting, string $selectedSetting, $value): ModeratorSetting
+    private function changeSettings(ModeratorSetting $setting, string $selectedSetting, $value, Update $update): ModeratorSetting
     {
+        if ('greeting_files' === $selectedSetting) {
+            if ($update->getMessage()->getText() && 'off' === strtolower(trim($value))) {
+                $setting->setGreetingFiles(null);
+            } else {
+                $setting->setGreetingFiles(get_values($update));
+            }
+        }
+
         if ('sleep_mode' === $selectedSetting) {
             if ('off' === strtolower(trim($value))) {
                 $setting->resetSleepMode();

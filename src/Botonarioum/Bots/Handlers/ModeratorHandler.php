@@ -11,6 +11,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisableForwardPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisableLinkPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\EnableForwardPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\EnableLinkPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\FileUploadPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupBlockListDetailPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupBlockRemovePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupGetBlockListPipe;
@@ -20,6 +21,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessagePipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupMessageReplyPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\GroupSettingsPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\InfoPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\LeftChatMemberPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\MyGroupsPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\NewChatMemberPipe;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RemoveBotFromGroupPipe;
@@ -194,8 +196,17 @@ class ModeratorHandler extends AbstractHandler
      * @var EnableForwardPipe
      */
     private $enableForwardPipe;
+    /**
+     * @var FileUploadPipe
+     */
+    private $fileUploadPipe;
+    /**
+     * @var LeftChatMemberPipe
+     */
+    private $leftChatMemberPipe;
 
     public function __construct(LoggerInterface $logger,
+                                FileUploadPipe $fileUploadPipe,
                                 StartPipe $startPipe,
                                 GroupMessagePipe $groupMessagePipe,
                                 NewChatMemberPipe $newChatMemberPipe,
@@ -221,7 +232,8 @@ class ModeratorHandler extends AbstractHandler
                                 GroupBlockListDetailPipe $blockListDetailPipe,
                                 GroupBlockRemovePipe $blockRemovePipe,
                                 EnableForwardPipe $enableForwardPipe,
-                                DisableForwardPipe $disableForwardPipe)
+                                DisableForwardPipe $disableForwardPipe,
+                                LeftChatMemberPipe $leftChatMemberPipe)
 //                                DonatePipe $donatePipe,
 //                                BotonarioumPipe $botonarioumPipe,
 //                                MessagePipe $messagePipe,
@@ -230,6 +242,8 @@ class ModeratorHandler extends AbstractHandler
 //                                DownloadCallbackPipe $downloadCallbackPipe,
 //                                DefaultPipe $defaultPipe)
     {
+        $this->leftChatMemberPipe = $leftChatMemberPipe;
+        $this->fileUploadPipe = $fileUploadPipe;
         $this->allSupportPipe = $allSupportPipe;
         $this->blockRemovePipe = $blockRemovePipe;
 
@@ -298,7 +312,10 @@ class ModeratorHandler extends AbstractHandler
     private function init(): void
     {
         $this
-//            ->add($this->allSupportPipe)
+
+
+
+//            ->add($this->fileUploadPipe)
             ->add($this->startPipe)             // message
             ->add($this->disableForwardPipe)
             ->add($this->enableForwardPipe)
@@ -317,6 +334,7 @@ class ModeratorHandler extends AbstractHandler
             ->add($this->removeBotFromGroup)
             ->add($this->groupMessageEditPipe)
             ->add($this->newChatMemberPipe)
+            ->add($this->leftChatMemberPipe)
             ->add($this->groupMessagePipe)
 
 
