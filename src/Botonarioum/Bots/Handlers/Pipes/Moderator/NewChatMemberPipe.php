@@ -15,7 +15,6 @@ use Formapro\TelegramBot\Bot;
 use Formapro\TelegramBot\ChatMember;
 use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\FileId;
-use Formapro\TelegramBot\GetFile;
 use Formapro\TelegramBot\Message;
 use Formapro\TelegramBot\SendDocument;
 use Formapro\TelegramBot\SendMessage;
@@ -161,11 +160,20 @@ class NewChatMemberPipe extends AbstractPipe
 
         $newGreetingMessage = $bot->sendMessage($msg);
 
-        $lastGreetingIdKey = RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId());
-        $this->client->lpush($lastGreetingIdKey, json_encode([
-            'token'      => $bot->getToken(),
-            'chat_id'    => $update->getMessage()->getChat()->getId(),
-            'message_id' => $newGreetingMessage->getMessageId()
+        $this->trackMessageIdInRedis(
+            RedisKeys::makeLastGreetingsMessageIdKey($update->getMessage()->getChat()->getId()),
+            $bot->getToken(),
+            $update->getMessage()->getChat()->getId(),
+            $newGreetingMessage->getMessageId()
+        );
+    }
+
+    private function trackMessageIdInRedis(string $key, string $token, int $chatId, int $messageId): void
+    {
+        $this->client->lpush($key, json_encode([
+            'token'      => $token,
+            'chat_id'    => $chatId,
+            'message_id' => $messageId
         ]));
     }
 
@@ -203,7 +211,14 @@ class NewChatMemberPipe extends AbstractPipe
                 $fileId = $updateData['message']['document']['file_id'];
             }
 
-            $bot->sendDocument(SendDocument::withFileId($update->getMessage()->getChat()->getId(), new FileId($fileId)));
+            $newGreetingMediaMessage = $bot->sendDocument(SendDocument::withFileId($update->getMessage()->getChat()->getId(), new FileId($fileId)));
+
+            $this->trackMessageIdInRedis(
+                RedisKeys::makeLastGreetingMediasMessageIdKey($update->getMessage()->getChat()->getId()),
+                $bot->getToken(),
+                $update->getMessage()->getChat()->getId(),
+                $newGreetingMediaMessage->getMessageId()
+            );
         } catch (\Throwable $exception) {
             //
         }

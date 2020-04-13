@@ -28,6 +28,16 @@ class RedisKeys
         return implode(':', ['moderator', 'last_greeting', 'queue', $chatId]);
     }
 
+    /**
+     * @param int $chatId
+     * @return string
+     * @deprecated
+     */
+    public static function makeLastGreetingMediasMessageIdKey(int $chatId): string
+    {
+        return implode(':', ['moderator', 'last_greeting_media', 'queue', $chatId]);
+    }
+
     public static function makeLastGreetingsMessageQueueIdKey(): string
     {
         return implode(':', ['moderator', 'last_greeting', 'queue']);
