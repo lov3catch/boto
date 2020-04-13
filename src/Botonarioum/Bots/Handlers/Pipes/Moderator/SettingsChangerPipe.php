@@ -48,7 +48,7 @@ class SettingsChangerPipe extends CallbackPipe
             $message .= PHP_EOL . PHP_EOL;
             $message .= 'Например:' . PHP_EOL;
             $message .= '12:30 - 14:30 (спящий режим от 12:30 до 14:30)' . PHP_EOL;
-            $message .= '22:00 - 08-00 (спящий режим от 22:00 до 08:00 следующего дня)';
+            $message .= '22:00 - 08:00 (спящий режим от 22:00 до 08:00 следующего дня)';
             $message .= PHP_EOL . PHP_EOL;
             $message .= 'Отправьте: off - чтобы деактивировать функцию.';
         }

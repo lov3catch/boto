@@ -18,7 +18,7 @@ class GroupSettingsPipe extends CallbackPipe
         $settings = [
             'greeting'                 => 'Приветствие',
             'greeting_buttons'         => 'Кнопки под приветствием',
-            'greeting_files'           => 'Файлы под приветствием (.gif, .pdf, .mp3, .zip, .txt)',
+            'greeting_files'           => 'Файлы под приветствием',
             'max_daily_messages_count' => 'Максимальное к-во сообщений в день',
             'min_referrals_count'      => 'Минимальное к-во рефералов',
             'holdtime'                 => 'Заглушить новичков на (в секундах)',
