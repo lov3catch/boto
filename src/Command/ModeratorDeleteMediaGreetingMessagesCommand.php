@@ -43,14 +43,18 @@ class ModeratorDeleteMediaGreetingMessagesCommand extends Command
         $io->title('Remove greeting messages');
 
         while (true) {
-            $groupIds = json_decode(file_get_contents('https://boto-all-in-one.herokuapp.com/group_ids'));
-            foreach ($groupIds as $groupId) {
-                $key = RedisKeys::makeLastGreetingMediasMessageIdKey($groupId);
-                try {
-                    $this->clear($key, $io);
-                } catch (\Exception $exception) {
-                    var_dump($exception->getMessage());
+            try {
+                $groupIds = json_decode(file_get_contents('https://boto-all-in-one.herokuapp.com/group_ids'));
+                foreach ($groupIds as $groupId) {
+                    $key = RedisKeys::makeLastGreetingMediasMessageIdKey($groupId);
+                    try {
+                        $this->clear($key, $io);
+                    } catch (\Exception $exception) {
+                        var_dump($exception->getMessage());
+                    }
                 }
+            } catch (\Throwable $exception) {
+                echo $exception->getMessage() . PHP_EOL;
             }
 
             sleep(5);
