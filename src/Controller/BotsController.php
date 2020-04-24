@@ -38,6 +38,7 @@ class BotsController extends AbstractController
      */
     public function handler(Request $request, $token, BotContainer $botContainer, EventDispatcherInterface $dispatcher): Response
     {
+        set_time_limit(0); // 0 = no limits
         if ($request->isMethod('post')) {
             $botContainer->handle($token, $request);
         }
