@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
@@ -29,6 +31,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
 use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Entity\ModeratorSetting;
+use App\Events\SpamDetectedEvent;
 use App\Storages\RedisStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
@@ -36,6 +39,7 @@ use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Predis\Client;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class GroupMessagePipe extends BaseMessagePipe
 {
@@ -99,8 +103,12 @@ class GroupMessagePipe extends BaseMessagePipe
      * @var SleepChecker
      */
     private $sleepChecker;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, SleepChecker $sleepChecker, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker, StopWordChecker $stopWordChecker)
+    public function __construct(EntityManagerInterface $entityManager, EventDispatcherInterface $dispatcher, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, SleepChecker $sleepChecker, HoldTimeChecker $holdTimeChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker, StopWordChecker $stopWordChecker)
     {
         $this->sleepChecker = $sleepChecker;
         $this->stopWordChecker = $stopWordChecker;
@@ -116,6 +124,7 @@ class GroupMessagePipe extends BaseMessagePipe
         $this->blockAllGlobalChecker = $blockAllGlobalChecker;
         $this->repostChecker = $repostChecker;
         $this->em = $entityManager;
+        $this->dispatcher = $dispatcher;
         $this->client = $redisStorage->client();
     }
 
@@ -130,36 +139,12 @@ class GroupMessagePipe extends BaseMessagePipe
         // Если сообщение написал админ - не модерируем
         if (true === $isUserAdmin) return true;
 
-
-//        var_dump($isBotAdmin);
-//        die;
-
-//        // todo: переход на репозиторий @makasim
-//        $bot->sendMessage(new SendMessage(
-//            $update->getMessage()->getChat()->getId(),
-//            'Logging'
-//        ));
-
         $groupId = $update->getMessage()->getChat()->getId();
 
         /** @var ModeratorSetting $setting */
         $setting = $this->em->getRepository(ModeratorSetting::class)->getForSelectedGroup($groupId);
 
-        /** @var ModeratorSetting $settings */
-//        $setting = ($this->em->getRepository(ModeratorSetting::class)->createQueryBuilder('setting'))
-//                       ->where('setting.is_default = :isd')
-//                       ->orWhere('setting.group_id = :grid')
-//                       ->orderBy('setting.is_default', 'ASC')
-//                       ->setParameters(new ArrayCollection([new Parameter('isd', true), new Parameter('grid', (int)$groupId)]))
-//                       ->getQuery()
-//                       ->getResult()[0];
-
-//        /** @var ModeratorSetting $setting */
-//        $setting = $this->em->getRepository(ModeratorSetting::class)->findOneBy([]);
-
         try {
-
-
             $this->sleepChecker->check($update, $setting);
             $this->stopWordChecker->check($update, $setting);
             $this->repostChecker->check($update, $setting);
@@ -175,17 +160,6 @@ class GroupMessagePipe extends BaseMessagePipe
 
             $this->dailyMessageLogger->set($update);
 
-//            var_dump($this->dailyMessageLogger->get($update));die;
-
-//            $bot->sendMessage(new SendMessage(
-//                $update->getMessage()->getChat()->getId(),
-//                'OK'
-//            ));
-
-
-//            (new DailyMessageLogger($this->))->set($update);      // логируем сообщение
-//            (new JoinToChatLogger($this->client))->set($update);        // todo: если группа старая - надо как-то создать запись о holdtime
-
             return true;
         } catch (SleepException $sleepException) {
             $errorMessage = 'Действует спящий режим.' . PHP_EOL;
@@ -198,7 +172,6 @@ class GroupMessagePipe extends BaseMessagePipe
             $errorMessage .= 'Chat is closed from ' . $setting->getSleepFrom() . ' to ' . $setting->getSleepUntil() . PHP_EOL;
             $errorMessage .= 'Time zone: Moscow.';
 
-//            $errorMessage = 'Действует режим сна. С ' . $setting->getSleepFrom() . ' по ' . $setting->getSleepUntil() . ' Часовой пояс: Москва.';
         } catch (RepostException $repostException) {
             $errorMessage = 'Перепост сообщений запрещен.';
         } catch (CharsCountException $charsCountException) {
@@ -209,7 +182,6 @@ class GroupMessagePipe extends BaseMessagePipe
             $errorMessage = 'Ссылки запрещенны';
         } catch (ReferralsCountException $referralsCountException) {
             $errorMessage = $referralsCountException->getMessage();
-//            $errorMessage = 'Пригласите больше людей в группу';
         } catch (DailyMessageCountException $dailyMessageCountException) {
             $errorMessage = 'Превышено максимально количество сообщений в сутки';
         } catch (HoldTimeException $holdTimeException) {
@@ -219,10 +191,10 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (StopWordException $stopWordException) {
             $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
         } catch (\Exception $exception) {
-//            var_dump($exception);die;
             $errorMessage = 'Что-то пошло не так :(';
-//            $errorMessage = $exception->getMessage();
         }
+
+        $this->dispatcher->dispatch(SpamDetectedEvent::EVENT_NAME, new SpamDetectedEvent($update, $bot));
 
         $tempMessage = $bot->sendMessage(new SendMessage(
             $update->getMessage()->getChat()->getId(),
@@ -230,14 +202,10 @@ class GroupMessagePipe extends BaseMessagePipe
         ));
         $bot->deleteMessage(new DeleteMessage($update->getMessage()->getChat()->getId(), $update->getMessage()->getMessageId()));
 
-//        $tempMessageData = ['chat_id' => $update->getMessage()->getChat()->getId(), 'message_id' => $tempMessage->getMessageId(), 'created' => time(), 'token' => $bot->getToken()];
-
         $this->client->lpush(RedisKeys::makeTempMessageKey(), [json_encode(['chat_id' => $update->getMessage()->getChat()->getId(), 'message_id' => $tempMessage->getMessageId(), 'created' => time(), 'token' => $bot->getToken()])]);
         $this->client->expire(RedisKeys::makeTempMessageKey(), 60 * 60 * 24);
 
 
-//        $this->client->set('foo', 'bar');
-//        $this->client->expire('foo', 15);
         return true;
     }
 

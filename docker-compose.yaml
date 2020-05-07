@@ -32,7 +32,9 @@ services:
           - db
     composer:
         container_name: boto_composer
-        image: composer:1.9
-        command: ["composer", "install"]
+        build: ./Dockerfiles/composer
         volumes:
             - .:/app
+        tty: true
+        restart: on-failure
+        command: ["composer", "install"]

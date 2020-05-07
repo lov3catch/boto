@@ -29,6 +29,7 @@ use App\Botonarioum\Bots\Handlers\Pipes\Moderator\RedisLogs\DailyMessageLogger;
 use App\Botonarioum\Bots\Helpers\IsChatAdministrator;
 use App\Botonarioum\Bots\Helpers\RedisKeys;
 use App\Entity\ModeratorSetting;
+use App\Events\SpamDetectedEvent;
 use App\Storages\RedisStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Formapro\TelegramBot\Bot;
@@ -36,6 +37,7 @@ use Formapro\TelegramBot\DeleteMessage;
 use Formapro\TelegramBot\SendMessage;
 use Formapro\TelegramBot\Update;
 use Predis\Client;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class GroupMessageEditPipe extends BaseMessagePipe
 {
@@ -99,9 +101,14 @@ class GroupMessageEditPipe extends BaseMessagePipe
      * @var SleepChecker
      */
     private $sleepChecker;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
 
-    public function __construct(EntityManagerInterface $entityManager, RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, SleepChecker $sleepChecker, HoldTimeChecker $holdTimeChecker, StopWordChecker $stopWordChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
+    public function __construct(EntityManagerInterface $entityManager, EventDispatcherInterface $dispatcher,  RedisStorage $redisStorage, DailyMessageLogger $dailyMessageLogger, SleepChecker $sleepChecker, HoldTimeChecker $holdTimeChecker, StopWordChecker $stopWordChecker, ReferralsCountChecker $referralsCountChecker, WordsCountChecker $wordsCountChecker, CharsCountChecker $charsCountChecker, LinkChecker $linkChecker, DailyMessagesCountChecker $dailyMessagesCountChecker, BlockChecker $blockChecker, BlockAllChecker $blockAllChecker, BlockAllGlobalChecker $blockAllGlobalChecker, ForwardChecker $repostChecker)
     {
+        $this->dispatcher = $dispatcher;
         $this->sleepChecker = $sleepChecker;
         $this->stopWordChecker = $stopWordChecker;
         $this->referralsCountChecker = $referralsCountChecker;
@@ -171,6 +178,7 @@ class GroupMessageEditPipe extends BaseMessagePipe
         } catch (\Exception $exception) {
             $errorMessage = 'Что-то пошло не так :(';
         }
+        $this->dispatcher->dispatch(SpamDetectedEvent::EVENT_NAME, new SpamDetectedEvent($update, $bot));
 
         $tempMessage = $bot->sendMessage(new SendMessage(
             $update->getEditedMessage()->getChat()->getId(),
