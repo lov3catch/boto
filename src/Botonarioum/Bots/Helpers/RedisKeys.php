@@ -62,6 +62,6 @@ class RedisKeys
 
     public static function makeJoinToChatDateTimeKey(int $chatId, int $userId): string
     {
-        return implode(':', ['moderator', 'join', $chatId, $userId]);
+        return implode(':', ['moderator', 'join2', $chatId, $userId]);
     }
 }

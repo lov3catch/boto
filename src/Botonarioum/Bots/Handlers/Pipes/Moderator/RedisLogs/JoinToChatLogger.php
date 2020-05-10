@@ -30,7 +30,7 @@ class JoinToChatLogger
         $value = (new \DateTime())->getTimestamp();
 
         $this->client->set(RedisKeys::makeJoinToChatDateTimeKey($chatId, $memberId), $value);
-        $this->client->expire(RedisKeys::makeJoinToChatDateTimeKey($chatId, $memberId), 60 * 60 * 24 * 7);
+        $this->client->expire(RedisKeys::makeJoinToChatDateTimeKey($chatId, $memberId), 60 * 60 * 24);
 
         return $value;
     }
