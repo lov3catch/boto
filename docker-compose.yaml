@@ -39,12 +39,12 @@ services:
         tty: true
         depends_on:
           - web
-          - composer
-    composer:
-        container_name: boto_composer
-        build: ./Dockerfiles/composer
-        volumes:
-            - .:/app
-        tty: true
-        restart: on-failure
-        command: ["composer", "install"]
+#          - composer
+#    composer:
+#        container_name: boto_composer
+#        build: ./Dockerfiles/composer
+#        volumes:
+#            - .:/app
+#        tty: true
+#        restart: on-failure
+#        command: ["composer", "install"]
