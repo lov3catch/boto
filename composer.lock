@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b97a2e6e56b6fd4299d187068b2bad6",
+    "content-hash": "198a5d3d346a6c687dedf2acee25fc62",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2977,6 +2977,34 @@
                 "mailer"
             ],
             "time": "2020-03-03T08:49:48+00:00"
+        },
+        {
+            "name": "symfony/amqp-pack",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/amqp-pack.git",
+                "reference": "6683ad706d5993fdeca84fdf0df2d665784edeaf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/amqp-pack/zipball/6683ad706d5993fdeca84fdf0df2d665784edeaf",
+                "reference": "6683ad706d5993fdeca84fdf0df2d665784edeaf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-amqp": "*",
+                "php": "^7.1",
+                "symfony/messenger": "*",
+                "symfony/serializer-pack": "*"
+            },
+            "type": "symfony-pack",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A pack for using the AMQP transport with Symfony Messenger",
+            "time": "2020-02-11T16:23:31+00:00"
         },
         {
             "name": "symfony/apache-pack",
@@ -7091,7 +7119,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "nesbot/carbon": 20
+        "nesbot/carbon": 20,
+        "symfony/amqp-pack": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -7100,5 +7129,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

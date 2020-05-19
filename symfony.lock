@@ -186,6 +186,9 @@
     "swiftmailer/swiftmailer": {
         "version": "6.3-dev"
     },
+    "symfony/amqp-pack": {
+        "version": "dev-master"
+    },
     "symfony/apache-pack": {
         "version": "1.0",
         "recipe": {
