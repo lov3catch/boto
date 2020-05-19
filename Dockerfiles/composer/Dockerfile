@@ -1,5 +1,5 @@
 FROM composer:1.9
-RUN apk update && apk add -y \
+RUN apk update && apk add --update \
     wget \
     curl \
     git \
