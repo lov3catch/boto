@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Botonarioum\Bots\Handlers;
 
@@ -303,7 +305,7 @@ class ModeratorHandler extends AbstractHandler
                 if ($pipe->handle($bot, $update)) break;
             }
         } catch (\Throwable $exception) {
-            var_dump('EXCEPTION: ' . $exception->getMessage());
+            $this->logger->critical($exception->getMessage());
         }
 
         return true;

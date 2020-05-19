@@ -1,0 +1,7 @@
+framework:
+    messenger:
+        transports:
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+        routing:
+             'App\Message\UpdateMessage': async

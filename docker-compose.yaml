@@ -30,6 +30,15 @@ services:
             - 8080:8080
         depends_on:
           - db
+    supervisor:
+        container_name: boto_supervisor
+        build: ./Dockerfiles/supervisor
+        volumes:
+            - .:/app
+        restart: on-failure
+        tty: true
+        depends_on:
+          - web
     composer:
         container_name: boto_composer
         build: ./Dockerfiles/composer
