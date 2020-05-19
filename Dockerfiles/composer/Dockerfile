@@ -1,5 +1,5 @@
 FROM composer:1.9
-RUN apt-get update && apt-get install -y \
+RUN apk update && apk add && apt-get update && apt-get install -y \
     wget \
     curl \
     git \
