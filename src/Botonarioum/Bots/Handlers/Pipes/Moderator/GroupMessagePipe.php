@@ -164,13 +164,11 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (SleepException $sleepException) {
             $errorMessage = 'Действует спящий режим.' . PHP_EOL;
             $errorMessage .= 'Чат закрыт с ' . $setting->getSleepFrom() . ' до ' . $setting->getSleepUntil() . PHP_EOL;
-            $errorMessage .= 'Часовой пояс: Москва.';
 
             $errorMessage .= PHP_EOL . PHP_EOL;
 
             $errorMessage .= 'There is a sleep mode.' . PHP_EOL;
             $errorMessage .= 'Chat is closed from ' . $setting->getSleepFrom() . ' to ' . $setting->getSleepUntil() . PHP_EOL;
-            $errorMessage .= 'Time zone: Moscow.';
 
         } catch (RepostException $repostException) {
             $errorMessage = 'Перепост сообщений запрещен.';
