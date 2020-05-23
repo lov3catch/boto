@@ -42,7 +42,7 @@ class SettingsGetterPipe extends CallbackPipe
                 $message = 'Режим сна' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . $setting->getSleepFrom() . ' - ' . $setting->getSleepUntil();
                 $message .= PHP_EOL;
                 $message .= PHP_EOL . 'Серверное время: ' . Carbon::now()->toRfc850String();
-                $message .= PHP_EOL . 'Московское время: ' . Carbon::now(new \DateTimeZone('Europe/Moscow'))->toRfc850String();
+//                $message .= PHP_EOL . 'Московское время: ' . Carbon::now(new \DateTimeZone('Europe/Moscow'))->toRfc850String();
             }
 
 

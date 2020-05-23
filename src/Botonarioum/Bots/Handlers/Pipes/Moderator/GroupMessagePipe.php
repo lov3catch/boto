@@ -165,7 +165,7 @@ class GroupMessagePipe extends BaseMessagePipe
             $errorMessage = 'Действует спящий режим.' . PHP_EOL;
             $errorMessage .= 'Чат закрыт с ' . $setting->getSleepFrom() . ' до ' . $setting->getSleepUntil() . PHP_EOL;
 
-            $errorMessage .= PHP_EOL . PHP_EOL;
+            $errorMessage .= PHP_EOL;
 
             $errorMessage .= 'There is a sleep mode.' . PHP_EOL;
             $errorMessage .= 'Chat is closed from ' . $setting->getSleepFrom() . ' to ' . $setting->getSleepUntil() . PHP_EOL;
@@ -187,7 +187,15 @@ class GroupMessagePipe extends BaseMessagePipe
         } catch (BanException $banException) {
             $errorMessage = 'Пользователь забанен админом.';
         } catch (StopWordException $stopWordException) {
-            $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
+            $errorMessage = 'Объявление удалено.' . PHP_EOL;
+            $errorMessage .= 'Тема и текст не соответствует правилам чата.' . PHP_EOL;
+
+            $errorMessage .= PHP_EOL;
+
+            $errorMessage .= 'Post removed.' . PHP_EOL;
+            $errorMessage .= 'This text falls short of to the rules.' . PHP_EOL;
+
+//            $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
         } catch (\Exception $exception) {
             $errorMessage = 'Что-то пошло не так :(';
         }
