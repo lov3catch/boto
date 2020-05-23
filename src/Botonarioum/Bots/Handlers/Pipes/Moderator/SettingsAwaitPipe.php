@@ -72,6 +72,8 @@ class SettingsAwaitPipe extends MessagePipe
         [$groupId, $selectedSetting] = explode(':', $this->redisStorage->client()->get($target));
 
         $message = 'Настройки изменены. Новое значение: ' . $update->getMessage()->getText();
+        $message .= PHP_EOL;
+        $message .= 'ВНИМАНИЕ: настройки обновляются в течении 30 минут.';
 
         try {
             if ($selectedSetting === 'greeting' || $selectedSetting === 'stop_words') {
