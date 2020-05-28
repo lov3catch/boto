@@ -73,7 +73,7 @@ class SettingsAwaitPipe extends MessagePipe
 
         $message = 'Настройки изменены. Новое значение: ' . $update->getMessage()->getText();
         $message .= PHP_EOL;
-        $message .= 'ВНИМАНИЕ: настройки обновляются в течении 30 минут.';
+        $message .= 'ВНИМАНИЕ: настройки обновляются в течении 5 минут.';
 
         try {
             if ($selectedSetting === 'greeting' || $selectedSetting === 'stop_words') {
