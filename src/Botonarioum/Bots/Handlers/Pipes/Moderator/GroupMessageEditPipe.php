@@ -174,7 +174,14 @@ class GroupMessageEditPipe extends BaseMessagePipe
         } catch (BanException $banException) {
             $errorMessage = 'Пользователь забанен админом.';
         } catch (StopWordException $stopWordException) {
-            $errorMessage = 'Вы использовали запрещенные слова, поэтому объявление удалено.';
+            $errorMessage = 'Объявление удалено.' . PHP_EOL;
+            $errorMessage .= 'Тема и текст не соответствует правилам чата.' . PHP_EOL;
+
+            $errorMessage .= PHP_EOL;
+
+            $errorMessage .= 'Post removed.' . PHP_EOL;
+            $errorMessage .= 'This text falls short of to the rules.' . PHP_EOL;
+
         } catch (\Exception $exception) {
             $errorMessage = 'Что-то пошло не так :(';
         }
