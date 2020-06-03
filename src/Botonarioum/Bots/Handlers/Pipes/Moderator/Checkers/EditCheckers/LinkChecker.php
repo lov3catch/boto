@@ -11,7 +11,7 @@ use Formapro\TelegramBot\Update;
 
 class LinkChecker
 {
-    private const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me'];
+    private const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me', 'www'];
 
     public function check(Update $update, ModeratorSetting $setting): void
     {
