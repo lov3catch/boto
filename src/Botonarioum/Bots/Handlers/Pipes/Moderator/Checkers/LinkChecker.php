@@ -11,28 +11,36 @@ use Formapro\TelegramBot\Update;
 
 class LinkChecker
 {
-    private const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me', 'www'];
+    protected const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me', 'www', '.ком'];
+    protected const LINK_REGEX = '/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&\'\(\)\*\+,;=.]+$/';
 
     public function check(Update $update, ModeratorSetting $setting): void
     {
         if (true === $setting->getAllowLink()) return;
 
-        $message = $update->getMessage()->getText() ?? '';
+        $message = $update->getMessage() ?? '';
+        $caption = (new MessageDTO($update->getMessage()))->getCaption() ?? '';
 
+        $this->doCheck($message);
+        $this->doCheck($caption);
+    }
+
+    public function doCheck(string $text): void
+    {
         foreach (self::LINK_PATTERNS as $linkPattern) {
-            if (strpos($message, $linkPattern) !== false) {
+            if (strpos($text, $linkPattern) !== false) {
                 throw new LinkException();
             }
         }
 
-        $messageDTO = new MessageDTO($update->getMessage());
+        $matches = [];
 
-        $caption = $messageDTO->getCaption() ?? '';
+        $hasLink = preg_match_all(self::LINK_REGEX, $text, $matches);
 
-        foreach (self::LINK_PATTERNS as $linkPattern) {
-            if (strpos($caption, $linkPattern) !== false) {
-                throw new LinkException();
-            }
-        }
+        if (false === $hasLink) return;
+
+        if (0 === $hasLink) return;
+
+        throw new LinkException();
     }
 }
