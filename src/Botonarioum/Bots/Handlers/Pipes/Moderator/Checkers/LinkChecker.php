@@ -18,7 +18,7 @@ class LinkChecker
     {
         if (true === $setting->getAllowLink()) return;
 
-        $message = $update->getMessage() ?? '';
+        $message = $update->getMessage()->getText() ?? '';
         $caption = (new MessageDTO($update->getMessage()))->getCaption() ?? '';
 
         $this->doCheck($message);
