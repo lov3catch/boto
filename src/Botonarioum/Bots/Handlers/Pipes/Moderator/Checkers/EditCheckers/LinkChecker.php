@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers;
 
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\LinkChecker as BaseLinkChecker;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Entity\ModeratorSetting;
 use Formapro\TelegramBot\Update;
 
-class LinkChecker extends BaseLinkChecker
+class LinkChecker
 {
+    protected const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me', 'www', '.ком'];
+    protected const LINK_REGEX = '/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&\'\(\)\*\+,;=.]+$/';
+
     public function check(Update $update, ModeratorSetting $setting): void
     {
         if (true === $setting->getAllowLink()) return;
@@ -19,24 +21,25 @@ class LinkChecker extends BaseLinkChecker
         $message = $update->getEditedMessage()->getText() ?? '';
         $caption = (new MessageDTO($update->getEditedMessage()))->getCaption() ?? '';
 
-        $this->doCheck($message);
-        $this->doCheck($caption);
+        if ($this->doCheck($message) || $this->doCheck($caption)) {
+            throw new LinkException();
+        }
     }
 
-    public function doCheck(string $text): void
+    public function doCheck(string $text): bool
     {
         foreach (self::LINK_PATTERNS as $linkPattern) {
             if (strpos($text, $linkPattern) !== false) {
-                throw new LinkException();
+                return true;
             }
         }
 
         $hasLink = preg_match_all(self::LINK_REGEX, $text);
 
-        if (false === $hasLink) return;
+        if (false === $hasLink) return false;
 
-        if (0 === $hasLink) return;
+        if (0 === $hasLink) return false;
 
-        throw new LinkException();
+        return true;
     }
 }

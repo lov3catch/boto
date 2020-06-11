@@ -27,8 +27,7 @@ class LinkCheckerTest extends KernelTestCase
      */
     public function testCheckShouldBeException(string $link)
     {
-        $this->expectException(LinkException::class);
-        $this->checker->doCheck($link);
+        $this->assertTrue($this->checker->doCheck($link));
     }
 
     public function linksProvider()
@@ -50,11 +49,10 @@ class LinkCheckerTest extends KernelTestCase
     /**
      * @dataProvider notLinksProvider
      * @param string $text
-     * @throws LinkException
      */
     public function testCheckShouldBeOk(string $text)
     {
-        $this->assertNull($this->checker->doCheck($text));
+        $this->assertFalse($this->checker->doCheck($text));
     }
 
     public function notLinksProvider()

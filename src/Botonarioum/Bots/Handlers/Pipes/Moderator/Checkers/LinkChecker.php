@@ -16,29 +16,30 @@ class LinkChecker
 
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        if (true === $setting->getAllowLink()) return;
+        if ($setting->getAllowLink()) return;
 
         $message = $update->getMessage()->getText() ?? '';
         $caption = (new MessageDTO($update->getMessage()))->getCaption() ?? '';
 
-        $this->doCheck($message);
-        $this->doCheck($caption);
+        if ($this->doCheck($message) || $this->doCheck($caption)) {
+            throw new LinkException();
+        }
     }
 
-    public function doCheck(string $text): void
+    public function doCheck(string $text): bool
     {
         foreach (self::LINK_PATTERNS as $linkPattern) {
             if (strpos($text, $linkPattern) !== false) {
-                throw new LinkException();
+                return true;
             }
         }
 
         $hasLink = preg_match_all(self::LINK_REGEX, $text);
 
-        if (false === $hasLink) return;
+        if (false === $hasLink) return false;
 
-        if (0 === $hasLink) return;
+        if (0 === $hasLink) return false;
 
-        throw new LinkException();
+        return true;
     }
 }
