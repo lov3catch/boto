@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers;
 
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers\EditCheckers\LinkChecker;
-use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use PHPUnit\Framework\TestCase;
 
 class LinkCheckerTest extends TestCase
@@ -32,18 +31,22 @@ class LinkCheckerTest extends TestCase
 
     public function linksProvider()
     {
+        yield ['Привет, вот ссылка: http://example.com'];
+        yield ['http://example.com'];
         yield ['http://example.com'];
         yield ['https://example.com'];
         yield ['https://www.example.com'];
         yield ['www.example.com'];
-        yield ['kvartirka.net.ua'];
+        yield ['Вот еще: kvartirka.net.ua'];
         yield ['24home.com.ua'];
         yield ['54.3.se'];
+        yield ['Привет, вот ссылка: 54.3.se'];
         yield ['340.ком'];
         yield ['Google.com'];
         yield ['Whatsapp.com'];
         yield ['Facebook.com'];
         yield ['YouTube.com'];
+
     }
 
     /**

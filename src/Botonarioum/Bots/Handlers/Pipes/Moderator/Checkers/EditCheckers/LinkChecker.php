@@ -11,7 +11,7 @@ use Formapro\TelegramBot\Update;
 
 class LinkChecker
 {
-    protected const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me', 'www', '.ком'];
+    protected const LINK_PATTERNS = ['@', 'http:', 'https:', 'http://', 'https://', 't.me', 'www', '.ком', '.com', '.ua', '.ru', '.kz', '.se'];
     protected const LINK_REGEX = '/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&\'\(\)\*\+,;=.]+$/';
 
     public function check(Update $update, ModeratorSetting $setting): void
@@ -34,12 +34,17 @@ class LinkChecker
             }
         }
 
-        $hasLink = preg_match_all(self::LINK_REGEX, $text);
+        foreach (explode(' ', $text) as $txt) {
 
-        if (false === $hasLink) return false;
+            $hasLink = preg_match_all(self::LINK_REGEX, $txt);
 
-        if (0 === $hasLink) return false;
+            if (false === $hasLink) return false;
 
-        return true;
+            if (0 === $hasLink) return false;
+
+            return true;
+        }
+
+        return false;
     }
 }
