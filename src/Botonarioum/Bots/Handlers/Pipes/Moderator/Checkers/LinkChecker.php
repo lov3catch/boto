@@ -33,9 +33,7 @@ class LinkChecker
             }
         }
 
-        $matches = [];
-
-        $hasLink = preg_match_all(self::LINK_REGEX, $text, $matches);
+        $hasLink = preg_match_all(self::LINK_REGEX, $text);
 
         if (false === $hasLink) return;
 

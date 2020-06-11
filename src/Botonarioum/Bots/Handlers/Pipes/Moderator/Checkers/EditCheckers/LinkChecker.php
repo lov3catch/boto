@@ -14,7 +14,7 @@ class LinkChecker extends BaseLinkChecker
 {
     public function check(Update $update, ModeratorSetting $setting): void
     {
-        parent::check($update, $setting);
+        if (true === $setting->getAllowLink()) return;
 
         $message = $update->getEditedMessage()->getText() ?? '';
         $caption = (new MessageDTO($update->getEditedMessage()))->getCaption() ?? '';
@@ -31,9 +31,7 @@ class LinkChecker extends BaseLinkChecker
             }
         }
 
-        $matches = [];
-
-        $hasLink = preg_match_all(self::LINK_REGEX, $text, $matches);
+        $hasLink = preg_match_all(self::LINK_REGEX, $text);
 
         if (false === $hasLink) return;
 
