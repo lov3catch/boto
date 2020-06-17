@@ -25,6 +25,11 @@ class MessageDTO extends Message
         return get_value($this->message, 'caption');
     }
 
+    public function getCaptionEntities(): ?\Generator
+    {
+        return get_objects($this->message, 'caption_entities', EntityDTO::class);
+    }
+
     public function getEntities(): ?\Generator
     {
         return get_objects($this->message, 'entities', EntityDTO::class);

@@ -19,13 +19,20 @@ class LinkChecker
     {
         if ($setting->getAllowLink()) return;
 
-        $entities = (new MessageDTO($update->getMessage()))->getEntities();
+        /**
+         * @var EntityDTO $entitie
+         */
+        foreach ((new MessageDTO($update->getMessage()))->getCaptionEntities() as $captionEntity) {
+            if ('url' === $captionEntity->getType()) {
+                throw new LinkException();
+            }
+        }
 
         /**
          * @var EntityDTO $entitie
          */
-        foreach ($entities as $entitie) {
-            if ('url' === $entitie->getType()) {
+        foreach ((new MessageDTO($update->getMessage()))->getEntities() as $entity) {
+            if ('url' === $entity->getType()) {
                 throw new LinkException();
             }
         }
