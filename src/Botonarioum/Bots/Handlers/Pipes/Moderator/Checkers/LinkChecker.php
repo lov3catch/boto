@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator\Checkers;
 
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\EntityDTO;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DTO\MessageDTO;
 use App\Botonarioum\Bots\Handlers\Pipes\Moderator\Exceptions\LinkException;
 use App\Entity\ModeratorSetting;
@@ -18,11 +19,15 @@ class LinkChecker
     {
         if ($setting->getAllowLink()) return;
 
-        $message = $update->getMessage()->getText() ?? '';
-        $caption = (new MessageDTO($update->getMessage()))->getCaption() ?? '';
+        $entities = (new MessageDTO($update->getMessage()))->getEntities();
 
-        if ($this->doCheck($message) || $this->doCheck($caption)) {
-            throw new LinkException();
+        /**
+         * @var EntityDTO $entitie
+         */
+        foreach ($entities as $entitie) {
+            if ('url' === $entitie->getType()) {
+                throw new LinkException();
+            }
         }
     }
 
