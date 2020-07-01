@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Botonarioum\Bots\Handlers\Pipes\Moderator;
 
 use App\Botonarioum\Bots\Handlers\Pipes\CallbackPipe;
+use App\Botonarioum\Bots\Handlers\Pipes\Moderator\DisplayLayer\DisplayStopWords;
 use App\Entity\ModeratorSetting;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,7 +54,11 @@ class SettingsGetterPipe extends CallbackPipe
         }
 
         if ('stop_words' === $selectedSetting) {
-            $message = 'Список стоп-слов' . PHP_EOL . 'Текущее значение: ' . PHP_EOL . implode(', ', $setting->getStopWords()) . '.';
+
+            $doDisplayStopWords = new DisplayStopWords($bot, $setting);
+            $doDisplayStopWords->display($update->getCallbackQuery()->getMessage()->getChat());
+
+            return true;
         }
 
         if ('max_daily_messages_count' === $selectedSetting) {
