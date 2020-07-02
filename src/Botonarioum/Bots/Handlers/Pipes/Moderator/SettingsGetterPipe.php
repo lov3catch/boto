@@ -56,7 +56,7 @@ class SettingsGetterPipe extends CallbackPipe
         if ('stop_words' === $selectedSetting) {
 
             $doDisplayStopWords = new DisplayStopWords($bot, $setting);
-            $doDisplayStopWords->display($update->getCallbackQuery()->getMessage()->getChat());
+            $doDisplayStopWords->display($update->getCallbackQuery()->getMessage()->getChat(), $update);
 
             return true;
         }
