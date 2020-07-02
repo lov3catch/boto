@@ -9,6 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ElementType
 {
+    public const BOT_TYPE = 'bot';
+    public const CHANNEL_TYPE = 'channel';
+    public const GROUP_TYPE = 'group';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

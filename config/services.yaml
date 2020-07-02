@@ -31,14 +31,8 @@ services:
         arguments:
             - '%env(REDISCLOUD_URL)%'
 
-    botonarioum.handler.bashim:
-        class: App\Botonarioum\Bots\Handlers\BashImHandler
-
-    botonarioum.handler.botonarioum:
-        class: App\Botonarioum\Bots\Handlers\BotonarioumHandler
-
-    botonarioum.handler.music_dealer:
-        class: App\Botonarioum\Bots\Handlers\MusicDealerHandler
+    botonarioum.handler.moderator:
+        class: App\Botonarioum\Bots\Handlers\ModeratorHandler
 
     # Bots
     App\Botonarioum\Bots\BotContainer:
@@ -46,25 +40,5 @@ services:
         calls:
             - method: add
               arguments:
-                  - '%env(BOTONARIOUMBOT_TOKEN)%'
-                  - '@botonarioum.handler.botonarioum'
-            - method: add
-              arguments:
-                  - '%env(BASHIM_TOKEN)%'
-                  - '@botonarioum.handler.bashim'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_1)%'
-                  - '@botonarioum.handler.music_dealer'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_2)%'
-                  - '@botonarioum.handler.music_dealer'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_3)%'
-                  - '@botonarioum.handler.music_dealer'
-            - method: add
-              arguments:
-                  - '%env(ZAYCEV_NET_4)%'
-                  - '@botonarioum.handler.music_dealer'
+                  - '%env(MODERATOR_1)%'
+                  - '@botonarioum.handler.moderator'

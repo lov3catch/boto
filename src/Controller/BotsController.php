@@ -6,13 +6,15 @@ use App\Botonarioum\Bots\BotContainer;
 use App\Entity\Element;
 use App\Entity\ElementType;
 use App\Entity\Platform;
-use Doctrine\ORM\EntityManager;
+use App\Message\UpdateMessage;
 use Doctrine\ORM\EntityManagerInterface;
+use Formapro\TelegramBot\Update;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BotsController extends AbstractController
@@ -34,12 +36,15 @@ class BotsController extends AbstractController
      * @param $token
      * @param BotContainer $botContainer
      * @param EventDispatcherInterface $dispatcher
+     * @param MessageBusInterface $bus
      * @return Response
      */
-    public function handler(Request $request, $token, BotContainer $botContainer, EventDispatcherInterface $dispatcher): Response
+    public function handler(Request $request, $token, BotContainer $botContainer, EventDispatcherInterface $dispatcher, MessageBusInterface $bus): Response
     {
+        set_time_limit(0); // 0 = no limits
         if ($request->isMethod('post')) {
-            $botContainer->handle($token, $request);
+            $json = json_decode($request->getContent(), true);
+            $bus->dispatch(new UpdateMessage($token, $json));
         }
 
         return new Response('It works!! ☺');

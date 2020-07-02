@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Subscribers;
 
+use App\Botonarioum\Bots\Handlers\BotHandlerInterface;
+use App\Botonarioum\Bots\Handlers\ModeratorHandler;
 use App\Entity\Channel;
 use App\Events\ActivityEvent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,6 +14,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class UpdateChannel implements EventSubscriberInterface
 {
+    private const NON_LOGGING_HANDLERS = [ModeratorHandler::class];
+
     /**
      * @var EntityManagerInterface
      */
@@ -53,6 +57,8 @@ class UpdateChannel implements EventSubscriberInterface
 
     public function onAction(ActivityEvent $event): void
     {
+        if (!$this->isNeedToLogging($event->getHandler())) return;
+
         try {
             $handler = $event->getHandler();
             $update = $event->getUpdate();
@@ -85,5 +91,14 @@ class UpdateChannel implements EventSubscriberInterface
         } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
+    }
+
+    private function isNeedToLogging(BotHandlerInterface $botHandler): bool
+    {
+        foreach (self::NON_LOGGING_HANDLERS as $NON_LOGGING_HANDLER) {
+            if (get_class($botHandler) === $NON_LOGGING_HANDLER) return false;
+        }
+
+        return true;
     }
 }
